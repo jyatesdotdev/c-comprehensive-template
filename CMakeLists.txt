@@ -17,6 +17,10 @@ option(BUILD_DOCS       "Build Doxygen documentation"   OFF)
 option(ENABLE_SANITIZERS "Enable ASan/UBSan"            OFF)
 option(ENABLE_RENDERING "Build rendering modules (requires OpenGL/Vulkan)" OFF)
 
+# ── POSIX feature-test macro (needed for clock_gettime, strdup, usleep, etc.
+#    when compiling with -std=c17 instead of -std=gnu17) ─────────────────────
+add_compile_definitions(_DEFAULT_SOURCE)
+
 # ── Compiler Warnings ──────────────────────────────────────────────────────
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wdouble-promotion
@@ -60,7 +64,6 @@ add_library(cli STATIC
 )
 target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(cli PRIVATE core)
-target_compile_definitions(cli PRIVATE _DEFAULT_SOURCE)
 
 # ── Systems Library ─────────────────────────────────────────────────────────
 add_library(systems STATIC
@@ -69,7 +72,6 @@ add_library(systems STATIC
 )
 target_include_directories(systems PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(systems PRIVATE core)
-target_compile_definitions(systems PRIVATE _DEFAULT_SOURCE)
 
 # ── HPC Library ─────────────────────────────────────────────────────────────
 find_package(Threads REQUIRED)

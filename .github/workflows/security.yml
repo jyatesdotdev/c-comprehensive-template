@@ -64,7 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install flawfinder
-        run: pipx install flawfinder
+        run: pip install --break-system-packages flawfinder
       - name: Configure
         run: cmake -B build
       - name: Run flawfinder
