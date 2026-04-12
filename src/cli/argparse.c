@@ -216,6 +216,17 @@ bool cli_flag(const CliContext *ctx, const char *option_name) {
            strcmp(v, "true") == 0 || strcmp(v, "yes") == 0;
 }
 
+/* ── cli_free ───────────────────────────────────────────────────────────── */
+
+void cli_free(CliContext *ctx) {
+    if (!ctx) return;
+    for (int i = 0; i < ctx->config_count; i++) {
+        free((void *)ctx->config_vals[i].key);
+        free((void *)ctx->config_vals[i].value);
+    }
+    ctx->config_count = 0;
+}
+
 /* ── Help Generation ────────────────────────────────────────────────────── */
 
 void cli_print_usage(const char *prog_name, bool has_subcommands) {

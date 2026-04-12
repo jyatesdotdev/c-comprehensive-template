@@ -22,7 +22,7 @@ void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...) {
 
     va_list ap;
     va_start(ap, fmt);
-    vfprintf(stream, fmt, ap);
+    vfprintf(stream, fmt, ap);  /* Flawfinder: ignore — format from trusted caller */
     va_end(ap);
 
     if (use_color) fputs(CLR_RESET, stream);

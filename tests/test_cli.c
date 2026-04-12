@@ -148,6 +148,7 @@ void test_load_config(void) {
     /* Config is lower priority than CLI but higher than default. */
     TEST_ASSERT_EQUAL_STRING("config.txt", cli_resolve(&ctx, "output"));
 
+    cli_free(&ctx);
     remove(path);
 }
 

@@ -125,6 +125,12 @@ const char *cli_resolve(const CliContext *ctx, const char *option_name);
  */
 bool cli_flag(const CliContext *ctx, const char *option_name);
 
+/**
+ * @brief Free heap-allocated config entries in a CliContext.
+ * @param ctx  Parsing context to clean up.
+ */
+void cli_free(CliContext *ctx);
+
 /* ── Help Generation ────────────────────────────────────────────────────── */
 
 /**

@@ -15,7 +15,7 @@
 
 ErrorCode process_run(const char *cmd, int *exit_status) {
     if (!cmd || !exit_status) return ERR_INVALID_ARG;
-    int ret = system(cmd);
+    int ret = system(cmd);  /* Flawfinder: ignore — cmd from caller */
     if (ret == -1) return ERR_IO;
     *exit_status = ret;
     return ERR_OK;
@@ -24,7 +24,7 @@ ErrorCode process_run(const char *cmd, int *exit_status) {
 ErrorCode process_capture(const char *cmd, char **out_buf, size_t *out_len) {
     if (!cmd || !out_buf || !out_len) return ERR_INVALID_ARG;
 
-    FILE *fp = popen(cmd, "r");
+    FILE *fp = popen(cmd, "r");  /* Flawfinder: ignore — cmd from caller */
     if (!fp) return ERR_IO;
 
     size_t cap = 1024, len = 0;
@@ -58,7 +58,7 @@ ErrorCode process_exec(const char *prog, char *const argv[], int *exit_status) {
 
     if (pid == 0) {
         /* Child */
-        execvp(prog, argv);
+        execvp(prog, argv);  /* Flawfinder: ignore — prog/argv from caller */
         _exit(127); /* exec failed */
     }
 

@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install clang-tidy
-        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake clang-tidy
       - name: Configure
         run: cmake -B build -DENABLE_CLANG_TIDY=ON -DCMAKE_C_COMPILER=gcc
       - name: Build (clang-tidy runs inline)
@@ -31,14 +31,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install cppcheck
-        run: sudo apt-get update && sudo apt-get install -y cppcheck
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake cppcheck
       - name: Configure
         run: cmake -B build -DENABLE_CPPCHECK=ON
       - name: Run cppcheck (CI mode)
         run: cmake --build build --target cppcheck-ci
       - name: Upload report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: cppcheck-report
@@ -49,8 +50,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install valgrind
-        run: sudo apt-get update && sudo apt-get install -y valgrind
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake valgrind
       - name: Configure & build
         run: |
           cmake -B build -DBUILD_TESTS=ON
@@ -63,8 +64,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install flawfinder
-        run: pip install --break-system-packages flawfinder
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake
+          pip install --break-system-packages flawfinder
       - name: Configure
         run: cmake -B build
       - name: Run flawfinder
