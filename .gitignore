@@ -42,8 +42,8 @@ vcpkg_installed/
 Thumbs.db
 
 # Core dumps
-core
-core.*
+/core
+/core.*
 vgcore.*
 
 # Coverage and profiling
