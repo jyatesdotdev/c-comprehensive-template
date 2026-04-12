@@ -1,0 +1,88 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  clang-tidy:
+    name: clang-tidy static analysis
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-tidy
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+      - name: Configure
+        run: cmake -B build -DENABLE_CLANG_TIDY=ON -DCMAKE_C_COMPILER=gcc
+      - name: Build (clang-tidy runs inline)
+        run: cmake --build build 2>&1 | tee build/clang-tidy.log
+      - name: Check for warnings
+        run: |
+          if grep -q "warning:" build/clang-tidy.log; then
+            echo "::error::clang-tidy reported warnings"
+            grep "warning:" build/clang-tidy.log
+            exit 1
+          fi
+
+  cppcheck:
+    name: cppcheck analysis
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
+      - name: Configure
+        run: cmake -B build -DENABLE_CPPCHECK=ON
+      - name: Run cppcheck (CI mode)
+        run: cmake --build build --target cppcheck-ci
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: build/cppcheck-report.xml
+
+  valgrind:
+    name: Valgrind memcheck
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install valgrind
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+      - name: Configure & build
+        run: |
+          cmake -B build -DBUILD_TESTS=ON
+          cmake --build build
+      - name: Run valgrind memcheck
+        run: cmake --build build --target valgrind
+
+  flawfinder:
+    name: flawfinder audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install flawfinder
+        run: pip install flawfinder
+      - name: Configure
+        run: cmake -B build
+      - name: Run flawfinder
+        run: cmake --build build --target flawfinder
+
+  security-gate:
+    name: Security gate
+    needs: [clang-tidy, cppcheck, valgrind, flawfinder]
+    runs-on: ubuntu-24.04
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          if [ "${{ needs.clang-tidy.result }}" != "success" ] || \
+             [ "${{ needs.cppcheck.result }}" != "success" ] || \
+             [ "${{ needs.valgrind.result }}" != "success" ] || \
+             [ "${{ needs.flawfinder.result }}" != "success" ]; then
+            echo "::error::Security gate failed — one or more scans reported findings"
+            exit 1
+          fi
+          echo "All security scans passed"

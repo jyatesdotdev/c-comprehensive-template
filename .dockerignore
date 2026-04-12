@@ -1,0 +1,50 @@
+# Version control
+.git
+.gitignore
+
+# Build artifacts
+build/
+cmake-build-*/
+*.o
+*.a
+*.so
+*.dylib
+
+# Documentation
+docs/
+README.md
+Doxyfile.in
+LICENSE
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github/
+
+# Coverage and profiling
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+coverage/
+
+# Tooling config
+.clang-tidy
+.cppcheck-suppressions
+.cache/
+compile_commands.json
+
+# Docker (prevent recursive copy)
+Dockerfile
+.dockerignore
+
+# Third-party build artifacts
+third_party/*/build/

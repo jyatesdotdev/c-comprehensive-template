@@ -1,0 +1,10 @@
+# cppcheck suppression file
+# Format: [error id]:[filename]:[line]
+# Or just: [error id]
+
+# Third-party code
+*:third_party/*
+
+# Known safe patterns
+missingIncludeSystem
+unmatchedSuppression

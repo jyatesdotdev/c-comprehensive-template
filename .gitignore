@@ -1,0 +1,65 @@
+# Build artifacts
+build/
+cmake-build-*/
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.lib
+*.exe
+*.out
+
+# CMake generated
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Makefile
+compile_commands.json
+install_manifest.txt
+_deps/
+
+# vcpkg
+vcpkg_installed/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.cproject
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Coverage and profiling
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
+coverage/
+coverage.info
+
+# Clang tooling cache
+.cache/
+
+# Doxygen output
+docs/html/
+docs/latex/
+
+# Third-party build artifacts
+third_party/*/build/

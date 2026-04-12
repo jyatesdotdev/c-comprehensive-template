@@ -1,0 +1,50 @@
+# Doxyfile — configured by CMake
+# Run: cmake -DBUILD_DOCS=ON .. && make docs
+
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+PROJECT_BRIEF          = "@PROJECT_DESCRIPTION@"
+OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@/docs"
+
+# ── Input ───────────────────────────────────────────────────────────────────
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/include \
+                         @CMAKE_CURRENT_SOURCE_DIR@/src \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/mainpage.md
+FILE_PATTERNS          = *.h *.c *.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = @CMAKE_CURRENT_SOURCE_DIR@/docs/mainpage.md
+
+# ── Extraction ──────────────────────────────────────────────────────────────
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+SORT_MEMBER_DOCS       = YES
+
+# ── Output Formats ──────────────────────────────────────────────────────────
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+HTML_COLORSTYLE        = LIGHT
+
+# ── Source Browsing ─────────────────────────────────────────────────────────
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# ── Diagrams ────────────────────────────────────────────────────────────────
+HAVE_DOT               = NO
+CLASS_DIAGRAMS         = NO
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+# ── Warnings ────────────────────────────────────────────────────────────────
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+
+# ── Preprocessing ───────────────────────────────────────────────────────────
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+PREDEFINED             = ENABLE_LEAK_DETECT

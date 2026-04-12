@@ -1,0 +1,33 @@
+# .clang-tidy — Security-focused static analysis configuration
+# Run via: cmake -DENABLE_CLANG_TIDY=ON .. or standalone: clang-tidy -p build src/**/*.c
+
+Checks: >
+  -*,
+  cert-*,
+  bugprone-*,
+  clang-analyzer-security.*,
+  clang-analyzer-core.*,
+  clang-analyzer-unix.*,
+  clang-analyzer-deadcode.*,
+  clang-analyzer-nullability.*,
+  concurrency-*,
+  misc-redundant-expression,
+  misc-unused-using-decls,
+  -bugprone-easily-swappable-parameters
+
+WarningsAsErrors: >
+  cert-*,
+  clang-analyzer-security.*,
+  bugprone-use-after-move,
+  bugprone-dangling-handle,
+  bugprone-undefined-memory-manipulation
+
+HeaderFilterRegex: 'include/.*\.h$'
+
+FormatStyle: file
+
+CheckOptions:
+  - key: bugprone-assert-side-effect.AssertMacros
+    value: 'assert,UNITY_TEST_ASSERT'
+  - key: cert-err33-c.CheckedFunctions
+    value: '::malloc;::calloc;::realloc;::fopen;::fclose;::fread;::fwrite'
