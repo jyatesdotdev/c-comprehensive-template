@@ -60,6 +60,7 @@ add_library(cli STATIC
 )
 target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(cli PRIVATE core)
+target_compile_definitions(cli PRIVATE _DEFAULT_SOURCE)
 
 # ── Systems Library ─────────────────────────────────────────────────────────
 add_library(systems STATIC
@@ -68,6 +69,7 @@ add_library(systems STATIC
 )
 target_include_directories(systems PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(systems PRIVATE core)
+target_compile_definitions(systems PRIVATE _DEFAULT_SOURCE)
 
 # ── HPC Library ─────────────────────────────────────────────────────────────
 find_package(Threads REQUIRED)
