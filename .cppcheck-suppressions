@@ -5,6 +5,22 @@
 # Third-party code
 *:third_party/*
 
-# Known safe patterns
-missingIncludeSystem
+# Library code — functions are used by consumers, not within src/ itself
+unusedFunction
+
+# Library code — functions declared in headers for external use
+staticFunction
+
+# Minor const suggestions — not worth churn in a template project
+constVariablePointer
+constParameterPointer
+constVariable
+
+# Variable scope reduction — stylistic preference
+variableScope
+
+# Informational messages that trigger --error-exitcode
+normalCheckLevelMaxBranches
+checkersReport
+
 unmatchedSuppression
