@@ -38,6 +38,13 @@ if(ENABLE_SANITIZERS)
     add_link_options(-fsanitize=address,undefined)
 endif()
 
+# ── Coverage ────────────────────────────────────────────────────────────────
+option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
+if(ENABLE_COVERAGE)
+    add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+    add_link_options(--coverage)
+endif()
+
 # ── Security Scanning ───────────────────────────────────────────────────────
 # Must be included before targets so CMAKE_C_CLANG_TIDY applies to all builds
 include(cmake/Security.cmake)
