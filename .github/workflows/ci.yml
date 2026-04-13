@@ -35,7 +35,7 @@ jobs:
       - name: Generate coverage report
         run: |
           lcov --capture --directory build-cov --output-file coverage.info --ignore-errors mismatch
-          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/third_party/*' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/third_party/*' '*/_deps/*' --output-file coverage.info
           lcov --list coverage.info
 
       - name: Check coverage threshold
