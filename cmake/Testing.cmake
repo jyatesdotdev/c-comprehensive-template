@@ -25,6 +25,14 @@ if(USE_UNITY)
         )
         add_library(unity::framework ALIAS unity_framework)
     endif()
+
+    # Third-party code — exempt from our clang-tidy rules regardless of
+    # whether Unity's own CMake ('unity') or our fallback target built it.
+    foreach(_unity_target unity unity_framework)
+        if(TARGET ${_unity_target})
+            set_target_properties(${_unity_target} PROPERTIES C_CLANG_TIDY "")
+        endif()
+    endforeach()
 endif()
 
 # ── cmocka (optional, system-installed) ─────────────────────────────────────
