@@ -32,6 +32,13 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU")
     add_compile_options(-Wlogical-op -Wduplicated-cond)
 endif()
 
+# Apple's linker (Xcode 15+) warns when a static library appears twice on the
+# link line, which is expected here: targets link `core` explicitly and also
+# receive it transitively (e.g. via hpc/simulation). Harmless — silence it.
+if(APPLE)
+    add_link_options(-Wl,-no_warn_duplicate_libraries)
+endif()
+
 # ── Sanitizers ──────────────────────────────────────────────────────────────
 if(ENABLE_SANITIZERS)
     add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)

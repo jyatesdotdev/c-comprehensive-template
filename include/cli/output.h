@@ -27,6 +27,13 @@
  */
 bool cli_colors_enabled(FILE *stream);
 
+/** Marks a function as printf-style so compilers type-check its format arguments. */
+#if defined(__GNUC__) || defined(__clang__)
+#define CLI_PRINTF_FORMAT(fmt_idx, arg_idx) __attribute__((format(printf, fmt_idx, arg_idx)))
+#else
+#define CLI_PRINTF_FORMAT(fmt_idx, arg_idx)
+#endif
+
 /**
  * @brief Print colored text to stream. No-op color if colors disabled.
  * @param stream Output stream.
@@ -34,7 +41,8 @@ bool cli_colors_enabled(FILE *stream);
  * @param fmt    printf-style format string.
  * @param ...    Format arguments.
  */
-void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...);
+void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...)
+    CLI_PRINTF_FORMAT(3, 4);
 
 /* ── Table Formatting ───────────────────────────────────────────────────── */
 
