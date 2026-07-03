@@ -234,7 +234,7 @@ static void test_matx(void) {
 
     /* arena-backed matrices: no matx_destroy, freed with the arena */
     Arena arena;
-    CHECK(arena_init(&arena, 64 * 1024) == ERR_OK);
+    CHECK(arena_init(&arena, (size_t)64 * 1024) == ERR_OK);
     MatX am;
     CHECK(matx_init_arena(&am, &arena, 8, 8) == ERR_OK);
     CHECK(am.owns_data == 0);
