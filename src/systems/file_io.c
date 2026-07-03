@@ -47,24 +47,28 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
     fseek(f, 0, SEEK_END);
     long len = ftell(f);
     if (len < 0) {
-        fclose(f);
+        (void)fclose(f); /* already returning an error */
         return ERR_IO;
     }
     fseek(f, 0, SEEK_SET);
 
     *out_buf = malloc((size_t)len);
     if (!*out_buf) {
-        fclose(f);
+        (void)fclose(f);
         return ERR_NOMEM;
     }
 
     if (fread(*out_buf, 1, (size_t)len, f) != (size_t)len) {
         free(*out_buf);
         *out_buf = NULL;
-        fclose(f);
+        (void)fclose(f);
         return ERR_IO;
     }
-    fclose(f);
+    if (fclose(f) != 0) {
+        free(*out_buf);
+        *out_buf = NULL;
+        return ERR_IO;
+    }
     *out_size = (size_t)len;
     return ERR_OK;
 }
@@ -74,10 +78,11 @@ ErrorCode file_write_all(const char *path, const unsigned char *buf, size_t size
     FILE *f = fopen(path, "wb");
     if (!f) return ERR_IO;
     if (size > 0 && fwrite(buf, 1, size, f) != size) {
-        fclose(f);
+        (void)fclose(f); /* already returning an error */
         return ERR_IO;
     }
-    fclose(f);
+    /* fclose flushes buffered data — a failure here means the write failed. */
+    if (fclose(f) != 0) return ERR_IO;
     return ERR_OK;
 }
 
@@ -141,6 +146,7 @@ ErrorCode dir_walk(const char *path, DirEntryCallback cb, void *user_data) {
     if (!d) return ERR_IO;
 
     struct dirent *ent;
+    /* NOLINTNEXTLINE(concurrency-mt-unsafe) — readdir is the modern API; only unsafe if one DIR* is shared across threads */
     while ((ent = readdir(d)) != NULL) {
         if (ent->d_name[0] == '.' &&
             (ent->d_name[1] == '\0' || (ent->d_name[1] == '.' && ent->d_name[2] == '\0')))

@@ -9,6 +9,7 @@
  * - Branch prediction effects
  */
 #include "testing/perf_test.h"
+#include "math/rng.h"
 #include "memory/arena.h"
 #include "memory/pool.h"
 #include "hpc/simd_ops.h"
@@ -92,14 +93,15 @@ static void bench_branch(const int *data, size_t n) {
 /* ── Main ─────────────────────────────────────────────────────────────── */
 
 int main(void) {
-    srand(42);
+    Rng rng;
+    rng_seed(&rng, 42, 0); /* deterministic, unlike rand() (see math/rng.h) */
     for (int r = 0; r < ROWS; r++)
         for (int c = 0; c < COLS; c++) matrix[r][c] = (float)(r * COLS + c);
 
     for (int i = 0; i < N; i++) {
         a_arr[i] = (float)i * 0.5f;
         b_arr[i] = (float)i * 0.3f;
-        sorted_data[i] = unsorted_data[i] = rand() % 256;
+        sorted_data[i] = unsorted_data[i] = (int)rng_range_u32(&rng, 256);
     }
     qsort(sorted_data, (size_t)N, sizeof(int), cmp_int);
 

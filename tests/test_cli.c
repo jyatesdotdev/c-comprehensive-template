@@ -22,7 +22,10 @@ static char captured[4096];
 
 static const char *capture(FILE *f) {
     fflush(f);
-    rewind(f);
+    if (fseek(f, 0, SEEK_SET) != 0) {
+        captured[0] = '\0';
+        return captured;
+    }
     size_t n = fread(captured, 1, sizeof(captured) - 1, f);
     captured[n] = '\0';
     return captured;
@@ -136,12 +139,12 @@ void test_load_config(void) {
     char path[] = "/tmp/test_cli_cfg_XXXXXX";
     int  fd = mkstemp(path);
     TEST_ASSERT_TRUE(fd >= 0);
-    rewind(f);
+    TEST_ASSERT_EQUAL(0, fseek(f, 0, SEEK_SET));
     char   buf[256];
     size_t n = fread(buf, 1, sizeof(buf), f);
     write(fd, buf, n);
     close(fd);
-    fclose(f);
+    (void)fclose(f);
 
     char      *argv[] = {"prog", NULL};
     CliContext ctx;
@@ -180,7 +183,7 @@ void test_table_output(void) {
     TEST_ASSERT_NOT_NULL(strstr(out, "Name"));
     TEST_ASSERT_NOT_NULL(strstr(out, "foo"));
     TEST_ASSERT_NOT_NULL(strstr(out, "42"));
-    fclose(f);
+    (void)fclose(f);
 }
 
 /* ── output: progress bar test ──────────────────────────────────────────── */
@@ -191,7 +194,7 @@ void test_progress_output(void) {
     cli_progress(50, 100, 20, f);
     const char *out = capture(f);
     TEST_ASSERT_NOT_NULL(strstr(out, "50%"));
-    fclose(f);
+    (void)fclose(f);
 }
 
 /* ── Runner ─────────────────────────────────────────────────────────────── */

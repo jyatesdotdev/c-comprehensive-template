@@ -12,6 +12,7 @@
 /* ── ANSI Colors ────────────────────────────────────────────────────────── */
 
 bool cli_colors_enabled(FILE *stream) {
+    /* NOLINTNEXTLINE(concurrency-mt-unsafe) — read-only env access; unsafe only alongside setenv from another thread */
     if (getenv("NO_COLOR")) return false;
     return isatty(fileno(stream));
 }

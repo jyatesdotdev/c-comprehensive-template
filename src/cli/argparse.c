@@ -98,6 +98,7 @@ ErrorCode cli_parse(int argc, char **argv, const CliOption *options, int num_opt
     optreset = 1;
 #endif
     int c;
+    /* NOLINTNEXTLINE(concurrency-mt-unsafe) — getopt runs once at startup, before threads exist */
     while ((c = getopt_long(argc, argv, short_str, long_opts, NULL)) != -1) {
         if (c == '?') continue; /* Unknown option, getopt prints error. */
         /* Find which option matched. */
@@ -168,7 +169,7 @@ ErrorCode cli_load_config(const char *path, CliContext *ctx) {
         }
     }
 
-    fclose(f);
+    if (fclose(f) != 0) return ERR_IO;
     return ERR_OK;
 }
 
@@ -184,6 +185,7 @@ const char *cli_resolve(const CliContext *ctx, const char *option_name) {
     /* 2. Environment variable. */
     const CliOption *opt = find_option(ctx->options, ctx->option_count, option_name);
     if (opt && opt->env_var) {
+        /* NOLINTNEXTLINE(concurrency-mt-unsafe) — read-only env access; unsafe only alongside setenv from another thread */
         v = getenv(opt->env_var);
         if (v) return v;
     }

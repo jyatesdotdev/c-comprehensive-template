@@ -21,12 +21,16 @@ jobs:
       - name: Configure
         run: cmake -B build -DENABLE_CLANG_TIDY=ON -DCMAKE_C_COMPILER=gcc
       - name: Build (clang-tidy runs inline)
-        run: cmake --build build 2>&1 | tee build/clang-tidy.log
+        # pipefail: without it, tee masks a failed build and the job goes
+        # green after compiling only the first file
+        run: |
+          set -o pipefail
+          cmake --build build 2>&1 | tee build/clang-tidy.log
       - name: Check for warnings
         run: |
-          if grep -q "warning:" build/clang-tidy.log; then
-            echo "::error::clang-tidy reported warnings"
-            grep "warning:" build/clang-tidy.log
+          if grep -qE "warning:|error:" build/clang-tidy.log; then
+            echo "::error::clang-tidy reported findings"
+            grep -E "warning:|error:" build/clang-tidy.log
             exit 1
           fi
 

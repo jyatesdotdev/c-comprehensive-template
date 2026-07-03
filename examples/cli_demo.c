@@ -76,7 +76,8 @@ static int cmd_run(int argc, char **argv) {
         }
     }
 
-    int jobs = atoi(cli_resolve(&ctx, "jobs"));
+    const char *jobs_str = cli_resolve(&ctx, "jobs");
+    int         jobs = jobs_str ? (int)strtol(jobs_str, NULL, 10) : 1;
     if (cli_flag(&ctx, "verbose")) printf("Running with %d job(s)\n", jobs);
 
     /* Demo progress bar. */

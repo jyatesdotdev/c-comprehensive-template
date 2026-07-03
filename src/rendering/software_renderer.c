@@ -11,7 +11,7 @@
 
 ErrorCode fb_create(Framebuffer *fb, int width, int height) {
     if (!fb || width <= 0 || height <= 0) return ERR_INVALID_ARG;
-    fb->pixels = calloc((size_t)(width * height), sizeof(uint32_t));
+    fb->pixels = calloc((size_t)width * (size_t)height, sizeof(uint32_t));
     if (!fb->pixels) return ERR_NOMEM;
     fb->width = width;
     fb->height = height;
@@ -29,7 +29,7 @@ void fb_destroy(Framebuffer *fb) {
 
 void fb_clear(Framebuffer *fb, uint32_t color) {
     if (!fb || !fb->pixels) return;
-    size_t n = (size_t)(fb->width * fb->height);
+    size_t n = (size_t)fb->width * (size_t)fb->height;
     for (size_t i = 0; i < n; i++) fb->pixels[i] = color;
 }
 
@@ -97,8 +97,12 @@ ErrorCode fb_write_ppm(const Framebuffer *fb, const char *path) {
     for (int i = 0; i < fb->width * fb->height; i++) {
         uint32_t p = fb->pixels[i];
         uint8_t  rgb[3] = {(uint8_t)(p >> 16), (uint8_t)(p >> 8), (uint8_t)p};
-        fwrite(rgb, 1, 3, f);
+        if (fwrite(rgb, 1, 3, f) != 3) {
+            (void)fclose(f); /* already returning an error */
+            return ERR_IO;
+        }
     }
-    fclose(f);
+    /* fclose flushes buffered data — a failure here means the write failed. */
+    if (fclose(f) != 0) return ERR_IO;
     return ERR_OK;
 }

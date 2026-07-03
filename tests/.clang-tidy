@@ -1,0 +1,5 @@
+# Relaxed clang-tidy config for test code (inherits the root config).
+# concurrency-mt-unsafe flags exit() — fine in single-threaded test binaries
+# where CHECK-style macros exit on failure.
+InheritParentConfig: true
+Checks: '-concurrency-mt-unsafe'

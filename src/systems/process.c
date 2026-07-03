@@ -15,6 +15,7 @@
 
 ErrorCode process_run(const char *cmd, int *exit_status) {
     if (!cmd || !exit_status) return ERR_INVALID_ARG;
+    /* NOLINTNEXTLINE(cert-env33-c,concurrency-mt-unsafe) — wrapping command execution is this module's purpose; callers own cmd sanitization */
     int ret = system(cmd); /* Flawfinder: ignore — cmd from caller */
     if (ret == -1) return ERR_IO;
     *exit_status = ret;
@@ -24,6 +25,7 @@ ErrorCode process_run(const char *cmd, int *exit_status) {
 ErrorCode process_capture(const char *cmd, char **out_buf, size_t *out_len) {
     if (!cmd || !out_buf || !out_len) return ERR_INVALID_ARG;
 
+    /* NOLINTNEXTLINE(cert-env33-c) — wrapping command execution is this module's purpose; callers own cmd sanitization */
     FILE *fp = popen(cmd, "r"); /* Flawfinder: ignore — cmd from caller */
     if (!fp) return ERR_IO;
 

@@ -65,19 +65,20 @@ static inline void perf_stop(const PerfTimer *t) {
  *
  * Usage: PERF_BENCH("my_func", 1000, { my_func(); });
  */
-#define PERF_BENCH(label, iters, block)                                                         \
-    do {                                                                                        \
-        double _min = DBL_MAX, _max = 0, _sum = 0;                                              \
-        for (int _i = 0; _i < (iters); _i++) {                                                  \
-            PerfTimer _t;                                                                       \
-            perf_start(&_t, label);                                                             \
-            block double _ms = perf_elapsed_ms(&_t);                                            \
-            if (_ms < _min) _min = _ms;                                                         \
-            if (_ms > _max) _max = _ms;                                                         \
-            _sum += _ms;                                                                        \
-        }                                                                                       \
-        printf("[PERF] %-30s iters=%-6d min=%.3f avg=%.3f max=%.3f ms\n", label, (iters), _min, \
-               _sum / (iters), _max);                                                           \
+#define PERF_BENCH(label, iters, block)                                                                 \
+    do {                                                                                                \
+        double _min = DBL_MAX, _max = 0, _sum = 0;                                                      \
+        for (int _i = 0; _i < (iters); _i++) {                                                          \
+            PerfTimer _t;                                                                               \
+            perf_start(&_t, label);                                                                     \
+            block /* NOLINT(bugprone-macro-parentheses) — a statement block can't be parenthesized */ \
+                double _ms = perf_elapsed_ms(&_t);                                                      \
+            if (_ms < _min) _min = _ms;                                                                 \
+            if (_ms > _max) _max = _ms;                                                                 \
+            _sum += _ms;                                                                                \
+        }                                                                                               \
+        printf("[PERF] %-30s iters=%-6d min=%.3f avg=%.3f max=%.3f ms\n", label, (iters), _min,         \
+               _sum / (iters), _max);                                                                   \
     } while (0)
 
 #endif /* PERF_TEST_H */

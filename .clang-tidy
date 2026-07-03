@@ -13,7 +13,15 @@ Checks: >
   concurrency-*,
   misc-redundant-expression,
   misc-unused-using-decls,
-  -bugprone-easily-swappable-parameters
+  -bugprone-easily-swappable-parameters,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -bugprone-multi-level-implicit-pointer-conversion
+
+# DeprecatedOrUnsafeBufferHandling is disabled: it flags every printf/memset/
+# memcpy and recommends C11 Annex K *_s functions that glibc does not provide.
+# multi-level-implicit-pointer-conversion is disabled: it fires on idiomatic
+# `ptr = malloc(...)` wherever the element type is itself a pointer (e.g.
+# pthread_t* on macOS, where pthread_t is an opaque pointer).
 
 WarningsAsErrors: >
   cert-*,
