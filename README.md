@@ -25,7 +25,9 @@ ctest --output-on-failure
 
 ```
 ├── CMakeLists.txt          Root build configuration
+├── AGENTS.md               Agent guide (conventions, build loop, module recipe)
 ├── cmake/Platform.cmake    Platform & SIMD detection
+├── scripts/new_module.sh   Scaffold a new module (files + CMake targets)
 ├── include/                Public headers
 │   ├── core/               Error handling
 │   ├── memory/             Arena & pool allocators
@@ -53,6 +55,7 @@ ctest --output-on-failure
 
 | Document | Description |
 |----------|-------------|
+| [AGENTS](AGENTS.md) | Condensed guide for AI coding agents (`CLAUDE.md` symlinks here) |
 | [ARCHITECTURE](docs/ARCHITECTURE.md) | Project structure, module dependencies, CMake targets |
 | [TOOLCHAIN](docs/TOOLCHAIN.md) | Required tools, install instructions, IDE setup |
 | [TUTORIAL](docs/TUTORIAL.md) | New developer walkthrough — build, test, extend |

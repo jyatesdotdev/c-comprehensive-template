@@ -10,6 +10,10 @@ This guide covers how to add new modules, examples, tests, and third-party depen
 
 Modules follow the convention: headers in `include/<module>/`, sources in `src/<module>/`.
 
+> **Shortcut:** `scripts/new_module.sh <module> [file]` scaffolds all four files below
+> *and* registers the CMake targets in one step. The manual walkthrough that follows
+> documents exactly what the script does.
+
 ### 1. Create the header
 
 ```c
@@ -263,13 +267,16 @@ target_link_libraries(networking PRIVATE CURL::libcurl)
 When extending the project, make sure to:
 
 - [ ] Follow the `include/<module>/` + `src/<module>/` directory convention
+      (or let `scripts/new_module.sh` do it)
 - [ ] Add Doxygen comments (`@file`, `@brief`, `@param`, `@return`) to all public headers
 - [ ] Use include guards matching the path: `<MODULE>_<FILE>_H`
 - [ ] Return `ErrorCode` from functions that can fail (see `core/error.h`)
-- [ ] Add at least one test for each new module
+- [ ] Add at least one test for each new module — CI enforces 80% line coverage
 - [ ] Add an example demonstrating the module's usage
 - [ ] Gate optional dependencies behind `option()` flags
-- [ ] Update [ARCHITECTURE](ARCHITECTURE.md) if adding a new module
+- [ ] Update [ARCHITECTURE](ARCHITECTURE.md): the **Module Dependency Graph**, the
+      **Test Targets** table, and the **Example Targets** table
+- [ ] Run `clang-format -i` on new/changed files — CI rejects unformatted code
 - [ ] Run `ctest` and `clang-tidy` before committing
 
 ---

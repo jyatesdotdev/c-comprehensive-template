@@ -6,6 +6,8 @@
 c_comprehensive_template/
 ├── CMakeLists.txt              Root build configuration
 ├── Doxyfile.in                 Doxygen config template
+├── AGENTS.md                   Agent guide (CLAUDE.md symlinks here)
+├── .clang-format               Enforced formatting style (checked in CI)
 ├── .clang-tidy                 clang-tidy rules
 ├── .cppcheck-suppressions      cppcheck suppression list
 ├── .github/workflows/
@@ -24,6 +26,8 @@ c_comprehensive_template/
 │   ├── simulation/{physics,numerical}.h
 │   └── testing/perf_test.h
 ├── src/                        Implementation files (mirrors include/)
+├── scripts/
+│   └── new_module.sh           Scaffold a new module (files + CMake registration)
 ├── tests/                      Unit & performance tests
 ├── examples/                   Working demo programs
 ├── docs/                       Documentation & Doxygen build
