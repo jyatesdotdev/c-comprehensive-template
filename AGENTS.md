@@ -53,7 +53,11 @@ Modules: `core` (errors + allocators), `cli`, `systems`, `hpc`, `networking`,
    macros `UPPER_SNAKE`. Header guards are `<MODULE>_<FILE>_H` (`MEMORY_ARENA_H`).
 5. **Doxygen on every public declaration** (`@file`, `@brief`, `@param`, `@return`).
    If a function allocates, its header comment must say who frees.
-6. **Portability:** `size_t` for sizes, `<stdint.h>` for fixed-width. Platform-specific
+6. **In tests, never put function calls inside `assert()`.** Release builds define
+   `NDEBUG`, which deletes assert bodies — the call silently never runs (and a loop
+   waiting on its result hangs). Call the function, store the result, then check it
+   with a macro that survives NDEBUG (see the `CHECK` macro in `tests/test_networking.c`).
+7. **Portability:** `size_t` for sizes, `<stdint.h>` for fixed-width. Platform-specific
    code stays in `systems/` or behind `#ifdef`. SIMD code always has a scalar fallback.
 
 Formatting is enforced by `.clang-format` — don't hand-align; run the formatter.
