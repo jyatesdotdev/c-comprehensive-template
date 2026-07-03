@@ -5,12 +5,8 @@
 #ifndef SIMULATION_PHYSICS_H
 #define SIMULATION_PHYSICS_H
 
+#include "math/vec.h" /* Vec3 */
 #include <stddef.h>
-
-/** @brief 3D vector. */
-typedef struct {
-    float x, y, z;
-} Vec3;
 
 /** @brief Particle with position, velocity, and mass. */
 typedef struct {

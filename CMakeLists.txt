@@ -103,7 +103,7 @@ add_library(simulation STATIC
     src/simulation/numerical.c
 )
 target_include_directories(simulation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(simulation PRIVATE core m)
+target_link_libraries(simulation PRIVATE core math m)
 
 # ── Software Renderer (always available, no external deps) ──────────────────
 add_library(rendering_sw STATIC src/rendering/software_renderer.c)
@@ -129,6 +129,18 @@ add_library(networking STATIC
 )
 target_include_directories(networking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(networking PRIVATE core)
+
+# ── Math Library ──────────────────────────────────────────────────
+add_library(math STATIC
+    src/math/vec.c
+    src/math/mat.c
+    src/math/quat.c
+    src/math/matx.c
+    src/math/rng.c
+    src/math/stats.c
+)
+target_include_directories(math PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(math PRIVATE core m)
 
 # ── Testing Frameworks ──────────────────────────────────────────────────────
 if(BUILD_TESTS)

@@ -22,6 +22,7 @@ c_comprehensive_template/
 │   ├── memory/{arena,pool,leak_detect}.h
 │   ├── systems/{file_io,process}.h
 │   ├── hpc/{simd_ops,thread_pool,parallel}.h
+│   ├── math/{scalar,vec,mat,quat,matx,rng,stats}.h
 │   ├── networking/{socket,udp,unix_socket}.h
 │   ├── rendering/{software_renderer,gl_pipeline,vk_pipeline}.h
 │   ├── simulation/{physics,numerical}.h
@@ -68,6 +69,12 @@ All library modules are built as static libraries. Arrows indicate `target_link_
        └────────────┘
             │
             └── links core
+
+       ┌────────────┐
+       │    math     │  vec/mat/quat (fixed-size) + matx/rng/stats (ML)
+       └────────────┘
+            │
+            └── links core + m   (simulation links math for Vec3)
 ```
 
 Key relationships:
@@ -75,7 +82,8 @@ Key relationships:
 - `cli` depends on `core` (uses error handling)
 - `systems` depends on `core` (file I/O, process wrappers)
 - `hpc` depends on `core` + `Threads::Threads` (pthreads)
-- `simulation` depends on `core` + `m` (libm for math)
+- `math` depends on `core` + `m` (owns the Vec3 type; fixed-size linalg + dynamic MatX)
+- `simulation` depends on `core` + `math` + `m` (uses math's Vec3)
 - `rendering_sw` depends on `core` (software renderer, always built)
 - `rendering` depends on `core` (optional GL/Vulkan, requires `ENABLE_RENDERING=ON`)
 - `networking` depends on `core` (TCP/UDP/Unix domain sockets, POSIX only)
@@ -140,6 +148,7 @@ Tests are organized by framework:
 | `test_hpc`            | minimal     | core, hpc, m       | SIMD, thread pool, parallel |
 | `test_simulation`     | minimal     | core, simulation, m| Physics, numerical methods  |
 | `test_networking`     | minimal     | core, networking   | TCP/UDP/Unix loopback I/O   |
+| `test_math`           | minimal     | core, math, m      | Vectors, matrices, quat, RNG|
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |
@@ -156,12 +165,13 @@ Tests are organized by framework:
 | `example_hpc`            | core, hpc, m           | SIMD + parallel_for          |
 | `example_rendering`      | core, rendering_sw     | Software framebuffer         |
 | `example_simulation`     | core, simulation, m    | Numerical methods            |
-| `example_benchmark`      | core, hpc, m           | Performance benchmarking     |
+| `example_benchmark`      | core, hpc, math, m     | Performance benchmarking     |
 | `example_cli`            | cli, core              | CLI argument parsing         |
 | `example_cli_argtable`   | argtable3              | argtable3 CLI (optional)     |
 | `example_networking`     | core, networking       | TCP/UDP/Unix loopback tour   |
 | `example_echo_server`    | core, networking, hpc  | Concurrent TCP echo server   |
 | `example_echo_client`    | core, networking       | TCP echo client              |
+| `example_math`           | core, math, m          | Transforms, quat, MatX, RNG  |
 
 ## See Also
 

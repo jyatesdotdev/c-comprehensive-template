@@ -22,7 +22,7 @@ add_executable(example_simulation ../examples/simulation_demo.c)
 target_link_libraries(example_simulation PRIVATE core simulation m)
 
 add_executable(example_benchmark ../examples/benchmark_demo.c)
-target_link_libraries(example_benchmark PRIVATE core hpc m)
+target_link_libraries(example_benchmark PRIVATE core hpc math m)
 
 add_executable(example_cli ../examples/cli_demo.c)
 target_link_libraries(example_cli PRIVATE cli core)
@@ -40,3 +40,6 @@ target_link_libraries(example_echo_server PRIVATE core networking hpc)
 
 add_executable(example_echo_client ../examples/echo_client_demo.c)
 target_link_libraries(example_echo_client PRIVATE core networking)
+
+add_executable(example_math ../examples/math_demo.c)
+target_link_libraries(example_math PRIVATE core math m)

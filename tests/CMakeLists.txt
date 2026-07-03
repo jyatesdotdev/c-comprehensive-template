@@ -48,3 +48,7 @@ add_test(NAME test_perf_memory COMMAND test_perf_memory)
 add_executable(test_networking test_networking.c)
 target_link_libraries(test_networking PRIVATE core networking)
 add_test(NAME test_networking COMMAND test_networking)
+
+add_executable(test_math test_math.c)
+target_link_libraries(test_math PRIVATE core math m)
+add_test(NAME test_math COMMAND test_math)
