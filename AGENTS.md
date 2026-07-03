@@ -34,8 +34,8 @@ compliance, and **line coverage ≥ 80%** — new code without tests will fail t
 | `cmake/` | Platform detection, security tooling, test frameworks, third-party deps |
 | `scripts/` | `new_module.sh` — scaffolds a complete new module |
 
-Modules: `core` (errors + allocators), `cli`, `systems`, `hpc`, `simulation`,
-`rendering_sw` (+ optional `rendering`). Every module depends on `core`.
+Modules: `core` (errors + allocators), `cli`, `systems`, `hpc`, `networking`,
+`simulation`, `rendering_sw` (+ optional `rendering`). Every module depends on `core`.
 
 ## Non-Negotiable Conventions
 

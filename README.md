@@ -33,6 +33,7 @@ ctest --output-on-failure
 │   ├── memory/             Arena & pool allocators
 │   ├── systems/            File I/O, process control
 │   ├── hpc/                SIMD, thread pool, parallel_for
+│   ├── networking/         TCP, UDP, Unix domain sockets
 │   ├── rendering/          Software renderer, GL pipeline
 │   └── simulation/         Physics, numerical methods
 ├── src/                    Implementation files
@@ -48,6 +49,7 @@ ctest --output-on-failure
 - **memory**: Arena (bump) allocator and fixed-size pool allocator
 - **systems**: Safe file I/O wrappers, process control
 - **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for
+- **networking**: TCP client/server, UDP datagrams, Unix domain sockets (POSIX)
 - **simulation**: Euler physics integration, Simpson's rule, bisection root finding
 - **rendering**: Software framebuffer renderer, OpenGL shader pipeline (optional)
 

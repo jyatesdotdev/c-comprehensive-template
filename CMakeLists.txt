@@ -121,6 +121,15 @@ if(ENABLE_RENDERING)
     # Platform-specific GL/Vulkan linkage handled in cmake/Platform.cmake
 endif()
 
+# ── Networking Library ──────────────────────────────────────────────────
+add_library(networking STATIC
+    src/networking/socket.c
+    src/networking/udp.c
+    src/networking/unix_socket.c
+)
+target_include_directories(networking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(networking PRIVATE core)
+
 # ── Testing Frameworks ──────────────────────────────────────────────────────
 if(BUILD_TESTS)
     enable_testing()

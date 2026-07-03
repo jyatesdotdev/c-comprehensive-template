@@ -22,6 +22,7 @@ c_comprehensive_template/
 │   ├── memory/{arena,pool,leak_detect}.h
 │   ├── systems/{file_io,process}.h
 │   ├── hpc/{simd_ops,thread_pool,parallel}.h
+│   ├── networking/{socket,udp,unix_socket}.h
 │   ├── rendering/{software_renderer,gl_pipeline,vk_pipeline}.h
 │   ├── simulation/{physics,numerical}.h
 │   └── testing/perf_test.h
@@ -61,6 +62,12 @@ All library modules are built as static libraries. Arrows indicate `target_link_
        └───────────┘   gl_pipeline.c + vk_pipeline.c
             │
             └── links core (+ OpenGL/Vulkan via Platform.cmake)
+
+       ┌────────────┐
+       │ networking  │  socket.c (TCP) + udp.c + unix_socket.c (POSIX)
+       └────────────┘
+            │
+            └── links core
 ```
 
 Key relationships:
@@ -71,6 +78,7 @@ Key relationships:
 - `simulation` depends on `core` + `m` (libm for math)
 - `rendering_sw` depends on `core` (software renderer, always built)
 - `rendering` depends on `core` (optional GL/Vulkan, requires `ENABLE_RENDERING=ON`)
+- `networking` depends on `core` (TCP/UDP/Unix domain sockets, POSIX only)
 
 ## Build System Overview
 
@@ -131,6 +139,7 @@ Tests are organized by framework:
 | `test_leak_detect`    | minimal     | core               | Leak detection              |
 | `test_hpc`            | minimal     | core, hpc, m       | SIMD, thread pool, parallel |
 | `test_simulation`     | minimal     | core, simulation, m| Physics, numerical methods  |
+| `test_networking`     | minimal     | core, networking   | TCP/UDP/Unix loopback I/O   |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |
@@ -150,6 +159,9 @@ Tests are organized by framework:
 | `example_benchmark`      | core, hpc, m           | Performance benchmarking     |
 | `example_cli`            | cli, core              | CLI argument parsing         |
 | `example_cli_argtable`   | argtable3              | argtable3 CLI (optional)     |
+| `example_networking`     | core, networking       | TCP/UDP/Unix loopback tour   |
+| `example_echo_server`    | core, networking, hpc  | Concurrent TCP echo server   |
+| `example_echo_client`    | core, networking       | TCP echo client              |
 
 ## See Also
 

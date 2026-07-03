@@ -44,3 +44,7 @@ endif()
 add_executable(test_perf_memory test_perf_memory.c)
 target_link_libraries(test_perf_memory PRIVATE core)
 add_test(NAME test_perf_memory COMMAND test_perf_memory)
+
+add_executable(test_networking test_networking.c)
+target_link_libraries(test_networking PRIVATE core networking)
+add_test(NAME test_networking COMMAND test_networking)

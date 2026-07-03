@@ -31,3 +31,12 @@ if(USE_ARGTABLE3)
     add_executable(example_cli_argtable ../examples/cli_argtable_demo.c)
     target_link_libraries(example_cli_argtable PRIVATE argtable3)
 endif()
+
+add_executable(example_networking ../examples/networking_demo.c)
+target_link_libraries(example_networking PRIVATE core networking)
+
+add_executable(example_echo_server ../examples/echo_server_demo.c)
+target_link_libraries(example_echo_server PRIVATE core networking hpc)
+
+add_executable(example_echo_client ../examples/echo_client_demo.c)
+target_link_libraries(example_echo_client PRIVATE core networking)
