@@ -272,7 +272,7 @@ static void test_rng(void) {
 
     /* normal samples: mean ~0, variance ~1 over many draws */
     enum { N = 20000 };
-    float *samples = malloc(N * sizeof(float));
+    float *samples = malloc((size_t)N * sizeof(float));
     CHECK(samples != NULL);
     rng_seed(&a, 2024, 3);
     for (int i = 0; i < N; i++) samples[i] = rng_normal(&a);

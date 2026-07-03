@@ -81,7 +81,7 @@ static int demo_matx(void) {
 /** Reproducible random numbers and summary statistics. */
 static int demo_rng_stats(void) {
     enum { N = 10000 };
-    float *samples = malloc(N * sizeof(float));
+    float *samples = malloc((size_t)N * sizeof(float));
     if (!samples) return 1;
 
     Rng rng;
