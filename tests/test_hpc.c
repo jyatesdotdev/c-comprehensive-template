@@ -9,25 +9,30 @@
 #include <math.h>
 
 #define N 1024
-#define ASSERT(cond, msg) do { \
-    if (!(cond)) { fprintf(stderr, "FAIL: %s\n", msg); return 1; } \
-} while(0)
+#define ASSERT(cond, msg)                       \
+    do {                                        \
+        if (!(cond)) {                          \
+            fprintf(stderr, "FAIL: %s\n", msg); \
+            return 1;                           \
+        }                                       \
+    } while (0)
 
 static int test_simd_ops(void) {
     float a[N], b[N], dst[N];
-    for (int i = 0; i < N; i++) { a[i] = (float)i; b[i] = (float)(N - i); }
+    for (int i = 0; i < N; i++) {
+        a[i] = (float)i;
+        b[i] = (float)(N - i);
+    }
 
     simd_add_f32(dst, a, b, N);
-    for (int i = 0; i < N; i++)
-        ASSERT(fabsf(dst[i] - (float)N) < 1e-3f, "simd_add_f32");
+    for (int i = 0; i < N; i++) ASSERT(fabsf(dst[i] - (float)N) < 1e-3f, "simd_add_f32");
 
     simd_mul_f32(dst, a, b, N);
     for (int i = 0; i < N; i++)
         ASSERT(fabsf(dst[i] - (float)i * (float)(N - i)) < 1.0f, "simd_mul_f32");
 
     simd_scale_f32(dst, a, 2.0f, N);
-    for (int i = 0; i < N; i++)
-        ASSERT(fabsf(dst[i] - (float)i * 2.0f) < 1e-3f, "simd_scale_f32");
+    for (int i = 0; i < N; i++) ASSERT(fabsf(dst[i] - (float)i * 2.0f) < 1e-3f, "simd_scale_f32");
 
     float dot = simd_dot_f32(a, b, N);
     float expected_dot = 0.0f;
@@ -43,7 +48,9 @@ static int test_simd_ops(void) {
 }
 
 /* parallel_for: each thread writes its index range */
-typedef struct { int *buf; } PForCtx;
+typedef struct {
+    int *buf;
+} PForCtx;
 
 static void fill_chunk(size_t start, size_t end, void *ctx) {
     int *buf = ((PForCtx *)ctx)->buf;
@@ -51,11 +58,10 @@ static void fill_chunk(size_t start, size_t end, void *ctx) {
 }
 
 static int test_parallel_for(void) {
-    int buf[N];
+    int     buf[N];
     PForCtx ctx = {buf};
     parallel_for(N, 4, fill_chunk, &ctx);
-    for (int i = 0; i < N; i++)
-        ASSERT(buf[i] == i, "parallel_for fill");
+    for (int i = 0; i < N; i++) ASSERT(buf[i] == i, "parallel_for fill");
     return 0;
 }
 
@@ -67,7 +73,9 @@ static double sum_range(size_t start, size_t end, void *ctx) {
     return s;
 }
 
-static double add_d(double a, double b) { return a + b; }
+static double add_d(double a, double b) {
+    return a + b;
+}
 
 static int test_parallel_reduce(void) {
     double result = parallel_reduce(N, 4, sum_range, NULL, add_d);

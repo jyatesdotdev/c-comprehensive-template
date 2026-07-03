@@ -11,13 +11,13 @@
  * @brief Error codes returned by library functions.
  */
 typedef enum {
-    ERR_OK = 0,        /**< Success (no error). */
-    ERR_NOMEM,         /**< Memory allocation failed. */
-    ERR_IO,            /**< I/O operation failed. */
-    ERR_INVALID_ARG,   /**< Invalid argument passed. */
-    ERR_OVERFLOW,      /**< Numeric or buffer overflow. */
-    ERR_NOT_FOUND,     /**< Requested item not found. */
-    ERR_UNSUPPORTED,   /**< Operation not supported. */
+    ERR_OK = 0,      /**< Success (no error). */
+    ERR_NOMEM,       /**< Memory allocation failed. */
+    ERR_IO,          /**< I/O operation failed. */
+    ERR_INVALID_ARG, /**< Invalid argument passed. */
+    ERR_OVERFLOW,    /**< Numeric or buffer overflow. */
+    ERR_NOT_FOUND,   /**< Requested item not found. */
+    ERR_UNSUPPORTED, /**< Operation not supported. */
 } ErrorCode;
 
 /**
@@ -28,8 +28,7 @@ typedef enum {
 const char *error_str(ErrorCode code);
 
 /** Log an error with file/line context. */
-#define LOG_ERROR(code) \
-    error_log_impl((code), __FILE__, __LINE__)
+#define LOG_ERROR(code) error_log_impl((code), __FILE__, __LINE__)
 
 /**
  * @brief Log an error with source location (used by LOG_ERROR macro).

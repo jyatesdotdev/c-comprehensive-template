@@ -1,0 +1,43 @@
+# clang-format configuration for this project.
+# Matches the house style documented in docs/BEST_PRACTICES.md (API Design).
+# Check:  clang-format --dry-run --Werror $(git ls-files '*.c' '*.h' ':!third_party')
+# Fix:    clang-format -i $(git ls-files '*.c' '*.h' ':!third_party')
+---
+# Note: no `Language:` key — clang-format handles C under its default (Cpp)
+# language, and `Language: C` is only recognized by clang-format >= 20.
+BasedOnStyle: LLVM
+
+# Layout
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces & short constructs (K&R attached braces, compact guard clauses)
+BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: None
+AllowShortCaseLabelsOnASingleLine: true
+
+# Pointers bind to the name: `char *buf`, not `char* buf`
+PointerAlignment: Right
+
+# Preserve deliberate column alignment in struct definitions and headers
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+
+# Includes: own header first, then system headers — do not reorder
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+# Comments: leave Doxygen blocks alone
+ReflowComments: false
+
+# Misc
+SpaceBeforeParens: ControlStatements
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1

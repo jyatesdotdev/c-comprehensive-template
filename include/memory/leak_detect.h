@@ -51,7 +51,7 @@ void *leak_detect_realloc(void *ptr, size_t size, const char *file, int line);
  * @param file  Source file of the free call.
  * @param line  Source line of the free call.
  */
-void  leak_detect_free(void *ptr, const char *file, int line);
+void leak_detect_free(void *ptr, const char *file, int line);
 
 /**
  * @brief Print all unfreed allocations to stderr.
@@ -65,10 +65,10 @@ size_t leak_detect_report(void);
 void leak_detect_shutdown(void);
 
 #ifdef ENABLE_LEAK_DETECT
-#define malloc(sz)        leak_detect_malloc((sz), __FILE__, __LINE__)
-#define calloc(n, sz)     leak_detect_calloc((n), (sz), __FILE__, __LINE__)
-#define realloc(p, sz)    leak_detect_realloc((p), (sz), __FILE__, __LINE__)
-#define free(p)           leak_detect_free((p), __FILE__, __LINE__)
+#define malloc(sz)     leak_detect_malloc((sz), __FILE__, __LINE__)
+#define calloc(n, sz)  leak_detect_calloc((n), (sz), __FILE__, __LINE__)
+#define realloc(p, sz) leak_detect_realloc((p), (sz), __FILE__, __LINE__)
+#define free(p)        leak_detect_free((p), __FILE__, __LINE__)
 #endif
 
 #endif /* MEMORY_LEAK_DETECT_H */

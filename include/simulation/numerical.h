@@ -38,7 +38,8 @@ double numerical_bisect(double (*f)(double), double a, double b, double tol, int
  * @param iters    Receives the number of iterations performed.
  * @return Approximate root.
  */
-double numerical_newton(double (*f)(double), double (*df)(double), double x0, double tol, int max_iter, int *iters);
+double numerical_newton(double (*f)(double), double (*df)(double), double x0, double tol,
+                        int max_iter, int *iters);
 
 /**
  * @brief Derivative function for ODE systems of the form dy/dt = f(t, y).
@@ -72,6 +73,7 @@ void numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *
  * @param dt  Time step size.
  * @param ctx User context pointer passed to f.
  */
-void numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt, void *ctx);
+void numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt,
+                             void *ctx);
 
 #endif /* SIMULATION_NUMERICAL_H */

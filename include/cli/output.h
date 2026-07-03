@@ -42,9 +42,9 @@ void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...);
 
 /** @brief Table state for formatted column output. */
 typedef struct {
-    int  num_cols;
-    int  widths[CLI_TABLE_MAX_COLS];       /**< Column widths. */
-    char headers[CLI_TABLE_MAX_COLS][64];  /**< Column header labels. */
+    int   num_cols;
+    int   widths[CLI_TABLE_MAX_COLS];      /**< Column widths. */
+    char  headers[CLI_TABLE_MAX_COLS][64]; /**< Column header labels. */
     FILE *out;
 } CliTable;
 
@@ -56,8 +56,7 @@ typedef struct {
  * @param widths   Array of column widths (num_cols entries).
  * @param headers  Array of column header strings (num_cols entries).
  */
-void cli_table_init(CliTable *t, FILE *out, int num_cols,
-                    const int *widths, const char **headers);
+void cli_table_init(CliTable *t, FILE *out, int num_cols, const int *widths, const char **headers);
 
 /**
  * @brief Print the header row with separator line.

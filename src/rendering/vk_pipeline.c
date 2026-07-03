@@ -21,13 +21,15 @@ ErrorCode vk_context_create(VkContext *ctx, const char *app_name) {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &app_info,
     };
-    if (vkCreateInstance(&ci, NULL, &ctx->instance) != VK_SUCCESS)
-        return ERR_UNKNOWN;
+    if (vkCreateInstance(&ci, NULL, &ctx->instance) != VK_SUCCESS) return ERR_UNKNOWN;
 
     /* Pick first physical device */
     uint32_t count = 1;
     vkEnumeratePhysicalDevices(ctx->instance, &count, &ctx->physical_device);
-    if (count == 0) { vk_context_destroy(ctx); return ERR_UNKNOWN; }
+    if (count == 0) {
+        vk_context_destroy(ctx);
+        return ERR_UNKNOWN;
+    }
 
     /* Find graphics queue family */
     uint32_t qf_count = 0;
@@ -43,9 +45,12 @@ ErrorCode vk_context_create(VkContext *ctx, const char *app_name) {
             break;
         }
     }
-    if (ctx->queue_family == UINT32_MAX) { vk_context_destroy(ctx); return ERR_UNKNOWN; }
+    if (ctx->queue_family == UINT32_MAX) {
+        vk_context_destroy(ctx);
+        return ERR_UNKNOWN;
+    }
 
-    float priority = 1.0f;
+    float                   priority = 1.0f;
     VkDeviceQueueCreateInfo qci = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
         .queueFamilyIndex = ctx->queue_family,
@@ -67,7 +72,7 @@ ErrorCode vk_context_create(VkContext *ctx, const char *app_name) {
 
 void vk_context_destroy(VkContext *ctx) {
     if (!ctx) return;
-    if (ctx->device)   vkDestroyDevice(ctx->device, NULL);
+    if (ctx->device) vkDestroyDevice(ctx->device, NULL);
     if (ctx->instance) vkDestroyInstance(ctx->instance, NULL);
     memset(ctx, 0, sizeof(*ctx));
 }

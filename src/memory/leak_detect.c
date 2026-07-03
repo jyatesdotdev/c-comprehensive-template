@@ -13,10 +13,10 @@
 #include <string.h>
 
 typedef struct AllocRecord {
-    void              *ptr;
-    size_t             size;
-    const char        *file;
-    int                line;
+    void               *ptr;
+    size_t              size;
+    const char         *file;
+    int                 line;
     struct AllocRecord *next;
 } AllocRecord;
 
@@ -27,7 +27,7 @@ static size_t       g_total_frees;
 void leak_detect_init(void) {
     g_head = NULL;
     g_total_allocs = 0;
-    g_total_frees  = 0;
+    g_total_frees = 0;
 }
 
 /**
@@ -39,8 +39,11 @@ void leak_detect_init(void) {
  */
 static void record_add(void *ptr, size_t size, const char *file, int line) {
     AllocRecord *rec = (AllocRecord *)malloc(sizeof(AllocRecord));
-    if (!rec) { fprintf(stderr, "leak_detect: out of memory for tracking\n"); return; }
-    rec->ptr  = ptr;
+    if (!rec) {
+        fprintf(stderr, "leak_detect: out of memory for tracking\n");
+        return;
+    }
+    rec->ptr = ptr;
     rec->size = size;
     rec->file = file;
     rec->line = line;
@@ -88,7 +91,8 @@ void *leak_detect_realloc(void *ptr, size_t size, const char *file, int line) {
 }
 
 void leak_detect_free(void *ptr, const char *file, int line) {
-    (void)file; (void)line;
+    (void)file;
+    (void)line;
     if (!ptr) return;
     record_remove(ptr);
     free(ptr);
@@ -98,8 +102,8 @@ size_t leak_detect_report(void) {
     size_t leaks = 0;
     size_t leaked_bytes = 0;
     for (AllocRecord *r = g_head; r; r = r->next) {
-        fprintf(stderr, "  LEAK: %zu bytes at %p allocated at %s:%d\n",
-                r->size, r->ptr, r->file, r->line);
+        fprintf(stderr, "  LEAK: %zu bytes at %p allocated at %s:%d\n", r->size, r->ptr, r->file,
+                r->line);
         leaks++;
         leaked_bytes += r->size;
     }

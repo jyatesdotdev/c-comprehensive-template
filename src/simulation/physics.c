@@ -20,9 +20,9 @@ void physics_step_euler(Particle *particles, size_t count, float dt, Vec3 gravit
 void physics_step_verlet(Particle *particles, size_t count, float dt, Vec3 gravity) {
     for (size_t i = 0; i < count; i++) {
         Particle *p = &particles[i];
-        float nx = 2.0f * p->pos.x - p->prev_pos.x + gravity.x * dt * dt;
-        float ny = 2.0f * p->pos.y - p->prev_pos.y + gravity.y * dt * dt;
-        float nz = 2.0f * p->pos.z - p->prev_pos.z + gravity.z * dt * dt;
+        float     nx = 2.0f * p->pos.x - p->prev_pos.x + gravity.x * dt * dt;
+        float     ny = 2.0f * p->pos.y - p->prev_pos.y + gravity.y * dt * dt;
+        float     nz = 2.0f * p->pos.z - p->prev_pos.z + gravity.z * dt * dt;
         p->prev_pos = p->pos;
         p->pos.x = nx;
         p->pos.y = ny;
@@ -34,7 +34,8 @@ void physics_step_verlet(Particle *particles, size_t count, float dt, Vec3 gravi
     }
 }
 
-void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, float damping, float dt) {
+void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, float damping,
+                          float dt) {
     float dx = b->pos.x - a->pos.x;
     float dy = b->pos.y - a->pos.y;
     float dz = b->pos.z - a->pos.z;
@@ -52,8 +53,12 @@ void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, flo
     float fy = (force / dist) * dy;
     float fz = (force / dist) * dz;
     float inv_a = dt / a->mass, inv_b = dt / b->mass;
-    a->vel.x += fx * inv_a;  a->vel.y += fy * inv_a;  a->vel.z += fz * inv_a;
-    b->vel.x -= fx * inv_b;  b->vel.y -= fy * inv_b;  b->vel.z -= fz * inv_b;
+    a->vel.x += fx * inv_a;
+    a->vel.y += fy * inv_a;
+    a->vel.z += fz * inv_a;
+    b->vel.x -= fx * inv_b;
+    b->vel.y -= fy * inv_b;
+    b->vel.z -= fz * inv_b;
 }
 
 void physics_collide_spheres(Particle *a, Particle *b, float radius) {
@@ -68,21 +73,35 @@ void physics_collide_spheres(Particle *a, Particle *b, float radius) {
     float nx = dx / dist, ny = dy / dist, nz = dz / dist;
     /* Push apart equally */
     float half = overlap * 0.5f;
-    a->pos.x -= nx * half;  a->pos.y -= ny * half;  a->pos.z -= nz * half;
-    b->pos.x += nx * half;  b->pos.y += ny * half;  b->pos.z += nz * half;
+    a->pos.x -= nx * half;
+    a->pos.y -= ny * half;
+    a->pos.z -= nz * half;
+    b->pos.x += nx * half;
+    b->pos.y += ny * half;
+    b->pos.z += nz * half;
     /* Elastic velocity exchange along normal */
     float va = a->vel.x * nx + a->vel.y * ny + a->vel.z * nz;
     float vb = b->vel.x * nx + b->vel.y * ny + b->vel.z * nz;
-    a->vel.x += (vb - va) * nx;  a->vel.y += (vb - va) * ny;  a->vel.z += (vb - va) * nz;
-    b->vel.x += (va - vb) * nx;  b->vel.y += (va - vb) * ny;  b->vel.z += (va - vb) * nz;
+    a->vel.x += (vb - va) * nx;
+    a->vel.y += (vb - va) * ny;
+    a->vel.z += (vb - va) * nz;
+    b->vel.x += (va - vb) * nx;
+    b->vel.y += (va - vb) * ny;
+    b->vel.z += (va - vb) * nz;
 }
 
 void physics_confine_box(Particle *p, Vec3 bounds, float restitution) {
     for (int axis = 0; axis < 3; axis++) {
         float *pos = &p->pos.x + axis;
         float *vel = &p->vel.x + axis;
-        float limit = *(&bounds.x + axis);
-        if (*pos < 0.0f)  { *pos = 0.0f;  *vel = -*vel * restitution; }
-        if (*pos > limit)  { *pos = limit;  *vel = -*vel * restitution; }
+        float  limit = *(&bounds.x + axis);
+        if (*pos < 0.0f) {
+            *pos = 0.0f;
+            *vel = -*vel * restitution;
+        }
+        if (*pos > limit) {
+            *pos = limit;
+            *vel = -*vel * restitution;
+        }
     }
 }

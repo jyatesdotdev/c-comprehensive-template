@@ -35,7 +35,7 @@ ErrorCode vk_context_create(VkContext *ctx, const char *app_name);
  * @brief Destroy a Vulkan context and release all resources.
  * @param ctx Context to destroy.
  */
-void      vk_context_destroy(VkContext *ctx);
+void vk_context_destroy(VkContext *ctx);
 
 /**
  * @brief Create a shader module from SPIR-V bytecode.

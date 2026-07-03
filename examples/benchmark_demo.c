@@ -20,8 +20,8 @@
 static volatile float sink_f;
 static volatile int   sink_i;
 
-#define N       (1 << 20)  /* ~1M elements */
-#define ITERS   100
+#define N     (1 << 20) /* ~1M elements */
+#define ITERS 100
 
 /* ── Cache: Row-major vs Column-major ─────────────────────────────────── */
 
@@ -32,16 +32,14 @@ static float matrix[ROWS][COLS];
 static void bench_row_major(void) {
     float sum = 0;
     for (int r = 0; r < ROWS; r++)
-        for (int c = 0; c < COLS; c++)
-            sum += matrix[r][c];
+        for (int c = 0; c < COLS; c++) sum += matrix[r][c];
     sink_f = sum;
 }
 
 static void bench_col_major(void) {
     float sum = 0;
     for (int c = 0; c < COLS; c++)
-        for (int r = 0; r < ROWS; r++)
-            sum += matrix[r][c];
+        for (int r = 0; r < ROWS; r++) sum += matrix[r][c];
     sink_f = sum;
 }
 
@@ -50,8 +48,7 @@ static void bench_col_major(void) {
 static float a_arr[N], b_arr[N], dst[N];
 
 static void scalar_add(float *d, const float *a, const float *b, size_t n) {
-    for (size_t i = 0; i < n; i++)
-        d[i] = a[i] + b[i];
+    for (size_t i = 0; i < n; i++) d[i] = a[i] + b[i];
 }
 
 /* ── Allocator Comparison ─────────────────────────────────────────────── */
@@ -61,24 +58,19 @@ static void scalar_add(float *d, const float *a, const float *b, size_t n) {
 
 static void bench_malloc_free(void) {
     void *ptrs[ALLOC_COUNT];
-    for (int i = 0; i < ALLOC_COUNT; i++)
-        ptrs[i] = malloc(ALLOC_SIZE);
-    for (int i = 0; i < ALLOC_COUNT; i++)
-        free(ptrs[i]);
+    for (int i = 0; i < ALLOC_COUNT; i++) ptrs[i] = malloc(ALLOC_SIZE);
+    for (int i = 0; i < ALLOC_COUNT; i++) free(ptrs[i]);
 }
 
 static void bench_arena_alloc(Arena *a) {
-    for (int i = 0; i < ALLOC_COUNT; i++)
-        arena_alloc(a, ALLOC_SIZE, 8);
+    for (int i = 0; i < ALLOC_COUNT; i++) arena_alloc(a, ALLOC_SIZE, 8);
     arena_reset(a);
 }
 
 static void bench_pool_alloc(Pool *p) {
     void *ptrs[ALLOC_COUNT];
-    for (int i = 0; i < ALLOC_COUNT; i++)
-        ptrs[i] = pool_alloc(p);
-    for (int i = 0; i < ALLOC_COUNT; i++)
-        pool_free(p, ptrs[i]);
+    for (int i = 0; i < ALLOC_COUNT; i++) ptrs[i] = pool_alloc(p);
+    for (int i = 0; i < ALLOC_COUNT; i++) pool_free(p, ptrs[i]);
 }
 
 /* ── Branch Prediction ────────────────────────────────────────────────── */
@@ -93,8 +85,7 @@ static int cmp_int(const void *a, const void *b) {
 static void bench_branch(const int *data, size_t n) {
     int sum = 0;
     for (size_t i = 0; i < n; i++)
-        if (data[i] >= 128)
-            sum += data[i];
+        if (data[i] >= 128) sum += data[i];
     sink_i = sum;
 }
 
@@ -103,8 +94,7 @@ static void bench_branch(const int *data, size_t n) {
 int main(void) {
     srand(42);
     for (int r = 0; r < ROWS; r++)
-        for (int c = 0; c < COLS; c++)
-            matrix[r][c] = (float)(r * COLS + c);
+        for (int c = 0; c < COLS; c++) matrix[r][c] = (float)(r * COLS + c);
 
     for (int i = 0; i < N; i++) {
         a_arr[i] = (float)i * 0.5f;

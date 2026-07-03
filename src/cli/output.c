@@ -22,7 +22,7 @@ void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...) {
 
     va_list ap;
     va_start(ap, fmt);
-    vfprintf(stream, fmt, ap);  /* Flawfinder: ignore — format from trusted caller */
+    vfprintf(stream, fmt, ap); /* Flawfinder: ignore — format from trusted caller */
     va_end(ap);
 
     if (use_color) fputs(CLR_RESET, stream);
@@ -30,15 +30,13 @@ void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...) {
 
 /* ── Table Formatting ───────────────────────────────────────────────────── */
 
-void cli_table_init(CliTable *t, FILE *out, int num_cols,
-                    const int *widths, const char **headers) {
+void cli_table_init(CliTable *t, FILE *out, int num_cols, const int *widths, const char **headers) {
     memset(t, 0, sizeof(*t));
     t->out = out;
     t->num_cols = num_cols > CLI_TABLE_MAX_COLS ? CLI_TABLE_MAX_COLS : num_cols;
     for (int i = 0; i < t->num_cols; i++) {
         t->widths[i] = widths[i];
-        snprintf(t->headers[i], sizeof(t->headers[i]), "%s",
-                 headers[i] ? headers[i] : "");
+        snprintf(t->headers[i], sizeof(t->headers[i]), "%s", headers[i] ? headers[i] : "");
     }
 }
 
@@ -78,9 +76,9 @@ void cli_progress(int current, int total, int width, FILE *stream) {
     fputc('\r', stream);
     fputc('[', stream);
     for (int i = 0; i < width; i++) {
-        if (i < filled)       fputc('=', stream);
+        if (i < filled) fputc('=', stream);
         else if (i == filled) fputc('>', stream);
-        else                  fputc(' ', stream);
+        else fputc(' ', stream);
     }
     fprintf(stream, "] %3d%%", pct);
     fflush(stream);

@@ -34,7 +34,7 @@ ErrorCode fb_create(Framebuffer *fb, int width, int height);
  * @brief Destroy a framebuffer and free its pixel buffer.
  * @param fb Framebuffer to destroy.
  */
-void      fb_destroy(Framebuffer *fb);
+void fb_destroy(Framebuffer *fb);
 
 /* ── Drawing ───────────────────────────────────────────────────────────── */
 

@@ -7,6 +7,19 @@ on:
     branches: [main]
 
 jobs:
+  format-check:
+    name: clang-format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned so local and CI results are identical: `pip install clang-format==18.1.8`
+      - name: Install clang-format
+        run: pip install clang-format==18.1.8
+
+      - name: Check formatting
+        run: clang-format --dry-run --Werror $(git ls-files '*.c' '*.h' ':!third_party/*')
+
   build-and-test:
     name: Build, test & coverage
     runs-on: ubuntu-24.04

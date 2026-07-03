@@ -9,9 +9,13 @@
 #include <stdlib.h>
 #include "memory/leak_detect.h"
 
-#define ASSERT(cond) do { \
-    if (!(cond)) { fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); exit(1); } \
-} while(0)
+#define ASSERT(cond)                                                         \
+    do {                                                                     \
+        if (!(cond)) {                                                       \
+            fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); \
+            exit(1);                                                         \
+        }                                                                    \
+    } while (0)
 
 int main(void) {
     /* Test 1: no leaks when everything is freed */

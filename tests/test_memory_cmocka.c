@@ -34,14 +34,14 @@ static int teardown_arena(void **state) {
 
 static void test_arena_basic_alloc(void **state) {
     Arena *a = (Arena *)*state;
-    void *p = arena_alloc(a, 64, 8);
+    void  *p = arena_alloc(a, 64, 8);
     assert_non_null(p);
     assert_int_equal((uintptr_t)p % 8, 0);
 }
 
 static void test_arena_reset(void **state) {
     Arena *a = (Arena *)*state;
-    void *first = arena_alloc(a, 128, 8);
+    void  *first = arena_alloc(a, 128, 8);
     arena_reset(a);
     void *second = arena_alloc(a, 128, 8);
     assert_ptr_equal(first, second);

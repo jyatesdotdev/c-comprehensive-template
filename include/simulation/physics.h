@@ -8,7 +8,9 @@
 #include <stddef.h>
 
 /** @brief 3D vector. */
-typedef struct { float x, y, z; } Vec3;
+typedef struct {
+    float x, y, z;
+} Vec3;
 
 /** @brief Particle with position, velocity, and mass. */
 typedef struct {
@@ -45,7 +47,8 @@ void physics_step_verlet(Particle *particles, size_t count, float dt, Vec3 gravi
  * @param damping  Damping coefficient.
  * @param dt       Time step.
  */
-void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, float damping, float dt);
+void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, float damping,
+                          float dt);
 
 /**
  * @brief Resolve sphere-sphere collision between two particles.

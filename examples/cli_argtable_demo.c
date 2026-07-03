@@ -12,14 +12,14 @@
 
 int main(int argc, char *argv[]) {
     /* Define typed argument table */
-    struct arg_lit  *help    = arg_lit0("h", "help",    "print this help and exit");
+    struct arg_lit  *help = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *verbose = arg_lit0("v", "verbose", "enable verbose output");
-    struct arg_str  *output  = arg_str0("o", "output",  "<file>", "output file (default: stdout)");
-    struct arg_int  *jobs    = arg_int0("j", "jobs",    "<n>",    "parallel jobs (default: 1)");
-    struct arg_file *infiles = arg_filen(NULL, NULL,    "<input>", 0, 10, "input source files");
-    struct arg_end  *end     = arg_end(20);
+    struct arg_str  *output = arg_str0("o", "output", "<file>", "output file (default: stdout)");
+    struct arg_int  *jobs = arg_int0("j", "jobs", "<n>", "parallel jobs (default: 1)");
+    struct arg_file *infiles = arg_filen(NULL, NULL, "<input>", 0, 10, "input source files");
+    struct arg_end  *end = arg_end(20);
 
-    void *argtable[] = {help, verbose, output, jobs, infiles, end};
+    void       *argtable[] = {help, verbose, output, jobs, infiles, end};
     const char *progname = "cli_argtable_demo";
 
     /* Verify table allocation */
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Use parsed values */
-    int njobs = jobs->ival[0];
+    int         njobs = jobs->ival[0];
     const char *outfile = (output->count > 0) ? output->sval[0] : "(stdout)";
 
     if (verbose->count > 0) {
@@ -70,12 +70,11 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < infiles->count; i++) {
-        printf("Processing [%d/%d]: %s (jobs=%d)\n",
-               i + 1, infiles->count, infiles->filename[i], njobs);
+        printf("Processing [%d/%d]: %s (jobs=%d)\n", i + 1, infiles->count, infiles->filename[i],
+               njobs);
     }
 
-    if (infiles->count == 0)
-        printf("No input files specified. Try '%s --help'.\n", progname);
+    if (infiles->count == 0) printf("No input files specified. Try '%s --help'.\n", progname);
 
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return 0;

@@ -17,7 +17,7 @@
 
 /** @brief Timer state for performance measurement. */
 typedef struct {
-    const char *label;
+    const char     *label;
     struct timespec start;
 } PerfTimer;
 
@@ -39,8 +39,8 @@ static inline void perf_start(PerfTimer *t, const char *label) {
 static inline double perf_elapsed_ms(const PerfTimer *t) {
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
-    return (double)(now.tv_sec - t->start.tv_sec) * 1e3
-         + (double)(now.tv_nsec - t->start.tv_nsec) * 1e-6;
+    return (double)(now.tv_sec - t->start.tv_sec) * 1e3 +
+           (double)(now.tv_nsec - t->start.tv_nsec) * 1e-6;
 }
 
 /**
@@ -53,30 +53,31 @@ static inline void perf_stop(const PerfTimer *t) {
 }
 
 /** @brief Start a named performance timer. */
-#define PERF_BEGIN(label) \
-    PerfTimer _perf_##label; perf_start(&_perf_##label, #label)
+#define PERF_BEGIN(label)    \
+    PerfTimer _perf_##label; \
+    perf_start(&_perf_##label, #label)
 
 /** @brief Stop a named performance timer and print elapsed time. */
-#define PERF_END(label) \
-    perf_stop(&_perf_##label)
+#define PERF_END(label) perf_stop(&_perf_##label)
 
 /**
  * @brief Run a block `iters` times, report min/avg/max.
  *
  * Usage: PERF_BENCH("my_func", 1000, { my_func(); });
  */
-#define PERF_BENCH(label, iters, block) do { \
-    double _min = DBL_MAX, _max = 0, _sum = 0; \
-    for (int _i = 0; _i < (iters); _i++) { \
-        PerfTimer _t; perf_start(&_t, label); \
-        block \
-        double _ms = perf_elapsed_ms(&_t); \
-        if (_ms < _min) _min = _ms; \
-        if (_ms > _max) _max = _ms; \
-        _sum += _ms; \
-    } \
-    printf("[PERF] %-30s iters=%-6d min=%.3f avg=%.3f max=%.3f ms\n", \
-           label, (iters), _min, _sum/(iters), _max); \
-} while(0)
+#define PERF_BENCH(label, iters, block)                                                         \
+    do {                                                                                        \
+        double _min = DBL_MAX, _max = 0, _sum = 0;                                              \
+        for (int _i = 0; _i < (iters); _i++) {                                                  \
+            PerfTimer _t;                                                                       \
+            perf_start(&_t, label);                                                             \
+            block double _ms = perf_elapsed_ms(&_t);                                            \
+            if (_ms < _min) _min = _ms;                                                         \
+            if (_ms > _max) _max = _ms;                                                         \
+            _sum += _ms;                                                                        \
+        }                                                                                       \
+        printf("[PERF] %-30s iters=%-6d min=%.3f avg=%.3f max=%.3f ms\n", label, (iters), _min, \
+               _sum / (iters), _max);                                                           \
+    } while (0)
 
 #endif /* PERF_TEST_H */

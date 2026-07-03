@@ -51,7 +51,10 @@ GLuint gl_shader_from_file(const char *path, GLenum type) {
     long len = ftell(f);
     fseek(f, 0, SEEK_SET);
     char *src = malloc((size_t)len + 1);
-    if (!src) { fclose(f); return 0; }
+    if (!src) {
+        fclose(f);
+        return 0;
+    }
     fread(src, 1, (size_t)len, f);
     src[len] = '\0';
     fclose(f);
@@ -64,7 +67,10 @@ GLuint gl_program_from_source(const char *vert_src, const char *frag_src) {
     GLuint vs = gl_compile_shader(vert_src, GL_VERTEX_SHADER);
     if (!vs) return 0;
     GLuint fs = gl_compile_shader(frag_src, GL_FRAGMENT_SHADER);
-    if (!fs) { glDeleteShader(vs); return 0; }
+    if (!fs) {
+        glDeleteShader(vs);
+        return 0;
+    }
     GLuint prog = gl_link_program(vs, fs);
     glDeleteShader(vs);
     glDeleteShader(fs);

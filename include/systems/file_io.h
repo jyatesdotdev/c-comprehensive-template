@@ -33,9 +33,9 @@ ErrorCode file_write_all(const char *path, const unsigned char *buf, size_t size
 
 /** @brief Handle for a memory-mapped file. */
 typedef struct MappedFile {
-    void  *data;   /**< Pointer to mapped region. */
-    size_t size;   /**< Size of mapped region in bytes. */
-    int    fd;     /**< Underlying file descriptor. */
+    void  *data; /**< Pointer to mapped region. */
+    size_t size; /**< Size of mapped region in bytes. */
+    int    fd;   /**< Underlying file descriptor. */
 } MappedFile;
 
 /**

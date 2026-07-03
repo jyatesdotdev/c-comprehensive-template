@@ -7,12 +7,12 @@
 
 /** @brief Human-readable strings indexed by ErrorCode. */
 static const char *error_strings[] = {
-    [ERR_OK]          = "success",
-    [ERR_NOMEM]       = "out of memory",
-    [ERR_IO]          = "I/O error",
+    [ERR_OK] = "success",
+    [ERR_NOMEM] = "out of memory",
+    [ERR_IO] = "I/O error",
     [ERR_INVALID_ARG] = "invalid argument",
-    [ERR_OVERFLOW]    = "overflow",
-    [ERR_NOT_FOUND]   = "not found",
+    [ERR_OVERFLOW] = "overflow",
+    [ERR_NOT_FOUND] = "not found",
     [ERR_UNSUPPORTED] = "unsupported operation",
 };
 

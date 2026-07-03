@@ -29,5 +29,10 @@ void arena_reset(Arena *a) {
 }
 
 void arena_destroy(Arena *a) {
-    if (a) { free(a->buf); a->buf = NULL; a->cap = 0; a->pos = 0; }
+    if (a) {
+        free(a->buf);
+        a->buf = NULL;
+        a->cap = 0;
+        a->pos = 0;
+    }
 }

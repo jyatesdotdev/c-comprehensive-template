@@ -10,7 +10,7 @@
 #include "memory/pool.h"
 
 static Arena arena;
-static Pool pool;
+static Pool  pool;
 
 void setUp(void) {
     /* Fresh allocators for each test */
@@ -42,7 +42,7 @@ void test_arena_reset_allows_reuse(void) {
 void test_arena_returns_null_when_full(void) {
     /* 4096-byte arena, allocate until exhausted */
     void *p;
-    int count = 0;
+    int   count = 0;
     while ((p = arena_alloc(&arena, 512, 8)) != NULL) count++;
     TEST_ASSERT_GREATER_THAN(0, count);
     TEST_ASSERT_NULL(p);
@@ -63,8 +63,7 @@ void test_pool_alloc_and_free(void) {
 
 void test_pool_exhaustion(void) {
     /* 8 blocks of 64 bytes */
-    for (int i = 0; i < 8; i++)
-        TEST_ASSERT_NOT_NULL(pool_alloc(&pool));
+    for (int i = 0; i < 8; i++) TEST_ASSERT_NOT_NULL(pool_alloc(&pool));
     TEST_ASSERT_NULL(pool_alloc(&pool));
 }
 

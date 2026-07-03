@@ -19,7 +19,10 @@ ErrorCode fb_create(Framebuffer *fb, int width, int height) {
 }
 
 void fb_destroy(Framebuffer *fb) {
-    if (fb) { free(fb->pixels); fb->pixels = NULL; }
+    if (fb) {
+        free(fb->pixels);
+        fb->pixels = NULL;
+    }
 }
 
 /* ── Drawing ───────────────────────────────────────────────────────────── */
@@ -46,15 +49,20 @@ void fb_line(Framebuffer *fb, int x0, int y0, int x1, int y1, uint32_t color) {
         fb_set_pixel(fb, x0, y0, color);
         if (x0 == x1 && y0 == y1) break;
         int e2 = 2 * err;
-        if (e2 >= dy) { err += dy; x0 += sx; }
-        if (e2 <= dx) { err += dx; y0 += sy; }
+        if (e2 >= dy) {
+            err += dy;
+            x0 += sx;
+        }
+        if (e2 <= dx) {
+            err += dx;
+            y0 += sy;
+        }
     }
 }
 
 void fb_fill_rect(Framebuffer *fb, int x, int y, int w, int h, uint32_t color) {
     for (int row = y; row < y + h; row++)
-        for (int col = x; col < x + w; col++)
-            fb_set_pixel(fb, col, row, color);
+        for (int col = x; col < x + w; col++) fb_set_pixel(fb, col, row, color);
 }
 
 /* Midpoint circle algorithm */
@@ -70,8 +78,12 @@ void fb_circle(Framebuffer *fb, int cx, int cy, int r, uint32_t color) {
         fb_set_pixel(fb, cx + y, cy - x, color);
         fb_set_pixel(fb, cx - y, cy - x, color);
         y++;
-        if (d <= 0) { d += 2 * y + 1; }
-        else        { x--; d += 2 * (y - x) + 1; }
+        if (d <= 0) {
+            d += 2 * y + 1;
+        } else {
+            x--;
+            d += 2 * (y - x) + 1;
+        }
     }
 }
 
@@ -84,7 +96,7 @@ ErrorCode fb_write_ppm(const Framebuffer *fb, const char *path) {
     fprintf(f, "P6\n%d %d\n255\n", fb->width, fb->height);
     for (int i = 0; i < fb->width * fb->height; i++) {
         uint32_t p = fb->pixels[i];
-        uint8_t rgb[3] = {(uint8_t)(p >> 16), (uint8_t)(p >> 8), (uint8_t)p};
+        uint8_t  rgb[3] = {(uint8_t)(p >> 16), (uint8_t)(p >> 8), (uint8_t)p};
         fwrite(rgb, 1, 3, f);
     }
     fclose(f);

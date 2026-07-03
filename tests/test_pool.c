@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include "memory/pool.h"
 
-#define ASSERT(cond) do { \
-    if (!(cond)) { fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); exit(1); } \
-} while(0)
+#define ASSERT(cond)                                                         \
+    do {                                                                     \
+        if (!(cond)) {                                                       \
+            fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); \
+            exit(1);                                                         \
+        }                                                                    \
+    } while (0)
 
 int main(void) {
     Pool p;

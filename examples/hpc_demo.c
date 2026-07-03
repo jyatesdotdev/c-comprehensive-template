@@ -12,7 +12,7 @@
 #include <math.h>
 #include <time.h>
 
-#define N       (1 << 20)  /* ~1M elements */
+#define N       (1 << 20) /* ~1M elements */
 #define THREADS 4
 
 static double now_sec(void) {
@@ -24,27 +24,34 @@ static double now_sec(void) {
 /* ── SIMD benchmark ───────────────────────────────────────────────────── */
 
 static void bench_simd(void) {
-    float *a   = malloc(N * sizeof(float));
-    float *b   = malloc(N * sizeof(float));
+    float *a = malloc(N * sizeof(float));
+    float *b = malloc(N * sizeof(float));
     float *dst = malloc(N * sizeof(float));
-    for (size_t i = 0; i < N; i++) { a[i] = (float)i * 0.001f; b[i] = (float)i * 0.002f; }
+    for (size_t i = 0; i < N; i++) {
+        a[i] = (float)i * 0.001f;
+        b[i] = (float)i * 0.002f;
+    }
 
     double t0 = now_sec();
     simd_add_f32(dst, a, b, N);
     simd_mul_f32(dst, a, b, N);
     simd_scale_f32(dst, a, 3.14f, N);
-    float dot = simd_dot_f32(a, b, N);
-    float sum = simd_sum_f32(a, N);
+    float  dot = simd_dot_f32(a, b, N);
+    float  sum = simd_sum_f32(a, N);
     double t1 = now_sec();
 
-    printf("[SIMD] add+mul+scale+dot+sum on %d floats: %.3f ms  (dot=%.2f, sum=%.2f)\n",
-           N, (t1 - t0) * 1000.0, (double)dot, (double)sum);
-    free(a); free(b); free(dst);
+    printf("[SIMD] add+mul+scale+dot+sum on %d floats: %.3f ms  (dot=%.2f, sum=%.2f)\n", N,
+           (t1 - t0) * 1000.0, (double)dot, (double)sum);
+    free(a);
+    free(b);
+    free(dst);
 }
 
 /* ── parallel_for benchmark ───────────────────────────────────────────── */
 
-typedef struct { double *data; } ForCtx;
+typedef struct {
+    double *data;
+} ForCtx;
 
 static void compute_chunk(size_t start, size_t end, void *ctx) {
     double *data = ((ForCtx *)ctx)->data;
@@ -54,7 +61,7 @@ static void compute_chunk(size_t start, size_t end, void *ctx) {
 
 static void bench_parallel_for(void) {
     double *data = malloc(N * sizeof(double));
-    ForCtx ctx = {data};
+    ForCtx  ctx = {data};
 
     double t0 = now_sec();
     compute_chunk(0, N, &ctx);
@@ -64,8 +71,8 @@ static void bench_parallel_for(void) {
     parallel_for(N, THREADS, compute_chunk, &ctx);
     double t_par = now_sec() - t0;
 
-    printf("[parallel_for] serial=%.3f ms  parallel(%d)=%.3f ms  speedup=%.2fx\n",
-           t_serial * 1000, THREADS, t_par * 1000, t_serial / t_par);
+    printf("[parallel_for] serial=%.3f ms  parallel(%d)=%.3f ms  speedup=%.2fx\n", t_serial * 1000,
+           THREADS, t_par * 1000, t_serial / t_par);
     free(data);
 }
 
@@ -74,12 +81,13 @@ static void bench_parallel_for(void) {
 static double sum_chunk(size_t start, size_t end, void *ctx) {
     (void)ctx;
     double s = 0.0;
-    for (size_t i = start; i < end; i++)
-        s += 1.0 / ((double)i * (double)i + 1.0);
+    for (size_t i = start; i < end; i++) s += 1.0 / ((double)i * (double)i + 1.0);
     return s;
 }
 
-static double add(double a, double b) { return a + b; }
+static double add(double a, double b) {
+    return a + b;
+}
 
 static void bench_parallel_reduce(void) {
     double t0 = now_sec();
@@ -114,7 +122,7 @@ static void bench_thread_pool(void) {
         ids[i] = i;
         thread_pool_submit(pool, pool_task, &ids[i]);
     }
-    thread_pool_destroy(pool);  /* waits for all tasks */
+    thread_pool_destroy(pool); /* waits for all tasks */
     printf("[thread_pool] done\n");
 }
 

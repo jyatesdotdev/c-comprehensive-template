@@ -18,13 +18,13 @@ static bool print_entry(const char *name, bool is_dir, void *user_data) {
 
 /* ── Signal handler ─────────────────────────────────────────────────────── */
 static volatile int g_interrupted = 0;
-static void on_sigint(int sig) {
+static void         on_sigint(int sig) {
     (void)sig;
     g_interrupted = 1;
 }
 
 int main(void) {
-    ErrorCode err;
+    ErrorCode   err;
     const char *tmp_path = "/tmp/systems_demo.txt";
     const char *msg = "Hello from systems_demo!\n";
 
@@ -34,7 +34,7 @@ int main(void) {
 
     /* 2. Read it back */
     unsigned char *buf = NULL;
-    size_t sz = 0;
+    size_t         sz = 0;
     err = file_read_all(tmp_path, &buf, &sz);
     printf("file_read_all : %s (%zu bytes) -> %.*s", error_str(err), sz, (int)sz, buf);
     free(buf);
@@ -54,7 +54,7 @@ int main(void) {
     dir_walk(".", print_entry, NULL);
 
     /* 5. Capture command output */
-    char *out = NULL;
+    char  *out = NULL;
     size_t out_len = 0;
     err = process_capture("echo 'captured output'", &out, &out_len);
     printf("\nprocess_capture: %s -> %s", error_str(err), out ? out : "(null)\n");
@@ -62,7 +62,7 @@ int main(void) {
 
     /* 6. Fork/exec */
     char *argv[] = {"echo", "fork/exec works", NULL};
-    int status = 0;
+    int   status = 0;
     err = process_exec("echo", argv, &status);
     printf("process_exec  : %s (exit %d)\n", error_str(err), status);
 

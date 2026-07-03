@@ -10,7 +10,7 @@ ErrorCode pool_init(Pool *p, size_t block_size, size_t block_count) {
     if (!p || block_count == 0) return ERR_INVALID_ARG;
     /* Ensure blocks can hold a pointer for the free list */
     if (block_size < sizeof(void *)) block_size = sizeof(void *);
-    p->block_size  = block_size;
+    p->block_size = block_size;
     p->block_count = block_count;
     p->buf = malloc(block_size * block_count);
     if (!p->buf) return ERR_NOMEM;
@@ -39,5 +39,9 @@ void pool_free(Pool *p, void *ptr) {
 }
 
 void pool_destroy(Pool *p) {
-    if (p) { free(p->buf); p->buf = NULL; p->free_list = NULL; }
+    if (p) {
+        free(p->buf);
+        p->buf = NULL;
+        p->free_list = NULL;
+    }
 }

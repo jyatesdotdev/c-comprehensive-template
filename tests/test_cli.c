@@ -11,8 +11,10 @@
 #include <string.h>
 #include <unistd.h>
 
-void setUp(void) {}
-void tearDown(void) {}
+void setUp(void) {
+}
+void tearDown(void) {
+}
 
 /* ── Helper: read tmpfile contents into static buffer ───────────────────── */
 
@@ -29,30 +31,30 @@ static const char *capture(FILE *f) {
 /* ── Shared option definitions ──────────────────────────────────────────── */
 
 static const CliOption test_opts[] = {
-    {"verbose", 'v', CLI_NO_ARG,       "Enable verbose",  "APP_VERBOSE", NULL},
-    {"output",  'o', CLI_REQUIRED_ARG,  "Output file",     "APP_OUTPUT",  "out.txt"},
-    {"count",   'c', CLI_REQUIRED_ARG,  "Count",           NULL,          "10"},
+    {"verbose", 'v', CLI_NO_ARG, "Enable verbose", "APP_VERBOSE", NULL},
+    {"output", 'o', CLI_REQUIRED_ARG, "Output file", "APP_OUTPUT", "out.txt"},
+    {"count", 'c', CLI_REQUIRED_ARG, "Count", NULL, "10"},
 };
 #define NUM_OPTS (int)(sizeof(test_opts) / sizeof(test_opts[0]))
 
 /* ── argparse tests ─────────────────────────────────────────────────────── */
 
 void test_parse_long_option(void) {
-    char *argv[] = {"prog", "--output", "foo.txt", NULL};
+    char      *argv[] = {"prog", "--output", "foo.txt", NULL};
     CliContext ctx;
     TEST_ASSERT_EQUAL(ERR_OK, cli_parse(3, argv, test_opts, NUM_OPTS, &ctx));
     TEST_ASSERT_EQUAL_STRING("foo.txt", cli_resolve(&ctx, "output"));
 }
 
 void test_parse_short_option(void) {
-    char *argv[] = {"prog", "-o", "bar.txt", NULL};
+    char      *argv[] = {"prog", "-o", "bar.txt", NULL};
     CliContext ctx;
     TEST_ASSERT_EQUAL(ERR_OK, cli_parse(3, argv, test_opts, NUM_OPTS, &ctx));
     TEST_ASSERT_EQUAL_STRING("bar.txt", cli_resolve(&ctx, "output"));
 }
 
 void test_parse_flag(void) {
-    char *argv[] = {"prog", "--verbose", NULL};
+    char      *argv[] = {"prog", "--verbose", NULL};
     CliContext ctx;
     TEST_ASSERT_EQUAL(ERR_OK, cli_parse(2, argv, test_opts, NUM_OPTS, &ctx));
     TEST_ASSERT_TRUE(cli_flag(&ctx, "verbose"));
@@ -63,7 +65,7 @@ void test_parse_null_returns_error(void) {
 }
 
 void test_parse_rest_args(void) {
-    char *argv[] = {"prog", "--verbose", "file1", "file2", NULL};
+    char      *argv[] = {"prog", "--verbose", "file1", "file2", NULL};
     CliContext ctx;
     cli_parse(4, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_EQUAL(2, ctx.rest_argc);
@@ -73,7 +75,7 @@ void test_parse_rest_args(void) {
 /* ── resolve priority tests ─────────────────────────────────────────────── */
 
 void test_resolve_default(void) {
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_EQUAL_STRING("out.txt", cli_resolve(&ctx, "output"));
@@ -81,7 +83,7 @@ void test_resolve_default(void) {
 
 void test_resolve_env_over_default(void) {
     setenv("APP_OUTPUT", "env.txt", 1);
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_EQUAL_STRING("env.txt", cli_resolve(&ctx, "output"));
@@ -90,7 +92,7 @@ void test_resolve_env_over_default(void) {
 
 void test_resolve_cli_over_env(void) {
     setenv("APP_OUTPUT", "env.txt", 1);
-    char *argv[] = {"prog", "-o", "cli.txt", NULL};
+    char      *argv[] = {"prog", "-o", "cli.txt", NULL};
     CliContext ctx;
     cli_parse(3, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_EQUAL_STRING("cli.txt", cli_resolve(&ctx, "output"));
@@ -98,7 +100,7 @@ void test_resolve_cli_over_env(void) {
 }
 
 void test_resolve_unknown_returns_null(void) {
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_NULL(cli_resolve(&ctx, "nonexistent"));
@@ -107,7 +109,7 @@ void test_resolve_unknown_returns_null(void) {
 /* ── cli_flag tests ─────────────────────────────────────────────────────── */
 
 void test_flag_absent_is_false(void) {
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_FALSE(cli_flag(&ctx, "verbose"));
@@ -115,7 +117,7 @@ void test_flag_absent_is_false(void) {
 
 void test_flag_env_truthy(void) {
     setenv("APP_VERBOSE", "true", 1);
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_TRUE(cli_flag(&ctx, "verbose"));
@@ -132,16 +134,16 @@ void test_load_config(void) {
 
     /* Write to a real temp path since cli_load_config opens by path. */
     char path[] = "/tmp/test_cli_cfg_XXXXXX";
-    int fd = mkstemp(path);
+    int  fd = mkstemp(path);
     TEST_ASSERT_TRUE(fd >= 0);
     rewind(f);
-    char buf[256];
+    char   buf[256];
     size_t n = fread(buf, 1, sizeof(buf), f);
     write(fd, buf, n);
     close(fd);
     fclose(f);
 
-    char *argv[] = {"prog", NULL};
+    char      *argv[] = {"prog", NULL};
     CliContext ctx;
     cli_parse(1, argv, test_opts, NUM_OPTS, &ctx);
     TEST_ASSERT_EQUAL(ERR_OK, cli_load_config(path, &ctx));
@@ -165,9 +167,9 @@ void test_table_output(void) {
     FILE *f = tmpfile();
     TEST_ASSERT_NOT_NULL(f);
 
-    const int widths[] = {10, 5};
+    const int   widths[] = {10, 5};
     const char *headers[] = {"Name", "Val"};
-    CliTable t;
+    CliTable    t;
     cli_table_init(&t, f, 2, widths, headers);
     cli_table_header(&t);
 

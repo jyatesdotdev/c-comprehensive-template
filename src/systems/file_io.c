@@ -8,11 +8,27 @@
 #include <stdbool.h>
 
 #ifdef _WIN32
-  /* Minimal stubs — full Win32 impl left as exercise. */
-  ErrorCode file_mmap_read(const char *path, MappedFile *out)  { (void)path; (void)out; return ERR_UNSUPPORTED; }
-  ErrorCode file_mmap_rw(const char *path, MappedFile *out)    { (void)path; (void)out; return ERR_UNSUPPORTED; }
-  ErrorCode file_munmap(MappedFile *mf)                        { (void)mf; return ERR_UNSUPPORTED; }
-  ErrorCode dir_walk(const char *p, DirEntryCallback cb, void *ud) { (void)p; (void)cb; (void)ud; return ERR_UNSUPPORTED; }
+/* Minimal stubs — full Win32 impl left as exercise. */
+ErrorCode file_mmap_read(const char *path, MappedFile *out) {
+    (void)path;
+    (void)out;
+    return ERR_UNSUPPORTED;
+}
+ErrorCode file_mmap_rw(const char *path, MappedFile *out) {
+    (void)path;
+    (void)out;
+    return ERR_UNSUPPORTED;
+}
+ErrorCode file_munmap(MappedFile *mf) {
+    (void)mf;
+    return ERR_UNSUPPORTED;
+}
+ErrorCode dir_walk(const char *p, DirEntryCallback cb, void *ud) {
+    (void)p;
+    (void)cb;
+    (void)ud;
+    return ERR_UNSUPPORTED;
+}
 #else
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -30,14 +46,21 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
 
     fseek(f, 0, SEEK_END);
     long len = ftell(f);
-    if (len < 0) { fclose(f); return ERR_IO; }
+    if (len < 0) {
+        fclose(f);
+        return ERR_IO;
+    }
     fseek(f, 0, SEEK_SET);
 
     *out_buf = malloc((size_t)len);
-    if (!*out_buf) { fclose(f); return ERR_NOMEM; }
+    if (!*out_buf) {
+        fclose(f);
+        return ERR_NOMEM;
+    }
 
     if (fread(*out_buf, 1, (size_t)len, f) != (size_t)len) {
-        free(*out_buf); *out_buf = NULL;
+        free(*out_buf);
+        *out_buf = NULL;
         fclose(f);
         return ERR_IO;
     }
@@ -50,7 +73,10 @@ ErrorCode file_write_all(const char *path, const unsigned char *buf, size_t size
     if (!path || (!buf && size > 0)) return ERR_INVALID_ARG;
     FILE *f = fopen(path, "wb");
     if (!f) return ERR_IO;
-    if (size > 0 && fwrite(buf, 1, size, f) != size) { fclose(f); return ERR_IO; }
+    if (size > 0 && fwrite(buf, 1, size, f) != size) {
+        fclose(f);
+        return ERR_IO;
+    }
     fclose(f);
     return ERR_OK;
 }
@@ -74,14 +100,20 @@ static ErrorCode mmap_open(const char *path, int oflags, int prot, int mflags, M
     if (fd < 0) return ERR_IO;
 
     struct stat st;
-    if (fstat(fd, &st) < 0) { close(fd); return ERR_IO; }
+    if (fstat(fd, &st) < 0) {
+        close(fd);
+        return ERR_IO;
+    }
 
     void *data = mmap(NULL, (size_t)st.st_size, prot, mflags, fd, 0);
-    if (data == MAP_FAILED) { close(fd); return ERR_IO; }
+    if (data == MAP_FAILED) {
+        close(fd);
+        return ERR_IO;
+    }
 
     out->data = data;
     out->size = (size_t)st.st_size;
-    out->fd   = fd;
+    out->fd = fd;
     return ERR_OK;
 }
 
@@ -99,7 +131,7 @@ ErrorCode file_munmap(MappedFile *mf) {
     close(mf->fd);
     mf->data = NULL;
     mf->size = 0;
-    mf->fd   = -1;
+    mf->fd = -1;
     return ERR_OK;
 }
 

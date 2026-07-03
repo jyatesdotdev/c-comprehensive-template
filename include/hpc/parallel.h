@@ -14,8 +14,8 @@
  * @param body        Callback invoked with each thread's [start, end) range.
  * @param ctx         User context pointer passed to body.
  */
-void parallel_for(size_t n, size_t num_threads,
-                  void (*body)(size_t start, size_t end, void *ctx), void *ctx);
+void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_t end, void *ctx),
+                  void *ctx);
 
 /**
  * @brief Parallel reduce: map-reduce across threads.
@@ -29,9 +29,8 @@ void parallel_for(size_t n, size_t num_threads,
  * @param reduce      Reduction function combining two partial results.
  * @return Final reduced value.
  */
-double parallel_reduce(size_t n, size_t num_threads,
-                       double (*map)(size_t start, size_t end, void *ctx),
-                       void *ctx,
+double parallel_reduce(size_t n, size_t                                          num_threads,
+                       double (*map)(size_t start, size_t end, void *ctx), void *ctx,
                        double (*reduce)(double a, double b));
 
 #endif /* HPC_PARALLEL_H */

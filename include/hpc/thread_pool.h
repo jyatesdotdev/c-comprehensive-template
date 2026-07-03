@@ -35,6 +35,6 @@ ErrorCode thread_pool_submit(ThreadPool *pool, TaskFunc func, void *arg);
  * @brief Destroy the thread pool, waiting for all pending tasks to complete.
  * @param pool Pool to destroy.
  */
-void      thread_pool_destroy(ThreadPool *pool);
+void thread_pool_destroy(ThreadPool *pool);
 
 #endif /* HPC_THREAD_POOL_H */

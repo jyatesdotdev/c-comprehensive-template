@@ -22,14 +22,19 @@ static void *chunk_worker(void *arg) {
     return NULL;
 }
 
-void parallel_for(size_t n, size_t num_threads,
-                  void (*body)(size_t start, size_t end, void *ctx), void *ctx) {
+void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_t end, void *ctx),
+                  void *ctx) {
     if (n == 0 || num_threads == 0) return;
     if (num_threads > n) num_threads = n;
 
     pthread_t *threads = malloc(num_threads * sizeof(pthread_t));
-    ChunkArg  *args    = malloc(num_threads * sizeof(ChunkArg));
-    if (!threads || !args) { free(threads); free(args); body(0, n, ctx); return; }
+    ChunkArg  *args = malloc(num_threads * sizeof(ChunkArg));
+    if (!threads || !args) {
+        free(threads);
+        free(args);
+        body(0, n, ctx);
+        return;
+    }
 
     size_t chunk = n / num_threads, rem = n % num_threads, off = 0;
     for (size_t i = 0; i < num_threads; i++) {
@@ -37,8 +42,7 @@ void parallel_for(size_t n, size_t num_threads,
         off = args[i].end;
         pthread_create(&threads[i], NULL, chunk_worker, &args[i]);
     }
-    for (size_t i = 0; i < num_threads; i++)
-        pthread_join(threads[i], NULL);
+    for (size_t i = 0; i < num_threads; i++) pthread_join(threads[i], NULL);
     free(threads);
     free(args);
 }
@@ -49,7 +53,7 @@ void parallel_for(size_t n, size_t num_threads,
 typedef struct {
     size_t start, end;
     double (*map)(size_t, size_t, void *);
-    void *ctx;
+    void  *ctx;
     double result;
 } ReduceArg;
 
@@ -60,17 +64,20 @@ static void *reduce_worker(void *arg) {
     return NULL;
 }
 
-double parallel_reduce(size_t n, size_t num_threads,
-                       double (*map)(size_t start, size_t end, void *ctx),
-                       void *ctx,
+double parallel_reduce(size_t n, size_t                                          num_threads,
+                       double (*map)(size_t start, size_t end, void *ctx), void *ctx,
                        double (*reduce)(double a, double b)) {
     if (n == 0) return 0.0;
     if (num_threads <= 1) return map(0, n, ctx);
 
     if (num_threads > n) num_threads = n;
-    pthread_t  *threads = malloc(num_threads * sizeof(pthread_t));
-    ReduceArg  *args    = malloc(num_threads * sizeof(ReduceArg));
-    if (!threads || !args) { free(threads); free(args); return map(0, n, ctx); }
+    pthread_t *threads = malloc(num_threads * sizeof(pthread_t));
+    ReduceArg *args = malloc(num_threads * sizeof(ReduceArg));
+    if (!threads || !args) {
+        free(threads);
+        free(args);
+        return map(0, n, ctx);
+    }
 
     size_t chunk = n / num_threads, rem = n % num_threads, off = 0;
     for (size_t i = 0; i < num_threads; i++) {

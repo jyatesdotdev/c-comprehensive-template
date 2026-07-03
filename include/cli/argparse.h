@@ -18,19 +18,19 @@
 
 /** Argument requirement (mirrors getopt values). */
 enum CliArgReq {
-    CLI_NO_ARG       = 0,
+    CLI_NO_ARG = 0,
     CLI_REQUIRED_ARG = 1,
     CLI_OPTIONAL_ARG = 2,
 };
 
 /** @brief Defines a single CLI option with layered resolution. */
 typedef struct {
-    const char *long_name;    /**< Long flag name (e.g. "verbose"). */
-    char        short_name;   /**< Single-char alias, or '\0'. */
-    int         arg_req;      /**< CLI_NO_ARG, CLI_REQUIRED_ARG, CLI_OPTIONAL_ARG. */
-    const char *description;  /**< Help text for this option. */
-    const char *env_var;      /**< Env var fallback name, or NULL. */
-    const char *default_val;  /**< Default value, or NULL. */
+    const char *long_name;   /**< Long flag name (e.g. "verbose"). */
+    char        short_name;  /**< Single-char alias, or '\0'. */
+    int         arg_req;     /**< CLI_NO_ARG, CLI_REQUIRED_ARG, CLI_OPTIONAL_ARG. */
+    const char *description; /**< Help text for this option. */
+    const char *env_var;     /**< Env var fallback name, or NULL. */
+    const char *default_val; /**< Default value, or NULL. */
 } CliOption;
 
 /* ── Subcommand Definition ──────────────────────────────────────────────── */
@@ -50,20 +50,20 @@ typedef struct {
 /** @brief Stores a resolved key-value pair from any source. */
 typedef struct {
     const char *key;
-    const char *value;   /**< NULL for boolean flags. */
+    const char *value; /**< NULL for boolean flags. */
 } CliEntry;
 
 /** @brief Parsing context holding results from all resolution layers. */
 typedef struct {
-    CliEntry cli_args[CLI_MAX_OPTS];     /**< Values from command line. */
-    int      cli_count;
-    CliEntry config_vals[CLI_MAX_CONFIG]; /**< Values from config file. */
-    int      config_count;
-    const CliOption *options;             /**< Option definitions (borrowed). */
+    CliEntry         cli_args[CLI_MAX_OPTS]; /**< Values from command line. */
+    int              cli_count;
+    CliEntry         config_vals[CLI_MAX_CONFIG]; /**< Values from config file. */
+    int              config_count;
+    const CliOption *options; /**< Option definitions (borrowed). */
     int              option_count;
-    const char      *subcommand;         /**< Matched subcommand, or NULL. */
-    int              rest_argc;          /**< argc after subcommand/options. */
-    char           **rest_argv;          /**< argv after subcommand/options. */
+    const char      *subcommand; /**< Matched subcommand, or NULL. */
+    int              rest_argc;  /**< argc after subcommand/options. */
+    char           **rest_argv;  /**< argv after subcommand/options. */
 } CliContext;
 
 /* ── Core API ───────────────────────────────────────────────────────────── */
@@ -79,8 +79,7 @@ typedef struct {
  * @param ctx         Parsing context to populate.
  * @return ERR_OK on success, or an error code.
  */
-ErrorCode cli_parse(int argc, char **argv,
-                    const CliOption *options, int num_options,
+ErrorCode cli_parse(int argc, char **argv, const CliOption *options, int num_options,
                     CliContext *ctx);
 
 /**
@@ -94,8 +93,7 @@ ErrorCode cli_parse(int argc, char **argv,
  * @param prog_description Program description for help output.
  * @return The handler's return value, or -1 if no match (prints help hint).
  */
-int cli_dispatch(int argc, char **argv,
-                 const CliSubcommand *cmds, int num_cmds,
+int cli_dispatch(int argc, char **argv, const CliSubcommand *cmds, int num_cmds,
                  const char *prog_description);
 
 /**
@@ -142,9 +140,8 @@ void cli_free(CliContext *ctx);
  * @param cmds        Array of subcommand definitions, or NULL.
  * @param num_cmds    Number of entries in cmds.
  */
-void cli_print_help(const char *prog_name, const char *description,
-                    const CliOption *options, int num_options,
-                    const CliSubcommand *cmds, int num_cmds);
+void cli_print_help(const char *prog_name, const char *description, const CliOption *options,
+                    int num_options, const CliSubcommand *cmds, int num_cmds);
 
 /**
  * @brief Print just the usage line.
