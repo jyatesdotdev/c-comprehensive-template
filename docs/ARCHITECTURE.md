@@ -19,9 +19,9 @@ c_comprehensive_template/
 │   └── ThirdParty.cmake        Optional dependencies via FetchContent
 ├── include/                    Public headers (all modules)
 │   ├── core/{error,log,time}.h
-│   ├── containers/{hash,vec,hashmap,strbuf,ringbuf}.h
+│   ├── containers/{hash,vec,hashmap,strbuf,ringbuf,str}.h
 │   ├── memory/{arena,pool,leak_detect}.h
-│   ├── systems/{file_io,process}.h
+│   ├── systems/{file_io,process,path}.h
 │   ├── hpc/{simd_ops,thread_pool,parallel}.h
 │   ├── math/{scalar,vec,mat,quat,matx,rng,stats}.h
 │   ├── ml/{nn,dataset}.h
@@ -93,7 +93,8 @@ All library modules are built as static libraries. Arrows indicate `target_link_
 
 Key relationships:
 - `core` is the foundation — every other module depends on it (errors, logging, monotonic time, allocators)
-- `containers` depends on `core` (growable array, hash map, string builder, ring buffer)
+- `containers` depends on `core` (growable array, hash map, string builder/views, ring buffer)
+- `systems` also provides lexical + filesystem path utilities (path.h)
 - `cli` depends on `core` (uses error handling)
 - `systems` depends on `core` (file I/O, process wrappers)
 - `hpc` depends on `core` + `Threads::Threads` (pthreads)
@@ -168,6 +169,7 @@ Tests are organized by framework:
 | `test_math`           | minimal     | core, math, m      | Vectors, matrices, quat, RNG|
 | `test_ml`             | minimal     | core, ml, math, m  | Backprop gradient check, XOR|
 | `test_containers`     | minimal     | core, containers   | Vec, hashmap, strbuf, log   |
+| `test_str_path`       | minimal     | core, containers, systems | String views, path utils |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |

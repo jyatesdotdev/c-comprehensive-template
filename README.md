@@ -32,7 +32,7 @@ ctest --output-on-failure
 │   ├── core/               Error handling, logging, monotonic time
 │   ├── containers/         Vec, hash map, string builder, ring buffer
 │   ├── memory/             Arena & pool allocators
-│   ├── systems/            File I/O, process control
+│   ├── systems/            File I/O, process control, paths
 │   ├── hpc/                SIMD, thread pool, parallel_for
 │   ├── math/               Vectors, matrices, quaternions, RNG, stats
 │   ├── ml/                 Neural net layers, losses, optimizers, datasets
@@ -49,9 +49,9 @@ ctest --output-on-failure
 ## Modules
 
 - **core**: Unified error codes, leveled logging, monotonic time/stopwatch
-- **containers**: Growable array, string-keyed hash map, string builder, ring buffer, FNV-1a/CRC-32
+- **containers**: Growable array, string-keyed hash map, string builder/views, ring buffer, FNV-1a/CRC-32
 - **memory**: Arena (bump) allocator and fixed-size pool allocator
-- **systems**: Safe file I/O wrappers, process control
+- **systems**: Safe file I/O wrappers, process control, path utilities
 - **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for
 - **math**: Vec2/3/4, Mat4 transforms, quaternions, dynamic MatX matrices, PCG32 RNG, statistics
 - **ml**: Dense layers with manual backprop, MSE/cross-entropy, SGD/Adam, CSV/shuffle/batch utilities

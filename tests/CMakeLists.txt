@@ -60,3 +60,7 @@ add_test(NAME test_ml COMMAND test_ml)
 add_executable(test_containers test_containers.c)
 target_link_libraries(test_containers PRIVATE core containers)
 add_test(NAME test_containers COMMAND test_containers)
+
+add_executable(test_str_path test_str_path.c)
+target_link_libraries(test_str_path PRIVATE core containers systems)
+add_test(NAME test_str_path COMMAND test_str_path)

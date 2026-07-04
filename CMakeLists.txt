@@ -85,6 +85,7 @@ target_link_libraries(cli PRIVATE core)
 add_library(systems STATIC
     src/systems/file_io.c
     src/systems/process.c
+    src/systems/path.c
 )
 target_include_directories(systems PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(systems PRIVATE core)
@@ -159,6 +160,7 @@ add_library(containers STATIC
     src/containers/hashmap.c
     src/containers/strbuf.c
     src/containers/ringbuf.c
+    src/containers/str.c
 )
 target_include_directories(containers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(containers PRIVATE core)
