@@ -22,7 +22,7 @@ c_comprehensive_template/
 │   ├── containers/{hash,vec,hashmap,strbuf,ringbuf,str}.h
 │   ├── memory/{arena,pool,leak_detect}.h
 │   ├── systems/{file_io,process,path}.h
-│   ├── hpc/{simd_ops,thread_pool,parallel}.h
+│   ├── hpc/{simd_ops,thread_pool,parallel,queue}.h
 │   ├── math/{scalar,vec,mat,quat,matx,rng,stats}.h
 │   ├── ml/{nn,dataset}.h
 │   ├── networking/{socket,udp,unix_socket}.h
@@ -97,7 +97,7 @@ Key relationships:
 - `systems` also provides lexical + filesystem path utilities (path.h)
 - `cli` depends on `core` (uses error handling)
 - `systems` depends on `core` (file I/O, process wrappers)
-- `hpc` depends on `core` + `Threads::Threads` (pthreads)
+- `hpc` depends on `core` + `Threads::Threads` (SIMD, thread pool, parallel_for, SPSC/MPMC queues)
 - `math` depends on `core` + `m` (owns the Vec3 type; fixed-size linalg + dynamic MatX)
 - `ml` depends on `core` + `math` + `m` (dense layers with manual backprop, dataset utils)
 - `simulation` depends on `core` + `math` + `m` (uses math's Vec3)
@@ -170,6 +170,7 @@ Tests are organized by framework:
 | `test_ml`             | minimal     | core, ml, math, m  | Backprop gradient check, XOR|
 | `test_containers`     | minimal     | core, containers   | Vec, hashmap, strbuf, log   |
 | `test_str_path`       | minimal     | core, containers, systems | String views, path utils |
+| `test_queue`          | minimal     | core, hpc          | SPSC/MPMC queues, threads   |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |
@@ -196,6 +197,7 @@ Tests are organized by framework:
 | `example_ml`             | core, ml, math, m      | MLP trained on spiral data   |
 | `example_matmul_bench`   | core, math, m (+BLAS)  | Our matmul vs optimized BLAS |
 | `example_containers`     | core, containers       | Vec/hashmap/strbuf + logging |
+| `example_pipeline`       | core, hpc              | Producer/consumer pipeline   |
 
 ## See Also
 

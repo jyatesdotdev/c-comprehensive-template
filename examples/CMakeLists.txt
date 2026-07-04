@@ -56,3 +56,6 @@ endif()
 
 add_executable(example_containers ../examples/containers_demo.c)
 target_link_libraries(example_containers PRIVATE core containers)
+
+add_executable(example_pipeline ../examples/pipeline_demo.c)
+target_link_libraries(example_pipeline PRIVATE core hpc)

@@ -33,7 +33,7 @@ ctest --output-on-failure
 │   ├── containers/         Vec, hash map, string builder, ring buffer
 │   ├── memory/             Arena & pool allocators
 │   ├── systems/            File I/O, process control, paths
-│   ├── hpc/                SIMD, thread pool, parallel_for
+│   ├── hpc/                SIMD, thread pool, parallel_for, queues
 │   ├── math/               Vectors, matrices, quaternions, RNG, stats
 │   ├── ml/                 Neural net layers, losses, optimizers, datasets
 │   ├── networking/         TCP, UDP, Unix domain sockets
@@ -52,7 +52,7 @@ ctest --output-on-failure
 - **containers**: Growable array, string-keyed hash map, string builder/views, ring buffer, FNV-1a/CRC-32
 - **memory**: Arena (bump) allocator and fixed-size pool allocator
 - **systems**: Safe file I/O wrappers, process control, path utilities
-- **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for
+- **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for, SPSC/MPMC queues
 - **math**: Vec2/3/4, Mat4 transforms, quaternions, dynamic MatX matrices, PCG32 RNG, statistics
 - **ml**: Dense layers with manual backprop, MSE/cross-entropy, SGD/Adam, CSV/shuffle/batch utilities
 - **networking**: TCP client/server, UDP datagrams, Unix domain sockets (POSIX)

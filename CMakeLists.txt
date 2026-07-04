@@ -96,6 +96,7 @@ add_library(hpc STATIC
     src/hpc/simd_ops.c
     src/hpc/thread_pool.c
     src/hpc/parallel.c
+    src/hpc/queue.c
 )
 target_include_directories(hpc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(hpc PRIVATE core Threads::Threads)
