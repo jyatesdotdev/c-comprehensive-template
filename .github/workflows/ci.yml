@@ -47,8 +47,10 @@ jobs:
         run: cd build-cov && ctest --output-on-failure --timeout 120
 
       - name: Generate coverage report
+        # `negative` ignores gcov's negative-counter artifact from
+        # multithreaded test binaries (gcov counters are not atomic)
         run: |
-          lcov --capture --directory build-cov --output-file coverage.info --ignore-errors mismatch,empty
+          lcov --capture --directory build-cov --output-file coverage.info --ignore-errors mismatch,empty,negative
           lcov --remove coverage.info '/usr/*' '*/tests/*' '*/third_party/*' '*/_deps/*' --output-file coverage.info --ignore-errors unused,empty
           lcov --list coverage.info --ignore-errors empty
 
