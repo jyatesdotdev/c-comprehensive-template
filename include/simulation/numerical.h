@@ -5,6 +5,7 @@
 #ifndef SIMULATION_NUMERICAL_H
 #define SIMULATION_NUMERICAL_H
 
+#include "core/error.h"
 #include <stddef.h>
 
 /**
@@ -57,11 +58,13 @@ typedef void (*OdeFunc)(double t, const double *y, double *dydt, void *ctx);
  * @param f   Derivative function.
  * @param t   Current time.
  * @param y   State vector, modified in-place.
- * @param n   Dimension of the system.
+ * @param n   Dimension of the system (> 0).
  * @param dt  Time step size.
  * @param ctx User context pointer passed to f.
+ * @return ERR_OK, ERR_INVALID_ARG for bad inputs, or ERR_NOMEM if the
+ *         scratch buffers cannot be allocated (y is left unchanged).
  */
-void numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *ctx);
+ErrorCode numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *ctx);
 
 /**
  * @brief Integrate ODE from t0 to t1 with fixed step dt.
@@ -69,11 +72,13 @@ void numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *
  * @param t0  Start time.
  * @param t1  End time.
  * @param y   State vector, modified in-place.
- * @param n   Dimension of the system.
- * @param dt  Time step size.
+ * @param n   Dimension of the system (> 0).
+ * @param dt  Time step size (> 0).
  * @param ctx User context pointer passed to f.
+ * @return ERR_OK, or the first error from numerical_rk4_step (integration
+ *         stops at the failing step).
  */
-void numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt,
-                             void *ctx);
+ErrorCode numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt,
+                                  void *ctx);
 
 #endif /* SIMULATION_NUMERICAL_H */

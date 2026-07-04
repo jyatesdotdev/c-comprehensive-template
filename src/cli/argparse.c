@@ -54,8 +54,8 @@ static const CliOption *find_option(const CliOption *opts, int count, const char
 /** @brief Strip leading and trailing whitespace in-place. */
 static char *trim(char *s) {
     while (isspace((unsigned char)*s)) s++;
-    char *end = s + strlen(s) - 1;
-    while (end > s && isspace((unsigned char)*end)) *end-- = '\0';
+    size_t len = strlen(s);
+    while (len > 0 && isspace((unsigned char)s[len - 1])) s[--len] = '\0';
     return s;
 }
 
@@ -162,9 +162,17 @@ ErrorCode cli_load_config(const char *path, CliContext *ctx) {
 
         if (ctx->config_count < CLI_MAX_CONFIG) {
             /* Duplicate strings since line buffer is reused. */
+            char *key_copy = strdup(key);
+            char *val_copy = strdup(val);
+            if (!key_copy || !val_copy) {
+                free(key_copy);
+                free(val_copy);
+                (void)fclose(f); /* already returning an error */
+                return ERR_NOMEM;
+            }
             ctx->config_vals[ctx->config_count++] = (CliEntry){
-                .key = strdup(key),
-                .value = strdup(val),
+                .key = key_copy,
+                .value = val_copy,
             };
         }
     }

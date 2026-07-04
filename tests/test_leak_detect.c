@@ -5,16 +5,17 @@
  * Calls the tracking functions directly (not via macros) so we can
  * verify the report counts without macro interference.
  */
-#include <stdio.h>
-#include <stdlib.h>
 #include "memory/leak_detect.h"
 
-#define ASSERT(cond)                                                         \
-    do {                                                                     \
-        if (!(cond)) {                                                       \
-            fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                         \
-        }                                                                    \
+#include <stdio.h>
+#include <stdlib.h>
+
+#define CHECK(cond)                                                                    \
+    do {                                                                               \
+        if (!(cond)) {                                                                 \
+            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
+            exit(1);                                                                   \
+        }                                                                              \
     } while (0)
 
 int main(void) {
@@ -22,18 +23,18 @@ int main(void) {
     leak_detect_init();
     void *a = leak_detect_malloc(128, __FILE__, __LINE__);
     void *b = leak_detect_calloc(4, 32, __FILE__, __LINE__);
-    ASSERT(a != NULL && b != NULL);
+    CHECK(a != NULL && b != NULL);
     leak_detect_free(a, __FILE__, __LINE__);
     leak_detect_free(b, __FILE__, __LINE__);
-    ASSERT(leak_detect_report() == 0);
+    CHECK(leak_detect_report() == 0);
     leak_detect_shutdown();
 
     /* Test 2: detect a leak */
     leak_detect_init();
     void *c = leak_detect_malloc(64, __FILE__, __LINE__);
-    ASSERT(c != NULL);
+    CHECK(c != NULL);
     /* intentionally not freed */
-    ASSERT(leak_detect_report() == 1);
+    CHECK(leak_detect_report() == 1);
     /* clean up to avoid real leak */
     free(c);
     leak_detect_shutdown();
@@ -42,11 +43,11 @@ int main(void) {
     leak_detect_init();
     void *d = leak_detect_malloc(16, __FILE__, __LINE__);
     d = leak_detect_realloc(d, 256, __FILE__, __LINE__);
-    ASSERT(d != NULL);
+    CHECK(d != NULL);
     leak_detect_free(d, __FILE__, __LINE__);
-    ASSERT(leak_detect_report() == 0);
+    CHECK(leak_detect_report() == 0);
     leak_detect_shutdown();
 
-    printf("test_leak_detect: PASS\n");
+    printf("All leak_detect tests passed.\n");
     return 0;
 }

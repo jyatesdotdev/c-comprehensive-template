@@ -94,7 +94,8 @@ ErrorCode fb_write_ppm(const Framebuffer *fb, const char *path) {
     FILE *f = fopen(path, "wb");
     if (!f) return ERR_IO;
     fprintf(f, "P6\n%d %d\n255\n", fb->width, fb->height);
-    for (int i = 0; i < fb->width * fb->height; i++) {
+    size_t n = (size_t)fb->width * (size_t)fb->height;
+    for (size_t i = 0; i < n; i++) {
         uint32_t p = fb->pixels[i];
         uint8_t  rgb[3] = {(uint8_t)(p >> 16), (uint8_t)(p >> 8), (uint8_t)p};
         if (fwrite(rgb, 1, 3, f) != 3) {

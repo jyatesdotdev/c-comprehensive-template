@@ -56,7 +56,21 @@ ErrorCode thread_pool_create(ThreadPool **pool, size_t num_threads) {
     p->num_threads = num_threads;
     pthread_mutex_init(&p->mutex, NULL);
     pthread_cond_init(&p->cond, NULL);
-    for (size_t i = 0; i < num_threads; i++) pthread_create(&p->threads[i], NULL, worker, p);
+    for (size_t i = 0; i < num_threads; i++) {
+        if (pthread_create(&p->threads[i], NULL, worker, p) != 0) {
+            /* Shut down the workers that did start, then fail cleanly. */
+            pthread_mutex_lock(&p->mutex);
+            p->shutdown = true;
+            pthread_cond_broadcast(&p->cond);
+            pthread_mutex_unlock(&p->mutex);
+            for (size_t j = 0; j < i; j++) pthread_join(p->threads[j], NULL);
+            pthread_mutex_destroy(&p->mutex);
+            pthread_cond_destroy(&p->cond);
+            free(p->threads);
+            free(p);
+            return ERR_IO;
+        }
+    }
     *pool = p;
     return ERR_OK;
 }

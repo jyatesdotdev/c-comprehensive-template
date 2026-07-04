@@ -51,7 +51,10 @@ int main(void) {
     double t = 0.0, dt = 0.01;
     for (int step = 0; step <= 200; step++) {
         if (step % 50 == 0) printf("  t=%.2f  theta=%.6f  omega=%.6f\n", t, y[0], y[1]);
-        numerical_rk4_step(pendulum_ode, t, y, 2, dt, NULL);
+        if (numerical_rk4_step(pendulum_ode, t, y, 2, dt, NULL) != ERR_OK) {
+            fprintf(stderr, "rk4 step failed\n");
+            return 1;
+        }
         t += dt;
     }
 

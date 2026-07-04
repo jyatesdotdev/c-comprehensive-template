@@ -44,13 +44,15 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
     FILE *f = fopen(path, "rb");
     if (!f) return ERR_IO;
 
-    fseek(f, 0, SEEK_END);
-    long len = ftell(f);
-    if (len < 0) {
+    if (fseek(f, 0, SEEK_END) != 0) {
         (void)fclose(f); /* already returning an error */
         return ERR_IO;
     }
-    fseek(f, 0, SEEK_SET);
+    long len = ftell(f);
+    if (len < 0 || fseek(f, 0, SEEK_SET) != 0) {
+        (void)fclose(f);
+        return ERR_IO;
+    }
 
     *out_buf = malloc((size_t)len);
     if (!*out_buf) {

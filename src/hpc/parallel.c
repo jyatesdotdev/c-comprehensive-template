@@ -40,9 +40,14 @@ void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_
     for (size_t i = 0; i < num_threads; i++) {
         args[i] = (ChunkArg){off, off + chunk + (i < rem ? 1 : 0), body, ctx};
         off = args[i].end;
-        pthread_create(&threads[i], NULL, chunk_worker, &args[i]);
+        if (pthread_create(&threads[i], NULL, chunk_worker, &args[i]) != 0) {
+            chunk_worker(&args[i]); /* thread creation failed — run the chunk inline */
+            args[i].body = NULL;    /* marks this slot as not needing a join */
+        }
     }
-    for (size_t i = 0; i < num_threads; i++) pthread_join(threads[i], NULL);
+    for (size_t i = 0; i < num_threads; i++) {
+        if (args[i].body) pthread_join(threads[i], NULL);
+    }
     free(threads);
     free(args);
 }
@@ -83,12 +88,15 @@ double parallel_reduce(size_t n, size_t                                         
     for (size_t i = 0; i < num_threads; i++) {
         args[i] = (ReduceArg){off, off + chunk + (i < rem ? 1 : 0), map, ctx, 0.0};
         off = args[i].end;
-        pthread_create(&threads[i], NULL, reduce_worker, &args[i]);
+        if (pthread_create(&threads[i], NULL, reduce_worker, &args[i]) != 0) {
+            reduce_worker(&args[i]); /* thread creation failed — map the chunk inline */
+            args[i].map = NULL;      /* marks this slot as not needing a join */
+        }
     }
 
     double result = 0.0;
     for (size_t i = 0; i < num_threads; i++) {
-        pthread_join(threads[i], NULL);
+        if (args[i].map) pthread_join(threads[i], NULL);
         result = (i == 0) ? args[i].result : reduce(result, args[i].result);
     }
     free(threads);

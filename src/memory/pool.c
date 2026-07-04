@@ -3,6 +3,7 @@
  * @brief Fixed-size block pool allocator with free-list implementation.
  */
 #include "memory/pool.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -10,6 +11,7 @@ ErrorCode pool_init(Pool *p, size_t block_size, size_t block_count) {
     if (!p || block_count == 0) return ERR_INVALID_ARG;
     /* Ensure blocks can hold a pointer for the free list */
     if (block_size < sizeof(void *)) block_size = sizeof(void *);
+    if (block_count > SIZE_MAX / block_size) return ERR_OVERFLOW;
     p->block_size = block_size;
     p->block_count = block_count;
     p->buf = malloc(block_size * block_count);

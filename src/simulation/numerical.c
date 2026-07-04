@@ -48,14 +48,16 @@ double numerical_newton(double (*f)(double), double (*df)(double), double x0, do
     return x;
 }
 
-void numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *ctx) {
+ErrorCode numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *ctx) {
+    if (!f || !y || n <= 0) return ERR_INVALID_ARG;
+
     double *k1 = malloc(4 * (size_t)n * sizeof(double));
-    if (!k1) return;
+    if (!k1) return ERR_NOMEM;
     double *k2 = k1 + n, *k3 = k2 + n, *k4 = k3 + n;
     double *tmp = malloc((size_t)n * sizeof(double));
     if (!tmp) {
         free(k1);
-        return;
+        return ERR_NOMEM;
     }
 
     f(t, y, k1, ctx);
@@ -70,14 +72,19 @@ void numerical_rk4_step(OdeFunc f, double t, double *y, int n, double dt, void *
 
     free(tmp);
     free(k1);
+    return ERR_OK;
 }
 
-void numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt,
-                             void *ctx) {
+ErrorCode numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, int n, double dt,
+                                  void *ctx) {
+    if (!f || !y || n <= 0 || dt <= 0.0) return ERR_INVALID_ARG;
+
     double t = t0;
     while (t < t1 - dt * 0.5) {
-        double step = (t + dt > t1) ? t1 - t : dt;
-        numerical_rk4_step(f, t, y, n, step, ctx);
+        double    step = (t + dt > t1) ? t1 - t : dt;
+        ErrorCode err = numerical_rk4_step(f, t, y, n, step, ctx);
+        if (err) return err; /* stop at the failing step; y holds the last good state */
         t += step;
     }
+    return ERR_OK;
 }
