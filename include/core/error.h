@@ -27,11 +27,11 @@ typedef enum {
  */
 const char *error_str(ErrorCode code);
 
-/** Log an error with file/line context. */
-#define LOG_ERROR(code) error_log_impl((code), __FILE__, __LINE__)
+/** Log an ErrorCode with file/line context. (Message logging: core/log.h.) */
+#define LOG_ERROR_CODE(code) error_log_impl((code), __FILE__, __LINE__)
 
 /**
- * @brief Log an error with source location (used by LOG_ERROR macro).
+ * @brief Log an error with source location (used by LOG_ERROR_CODE macro).
  * @param code The error code to log.
  * @param file Source file name (typically __FILE__).
  * @param line Source line number (typically __LINE__).

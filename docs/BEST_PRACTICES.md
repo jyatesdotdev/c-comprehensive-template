@@ -74,10 +74,10 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
 1. **Always check return values.** Never ignore an `ErrorCode`.
 2. **ERR_OK is zero.** This allows `if (err) { handle_error(); }`.
 3. **Validate inputs first.** Return `ERR_INVALID_ARG` for NULL pointers or invalid sizes before doing any work.
-4. **Use LOG_ERROR for diagnostics.** The macro captures file and line automatically:
+4. **Use LOG_ERROR_CODE for diagnostics.** The macro captures file and line automatically:
    ```c
    ErrorCode err = arena_init(&a, size);
-   if (err) { LOG_ERROR(err); return err; }
+   if (err) { LOG_ERROR_CODE(err); return err; }
    ```
 5. **Propagate errors upward.** Don't swallow errors silently — let callers decide how to handle them.
 
@@ -249,7 +249,7 @@ ErrorCode arena_init(Arena *a, size_t capacity);
 
 - Types: `PascalCase` (`Arena`, `ErrorCode`, `Pool`)
 - Functions: `module_action` (`arena_init`, `pool_alloc`, `file_read_all`)
-- Macros: `UPPER_SNAKE` (`LOG_ERROR`, `ERR_OK`)
+- Macros: `UPPER_SNAKE` (`LOG_ERROR_CODE`, `ERR_OK`)
 - Internal functions: `static` linkage, no prefix needed
 
 ### Documentation

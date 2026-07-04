@@ -65,6 +65,8 @@ include(cmake/ThirdParty.cmake)
 # ── Core Library ────────────────────────────────────────────────────────────
 add_library(core STATIC
     src/core/error.c
+    src/core/log.c
+    src/core/time.c
     src/memory/arena.c
     src/memory/pool.c
     src/memory/leak_detect.c
@@ -149,6 +151,17 @@ add_library(ml STATIC
 )
 target_include_directories(ml PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(ml PRIVATE core math m)
+
+# ── Containers Library ──────────────────────────────────────────────────
+add_library(containers STATIC
+    src/containers/hash.c
+    src/containers/vec.c
+    src/containers/hashmap.c
+    src/containers/strbuf.c
+    src/containers/ringbuf.c
+)
+target_include_directories(containers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(containers PRIVATE core)
 
 # ── Testing Frameworks ──────────────────────────────────────────────────────
 if(BUILD_TESTS)

@@ -53,3 +53,6 @@ if(USE_OPENBLAS AND BLAS_FOUND)
     target_link_libraries(example_matmul_bench PRIVATE ${BLAS_LIBRARIES})
     target_compile_definitions(example_matmul_bench PRIVATE HAVE_CBLAS)
 endif()
+
+add_executable(example_containers ../examples/containers_demo.c)
+target_link_libraries(example_containers PRIVATE core containers)

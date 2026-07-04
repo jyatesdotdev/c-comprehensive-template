@@ -18,7 +18,8 @@ c_comprehensive_template/
 │   ├── Testing.cmake           Unity & cmocka test framework integration
 │   └── ThirdParty.cmake        Optional dependencies via FetchContent
 ├── include/                    Public headers (all modules)
-│   ├── core/error.h
+│   ├── core/{error,log,time}.h
+│   ├── containers/{hash,vec,hashmap,strbuf,ringbuf}.h
 │   ├── memory/{arena,pool,leak_detect}.h
 │   ├── systems/{file_io,process}.h
 │   ├── hpc/{simd_ops,thread_pool,parallel}.h
@@ -43,7 +44,7 @@ All library modules are built as static libraries. Arrows indicate `target_link_
 
 ```
                     ┌──────────┐
-                    │   core   │  (error.c, arena.c, pool.c, leak_detect.c)
+                    │   core   │  (error, log, time, arena, pool, leak_detect)
                     └────┬─────┘
            ┌─────────┬───┼───────┬──────────────┐
            │         │   │       │              │
@@ -82,10 +83,17 @@ All library modules are built as static libraries. Arrows indicate `target_link_
        └────────────┘
             │
             └── links core + math + m
+
+       ┌────────────┐
+       │ containers  │  hash, vec, hashmap, strbuf, ringbuf
+       └────────────┘
+            │
+            └── links core
 ```
 
 Key relationships:
-- `core` is the foundation — every other module depends on it
+- `core` is the foundation — every other module depends on it (errors, logging, monotonic time, allocators)
+- `containers` depends on `core` (growable array, hash map, string builder, ring buffer)
 - `cli` depends on `core` (uses error handling)
 - `systems` depends on `core` (file I/O, process wrappers)
 - `hpc` depends on `core` + `Threads::Threads` (pthreads)
@@ -159,6 +167,7 @@ Tests are organized by framework:
 | `test_networking`     | minimal     | core, networking   | TCP/UDP/Unix loopback I/O   |
 | `test_math`           | minimal     | core, math, m      | Vectors, matrices, quat, RNG|
 | `test_ml`             | minimal     | core, ml, math, m  | Backprop gradient check, XOR|
+| `test_containers`     | minimal     | core, containers   | Vec, hashmap, strbuf, log   |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |
@@ -184,6 +193,7 @@ Tests are organized by framework:
 | `example_math`           | core, math, m          | Transforms, quat, MatX, RNG  |
 | `example_ml`             | core, ml, math, m      | MLP trained on spiral data   |
 | `example_matmul_bench`   | core, math, m (+BLAS)  | Our matmul vs optimized BLAS |
+| `example_containers`     | core, containers       | Vec/hashmap/strbuf + logging |
 
 ## See Also
 

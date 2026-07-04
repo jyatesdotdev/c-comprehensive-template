@@ -29,7 +29,8 @@ ctest --output-on-failure
 ├── cmake/Platform.cmake    Platform & SIMD detection
 ├── scripts/new_module.sh   Scaffold a new module (files + CMake targets)
 ├── include/                Public headers
-│   ├── core/               Error handling
+│   ├── core/               Error handling, logging, monotonic time
+│   ├── containers/         Vec, hash map, string builder, ring buffer
 │   ├── memory/             Arena & pool allocators
 │   ├── systems/            File I/O, process control
 │   ├── hpc/                SIMD, thread pool, parallel_for
@@ -47,7 +48,8 @@ ctest --output-on-failure
 
 ## Modules
 
-- **core**: Unified error codes and logging
+- **core**: Unified error codes, leveled logging, monotonic time/stopwatch
+- **containers**: Growable array, string-keyed hash map, string builder, ring buffer, FNV-1a/CRC-32
 - **memory**: Arena (bump) allocator and fixed-size pool allocator
 - **systems**: Safe file I/O wrappers, process control
 - **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for

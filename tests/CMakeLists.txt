@@ -56,3 +56,7 @@ add_test(NAME test_math COMMAND test_math)
 add_executable(test_ml test_ml.c)
 target_link_libraries(test_ml PRIVATE core ml math m)
 add_test(NAME test_ml COMMAND test_ml)
+
+add_executable(test_containers test_containers.c)
+target_link_libraries(test_containers PRIVATE core containers)
+add_test(NAME test_containers COMMAND test_containers)

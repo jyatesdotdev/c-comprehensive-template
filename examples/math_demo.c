@@ -2,6 +2,7 @@
  * @file math_demo.c
  * @brief Tour of the math module: transforms, quaternions, MatX, RNG, stats.
  */
+#include "core/time.h"
 #include "math/mat.h"
 #include "math/matx.h"
 #include "math/quat.h"
@@ -12,13 +13,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
-static double now_ms(void) {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (double)ts.tv_sec * 1000.0 + (double)ts.tv_nsec / 1.0e6;
-}
 
 /** Model-view-projection pipeline: the core of every 3D renderer. */
 static void demo_transforms(void) {
@@ -62,13 +56,13 @@ static int demo_matx(void) {
     matx_random_uniform(&a, &rng, -1.0f, 1.0f);
     matx_random_uniform(&b, &rng, -1.0f, 1.0f);
 
-    double t0 = now_ms();
+    double t0 = time_now_ms();
     matx_mul(&a, &b, &out);
-    double t_naive = now_ms() - t0;
+    double t_naive = time_now_ms() - t0;
 
-    t0 = now_ms();
+    t0 = time_now_ms();
     matx_mul_blocked(&a, &b, &out, 32);
-    double t_blocked = now_ms() - t0;
+    double t_blocked = time_now_ms() - t0;
 
     printf("%dx%d matmul: naive %.1f ms, blocked %.1f ms\n", N, N, t_naive, t_blocked);
 
