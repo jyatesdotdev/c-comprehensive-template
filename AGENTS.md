@@ -4,6 +4,12 @@ C17 project template: static library modules under `src/<module>/` + `include/<m
 built with CMake, tested with CTest. This file contains everything you need for routine
 changes; the `docs/` guides cover depth.
 
+**Every directory has its own `AGENTS.md`** with domain-specific rules and the C
+practices that matter there — read the one for the directory you're editing:
+`src/` and `include/` (general implementation/header rules), `src/<module>/`
+(per-module invariants and idioms), `tests/`, `examples/`, `cmake/`, `scripts/`,
+and `docs/`.
+
 ## Build & Test Loop
 
 Run this after every change. Develop with sanitizers ON.
