@@ -276,8 +276,9 @@ When extending the project, make sure to:
 - [ ] Gate optional dependencies behind `option()` flags
 - [ ] Update [ARCHITECTURE](ARCHITECTURE.md): the **Module Dependency Graph**, the
       **Test Targets** table, and the **Example Targets** table
-- [ ] Write `src/<module>/AGENTS.md` for a new module (purpose, invariants,
-      domain-specific practices — see existing module guides for the shape)
+- [ ] Write `src/<module>/AGENTS.md` (invariants, domain practices) and
+      `include/<module>/AGENTS.md` (the consumer contract) for a new module —
+      see existing module guides for the shape
 - [ ] Run `clang-format -i` on new/changed files — CI rejects unformatted code
 - [ ] Run `ctest` and `clang-tidy` before committing
 

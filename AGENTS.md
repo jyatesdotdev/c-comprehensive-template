@@ -7,8 +7,9 @@ changes; the `docs/` guides cover depth.
 **Every directory has its own `AGENTS.md`** with domain-specific rules and the C
 practices that matter there — read the one for the directory you're editing:
 `src/` and `include/` (general implementation/header rules), `src/<module>/`
-(per-module invariants and idioms), `tests/`, `examples/`, `cmake/`, `scripts/`,
-and `docs/`.
+(per-module invariants and idioms), `include/<module>/` (the consumer contract
+for that API), `tests/`, `examples/`, `cmake/`, `scripts/`, `docs/`, and
+`third_party/` (vendoring policy).
 
 ## Build & Test Loop
 
