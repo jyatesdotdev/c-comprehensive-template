@@ -240,6 +240,7 @@ ErrorCode loss_softmax_xent(const MatX *logits, const MatX *onehot, float *out_l
         return ERR_INVALID_ARG;
 
     size_t batch = logits->rows, classes = logits->cols;
+    if (batch == 0 || classes == 0) return ERR_INVALID_ARG;
     double total = 0.0;
 
     for (size_t r = 0; r < batch; r++) {

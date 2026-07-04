@@ -79,7 +79,7 @@ ErrorCode dataset_load_csv(const char *path, int has_header, MatX *out) {
     }
     (void)fclose(f);
 
-    if (!err && rows == 0) err = ERR_IO; /* empty file */
+    if (!err && (rows == 0 || !vals)) err = ERR_IO; /* empty file */
     if (!err) err = matx_init(out, rows, cols);
     if (!err) memcpy(out->data, vals, rows * cols * sizeof(float));
     free(vals);
