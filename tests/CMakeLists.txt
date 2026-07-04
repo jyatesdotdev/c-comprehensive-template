@@ -68,3 +68,7 @@ add_test(NAME test_str_path COMMAND test_str_path)
 add_executable(test_queue test_queue.c)
 target_link_libraries(test_queue PRIVATE core hpc)
 add_test(NAME test_queue COMMAND test_queue)
+
+add_executable(test_event_loop test_event_loop.c)
+target_link_libraries(test_event_loop PRIVATE core networking)
+add_test(NAME test_event_loop COMMAND test_event_loop)

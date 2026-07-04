@@ -130,6 +130,7 @@ add_library(networking STATIC
     src/networking/socket.c
     src/networking/udp.c
     src/networking/unix_socket.c
+    src/networking/event_loop.c
 )
 target_include_directories(networking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(networking PRIVATE core)

@@ -25,7 +25,7 @@ c_comprehensive_template/
 │   ├── hpc/{simd_ops,thread_pool,parallel,queue}.h
 │   ├── math/{scalar,vec,mat,quat,matx,rng,stats}.h
 │   ├── ml/{nn,dataset}.h
-│   ├── networking/{socket,udp,unix_socket}.h
+│   ├── networking/{socket,udp,unix_socket,event_loop}.h
 │   ├── rendering/{software_renderer,gl_pipeline,vk_pipeline}.h
 │   ├── simulation/{physics,numerical}.h
 │   └── testing/perf_test.h
@@ -103,7 +103,7 @@ Key relationships:
 - `simulation` depends on `core` + `math` + `m` (uses math's Vec3)
 - `rendering_sw` depends on `core` (software renderer, always built)
 - `rendering` depends on `core` (optional GL/Vulkan, requires `ENABLE_RENDERING=ON`)
-- `networking` depends on `core` (TCP/UDP/Unix domain sockets, POSIX only)
+- `networking` depends on `core` (TCP/UDP/Unix domain sockets + poll event loop, POSIX only)
 
 ## Build System Overview
 
@@ -171,6 +171,7 @@ Tests are organized by framework:
 | `test_containers`     | minimal     | core, containers   | Vec, hashmap, strbuf, log   |
 | `test_str_path`       | minimal     | core, containers, systems | String views, path utils |
 | `test_queue`          | minimal     | core, hpc          | SPSC/MPMC queues, threads   |
+| `test_event_loop`     | minimal     | core, networking   | poll loop, loop-driven echo |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |
@@ -198,6 +199,7 @@ Tests are organized by framework:
 | `example_matmul_bench`   | core, math, m (+BLAS)  | Our matmul vs optimized BLAS |
 | `example_containers`     | core, containers       | Vec/hashmap/strbuf + logging |
 | `example_pipeline`       | core, hpc              | Producer/consumer pipeline   |
+| `example_evloop_server`  | core, networking       | Single-thread event-loop echo|
 
 ## See Also
 

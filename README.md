@@ -36,7 +36,7 @@ ctest --output-on-failure
 │   ├── hpc/                SIMD, thread pool, parallel_for, queues
 │   ├── math/               Vectors, matrices, quaternions, RNG, stats
 │   ├── ml/                 Neural net layers, losses, optimizers, datasets
-│   ├── networking/         TCP, UDP, Unix domain sockets
+│   ├── networking/         TCP, UDP, Unix sockets, event loop
 │   ├── rendering/          Software renderer, GL pipeline
 │   └── simulation/         Physics, numerical methods
 ├── src/                    Implementation files
@@ -55,7 +55,7 @@ ctest --output-on-failure
 - **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for, SPSC/MPMC queues
 - **math**: Vec2/3/4, Mat4 transforms, quaternions, dynamic MatX matrices, PCG32 RNG, statistics
 - **ml**: Dense layers with manual backprop, MSE/cross-entropy, SGD/Adam, CSV/shuffle/batch utilities
-- **networking**: TCP client/server, UDP datagrams, Unix domain sockets (POSIX)
+- **networking**: TCP client/server, UDP datagrams, Unix domain sockets, poll event loop (POSIX)
 - **simulation**: Euler physics integration, Simpson's rule, bisection root finding
 - **rendering**: Software framebuffer renderer, OpenGL shader pipeline (optional)
 

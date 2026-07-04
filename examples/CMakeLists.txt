@@ -59,3 +59,6 @@ target_link_libraries(example_containers PRIVATE core containers)
 
 add_executable(example_pipeline ../examples/pipeline_demo.c)
 target_link_libraries(example_pipeline PRIVATE core hpc)
+
+add_executable(example_evloop_server ../examples/evloop_server_demo.c)
+target_link_libraries(example_evloop_server PRIVATE core networking)
