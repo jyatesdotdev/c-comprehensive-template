@@ -86,3 +86,21 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/third_party/stb)
     target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/third_party/stb)
     message(STATUS "stb headers found in third_party/stb/")
 endif()
+
+# ── BLAS (optional, for benchmarking our matmul vs an optimized library) ────
+# Uses a system BLAS via find_package: OpenBLAS on Linux (apt install
+# libopenblas-dev), the Accelerate framework on macOS (built in).
+option(USE_OPENBLAS "Link a system BLAS for matmul benchmarking" OFF)
+if(USE_OPENBLAS)
+    set(BLA_VENDOR OpenBLAS)
+    find_package(BLAS QUIET)
+    if(NOT BLAS_FOUND)
+        unset(BLA_VENDOR)
+        find_package(BLAS QUIET) # any BLAS, e.g. Accelerate on macOS
+    endif()
+    if(BLAS_FOUND)
+        message(STATUS "BLAS enabled for benchmarking: ${BLAS_LIBRARIES}")
+    else()
+        message(WARNING "USE_OPENBLAS=ON but no BLAS found — benchmark builds without it")
+    endif()
+endif()

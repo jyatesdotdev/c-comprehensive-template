@@ -35,8 +35,8 @@ compliance, and **line coverage ≥ 80%** — new code without tests will fail t
 | `scripts/` | `new_module.sh` — scaffolds a complete new module |
 
 Modules: `core` (errors + allocators), `cli`, `systems`, `hpc`, `math` (owns `Vec3`),
-`networking`, `simulation`, `rendering_sw` (+ optional `rendering`). Every module
-depends on `core`.
+`ml` (layers/losses/optimizers, depends on `math`), `networking`, `simulation`,
+`rendering_sw` (+ optional `rendering`). Every module depends on `core`.
 
 ## Non-Negotiable Conventions
 

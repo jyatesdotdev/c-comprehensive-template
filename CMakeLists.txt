@@ -142,6 +142,14 @@ add_library(math STATIC
 target_include_directories(math PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(math PRIVATE core m)
 
+# ── ML Library ──────────────────────────────────────────────────
+add_library(ml STATIC
+    src/ml/nn.c
+    src/ml/dataset.c
+)
+target_include_directories(ml PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(ml PRIVATE core math m)
+
 # ── Testing Frameworks ──────────────────────────────────────────────────────
 if(BUILD_TESTS)
     enable_testing()

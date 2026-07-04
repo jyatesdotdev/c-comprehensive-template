@@ -68,6 +68,41 @@ ErrorCode matx_random_uniform(MatX *m, Rng *rng, float lo, float hi);
  */
 ErrorCode matx_add(const MatX *a, const MatX *b, MatX *out);
 
+/** @brief Element-wise out = a - b. Same contract as matx_add. */
+ErrorCode matx_sub(const MatX *a, const MatX *b, MatX *out);
+
+/** @brief Element-wise (Hadamard) product out = a ⊙ b. Same contract as matx_add. */
+ErrorCode matx_hadamard(const MatX *a, const MatX *b, MatX *out);
+
+/** @brief out = a * s. out must match a's dimensions (may alias a). */
+ErrorCode matx_scale(const MatX *a, float s, MatX *out);
+
+/** @brief Apply fn to every element: out[i] = fn(a[i]). May alias. */
+ErrorCode matx_map(const MatX *a, float (*fn)(float), MatX *out);
+
+/**
+ * @brief Broadcast-add a row vector to every row: out[r][c] = a[r][c] + row[0][c].
+ * @param a   Input (n x m).
+ * @param row Row vector (1 x m).
+ * @param out Pre-allocated result (n x m, may alias a).
+ */
+ErrorCode matx_add_row(const MatX *a, const MatX *row, MatX *out);
+
+/**
+ * @brief Sum each column: out[0][c] = sum over rows of a[r][c].
+ * @param a   Input (n x m).
+ * @param out Pre-allocated result (1 x m); must not alias a.
+ */
+ErrorCode matx_col_sums(const MatX *a, MatX *out);
+
+/**
+ * @brief Index of the maximum element in row r (first occurrence wins).
+ * @param a       Input matrix.
+ * @param r       Row index (must be < a->rows).
+ * @param out_col Receives the column index of the row maximum.
+ */
+ErrorCode matx_row_argmax(const MatX *a, size_t r, size_t *out_col);
+
 /**
  * @brief Matrix product out = a * b (naive triple loop).
  * @param a   Left operand (n x k).

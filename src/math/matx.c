@@ -72,12 +72,77 @@ ErrorCode matx_random_uniform(MatX *m, Rng *rng, float lo, float hi) {
     return ERR_OK;
 }
 
-ErrorCode matx_add(const MatX *a, const MatX *b, MatX *out) {
+/** Shared validation for element-wise binary operations. */
+static ErrorCode check_elementwise(const MatX *a, const MatX *b, const MatX *out) {
     if (!a || !b || !out || !a->data || !b->data || !out->data) return ERR_INVALID_ARG;
     if (a->rows != b->rows || a->cols != b->cols) return ERR_INVALID_ARG;
     if (out->rows != a->rows || out->cols != a->cols) return ERR_INVALID_ARG;
+    return ERR_OK;
+}
 
+ErrorCode matx_add(const MatX *a, const MatX *b, MatX *out) {
+    ErrorCode err = check_elementwise(a, b, out);
+    if (err) return err;
     for (size_t i = 0; i < a->rows * a->cols; i++) out->data[i] = a->data[i] + b->data[i];
+    return ERR_OK;
+}
+
+ErrorCode matx_sub(const MatX *a, const MatX *b, MatX *out) {
+    ErrorCode err = check_elementwise(a, b, out);
+    if (err) return err;
+    for (size_t i = 0; i < a->rows * a->cols; i++) out->data[i] = a->data[i] - b->data[i];
+    return ERR_OK;
+}
+
+ErrorCode matx_hadamard(const MatX *a, const MatX *b, MatX *out) {
+    ErrorCode err = check_elementwise(a, b, out);
+    if (err) return err;
+    for (size_t i = 0; i < a->rows * a->cols; i++) out->data[i] = a->data[i] * b->data[i];
+    return ERR_OK;
+}
+
+ErrorCode matx_scale(const MatX *a, float s, MatX *out) {
+    if (!a || !out || !a->data || !out->data) return ERR_INVALID_ARG;
+    if (out->rows != a->rows || out->cols != a->cols) return ERR_INVALID_ARG;
+    for (size_t i = 0; i < a->rows * a->cols; i++) out->data[i] = a->data[i] * s;
+    return ERR_OK;
+}
+
+ErrorCode matx_map(const MatX *a, float (*fn)(float), MatX *out) {
+    if (!a || !fn || !out || !a->data || !out->data) return ERR_INVALID_ARG;
+    if (out->rows != a->rows || out->cols != a->cols) return ERR_INVALID_ARG;
+    for (size_t i = 0; i < a->rows * a->cols; i++) out->data[i] = fn(a->data[i]);
+    return ERR_OK;
+}
+
+ErrorCode matx_add_row(const MatX *a, const MatX *row, MatX *out) {
+    if (!a || !row || !out || !a->data || !row->data || !out->data) return ERR_INVALID_ARG;
+    if (row->rows != 1 || row->cols != a->cols) return ERR_INVALID_ARG;
+    if (out->rows != a->rows || out->cols != a->cols) return ERR_INVALID_ARG;
+
+    for (size_t r = 0; r < a->rows; r++)
+        for (size_t c = 0; c < a->cols; c++)
+            out->data[r * a->cols + c] = a->data[r * a->cols + c] + row->data[c];
+    return ERR_OK;
+}
+
+ErrorCode matx_col_sums(const MatX *a, MatX *out) {
+    if (!a || !out || !a->data || !out->data) return ERR_INVALID_ARG;
+    if (out->rows != 1 || out->cols != a->cols || out->data == a->data) return ERR_INVALID_ARG;
+
+    for (size_t c = 0; c < a->cols; c++) out->data[c] = 0.0f;
+    for (size_t r = 0; r < a->rows; r++)
+        for (size_t c = 0; c < a->cols; c++) out->data[c] += a->data[r * a->cols + c];
+    return ERR_OK;
+}
+
+ErrorCode matx_row_argmax(const MatX *a, size_t r, size_t *out_col) {
+    if (!a || !a->data || r >= a->rows || !out_col) return ERR_INVALID_ARG;
+
+    size_t best = 0;
+    for (size_t c = 1; c < a->cols; c++)
+        if (matx_get(a, r, c) > matx_get(a, r, best)) best = c;
+    *out_col = best;
     return ERR_OK;
 }
 

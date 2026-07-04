@@ -52,3 +52,7 @@ add_test(NAME test_networking COMMAND test_networking)
 add_executable(test_math test_math.c)
 target_link_libraries(test_math PRIVATE core math m)
 add_test(NAME test_math COMMAND test_math)
+
+add_executable(test_ml test_ml.c)
+target_link_libraries(test_ml PRIVATE core ml math m)
+add_test(NAME test_ml COMMAND test_ml)

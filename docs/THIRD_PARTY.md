@@ -318,6 +318,30 @@ HMM_Vec3 pos = HMM_V3(1.0f, 2.0f, 3.0f);
 HMM_Mat4 proj = HMM_Perspective_RH_NO(HMM_ToRad(45.0f), aspect, 0.1f, 100.0f);
 ```
 
+### OpenBLAS / system BLAS (Optimized Linear Algebra)
+
+Production-grade matrix math — vectorized micro-kernels, cache packing, and
+threading. This template's `math/matx.h` implementations are educational;
+enable `USE_OPENBLAS` to benchmark them against a real BLAS
+(`examples/matmul_bench_demo.c`). Expect a 10-100x gap at 256x256 and up.
+
+**Install:**
+```bash
+sudo apt-get install libopenblas-dev   # Linux
+# macOS: nothing to install — the built-in Accelerate framework is used
+```
+
+**Enable:**
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DUSE_OPENBLAS=ON
+cmake --build build && ./build/examples/example_matmul_bench
+```
+
+Integration lives in `cmake/ThirdParty.cmake` via `find_package(BLAS)` —
+a system install is expected (building OpenBLAS from source via FetchContent
+is possible but slow). Guard call sites with `#ifdef HAVE_CBLAS`; on macOS
+define `ACCELERATE_NEW_LAPACK` before including `<Accelerate/Accelerate.h>`.
+
 ### Math Library Comparison
 
 | Library       | Style         | SIMD  | Size    | Best For              |
@@ -325,6 +349,7 @@ HMM_Mat4 proj = HMM_Perspective_RH_NO(HMM_ToRad(45.0f), aspect, 0.1f, 100.0f);
 | cglm          | Function-based| Yes   | Medium  | Full graphics apps    |
 | linmath.h     | Macro-based   | No    | Tiny    | Small projects        |
 | HandmadeMath  | Function-based| Partial| Small  | Handmade-style code   |
+| OpenBLAS      | CBLAS API     | Yes   | Large   | Large-matrix / ML work|
 
 ---
 

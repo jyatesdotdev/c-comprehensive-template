@@ -43,3 +43,13 @@ target_link_libraries(example_echo_client PRIVATE core networking)
 
 add_executable(example_math ../examples/math_demo.c)
 target_link_libraries(example_math PRIVATE core math m)
+
+add_executable(example_ml ../examples/ml_demo.c)
+target_link_libraries(example_ml PRIVATE core ml math m)
+
+add_executable(example_matmul_bench ../examples/matmul_bench_demo.c)
+target_link_libraries(example_matmul_bench PRIVATE core math m)
+if(USE_OPENBLAS AND BLAS_FOUND)
+    target_link_libraries(example_matmul_bench PRIVATE ${BLAS_LIBRARIES})
+    target_compile_definitions(example_matmul_bench PRIVATE HAVE_CBLAS)
+endif()
