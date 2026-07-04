@@ -247,11 +247,16 @@ ErrorCode loss_softmax_xent(const MatX *logits, const MatX *onehot, float *out_l
         const float *row = logits->data + r * classes;
 
         /* Stable softmax: subtract the row max before exponentiating. */
-        float max = row[0];
+        size_t max_c = 0;
         for (size_t c = 1; c < classes; c++)
-            if (row[c] > max) max = row[c];
-        float sum = 0.0f;
-        for (size_t c = 0; c < classes; c++) sum += expf(row[c] - max);
+            if (row[c] > row[max_c]) max_c = c;
+        float max = row[max_c];
+
+        /* Seed with the max element's expf(0) == 1 term, so sum is provably
+           >= 1 and logf below can never see zero. */
+        float sum = 1.0f;
+        for (size_t c = 0; c < classes; c++)
+            if (c != max_c) sum += expf(row[c] - max);
         float log_sum = logf(sum) + max;
 
         for (size_t c = 0; c < classes; c++) {
