@@ -86,9 +86,24 @@ void *leak_detect_calloc(size_t count, size_t size, const char *file, int line) 
 }
 
 void *leak_detect_realloc(void *ptr, size_t size, const char *file, int line) {
+    AllocRecord *rec = NULL;
+    if (ptr) {
+        for (AllocRecord *r = g_head; r; r = r->next) {
+            if (r->ptr == ptr) {
+                rec = r;
+                break;
+            }
+        }
+    }
     void *newptr = realloc(ptr, size);
     if (!newptr) return NULL; /* original pointer stays live and tracked */
-    if (ptr) record_remove(ptr);
+    if (rec) {
+        rec->ptr = newptr;
+        rec->size = size;
+        rec->file = file;
+        rec->line = line;
+        return newptr;
+    }
     record_add(newptr, size, file, line);
     return newptr;
 }

@@ -21,12 +21,13 @@
 /* ── Shared helpers (used by TCP and Unix domain sockets) ───────────────── */
 
 int nw_socket(int domain, int type, int protocol) {
+    int fd = -1;
 #ifdef SOCK_CLOEXEC
-    int fd = socket(domain, type | SOCK_CLOEXEC, protocol);
+    fd = socket(domain, type | SOCK_CLOEXEC, protocol);
     if (fd >= 0) return fd;
         /* Some kernels reject SOCK_CLOEXEC; fall through to fcntl. */
 #endif
-    int fd = socket(domain, type, protocol);
+    fd = socket(domain, type, protocol);
     if (fd >= 0) (void)fcntl(fd, F_SETFD, FD_CLOEXEC);
     return fd;
 }

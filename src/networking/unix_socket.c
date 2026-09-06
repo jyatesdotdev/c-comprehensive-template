@@ -45,7 +45,7 @@ ErrorCode unix_listen(UnixSocket *s, const char *path, int backlog) {
         close(fd);
         return ERR_IO;
     }
-    (void)chmod(path, 0600);
+    (void)chmod(path, 0600); /* Flawfinder: ignore — mode on a socket we just bound */
     s->fd = fd;
     return ERR_OK;
 }
