@@ -17,7 +17,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define EPS 1e-5f
 
@@ -123,9 +122,16 @@ static void test_mat4(void) {
     /* Degenerate frustum/box must not divide by zero — identity is returned. */
     Mat4 bad_p = mat4_perspective(scalar_deg_to_rad(60.0f), 0.0f, 0.1f, 100.0f);
     Mat4 ident = mat4_identity();
-    CHECK(memcmp(&bad_p, &ident, sizeof(Mat4)) == 0);
+    int  same_p = 1, same_o = 1;
+    for (int i = 0; i < 16; i++) {
+        if (bad_p.m[i] != ident.m[i]) same_p = 0;
+    }
+    CHECK(same_p);
     Mat4 bad_o = mat4_ortho(1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f);
-    CHECK(memcmp(&bad_o, &ident, sizeof(Mat4)) == 0);
+    for (int i = 0; i < 16; i++) {
+        if (bad_o.m[i] != ident.m[i]) same_o = 0;
+    }
+    CHECK(same_o);
 }
 
 static void test_quat(void) {
