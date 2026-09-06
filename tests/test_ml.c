@@ -5,6 +5,7 @@
  * The dense-layer backward pass is verified against numerical gradients
  * (finite differences) — the gold-standard check for backprop code.
  */
+#include "check.h"
 #include "ml/dataset.h"
 #include "ml/nn.h"
 
@@ -12,14 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 /* ── Losses ─────────────────────────────────────────────────────────────── */
 

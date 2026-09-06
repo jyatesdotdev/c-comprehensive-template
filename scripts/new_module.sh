@@ -3,7 +3,9 @@
 #
 # Usage: scripts/new_module.sh <module> [file]
 #   <module>  module name (lowercase_snake), e.g. "networking"
-#   <file>    first source/header name, defaults to <module>, e.g. "socket"
+#   <file>    source/header name, defaults to <module>, e.g. "socket"
+#             If include/<module>/ already exists, <file> is required and the
+#             script only adds that header/source to the existing target.
 #
 # Creates and registers everything a module needs:
 #   include/<module>/<file>.h    header with Doxygen comments + include guard
@@ -34,9 +36,17 @@ case $MODULE in
 esac
 echo "$MODULE$FILE" | grep -Eq '^[a-z0-9_]+$' || die "names must be lowercase_snake ([a-z0-9_])"
 
-[ -d "$ROOT/include/$MODULE" ] && die "include/$MODULE already exists"
-grep -q "add_library($MODULE " "$ROOT/CMakeLists.txt" && die "target '$MODULE' already in CMakeLists.txt"
-grep -q '# ── Testing Frameworks' "$ROOT/CMakeLists.txt" || die "insertion anchor '# ── Testing Frameworks' not found in CMakeLists.txt"
+EXISTING=0
+if [ -d "$ROOT/include/$MODULE" ]; then
+    EXISTING=1
+    [ $# -eq 2 ] || die "module '$MODULE' already exists; pass a new <file> to add a source"
+    [ -e "$ROOT/include/$MODULE/$FILE.h" ] && die "include/$MODULE/$FILE.h already exists"
+    [ -e "$ROOT/src/$MODULE/$FILE.c" ] && die "src/$MODULE/$FILE.c already exists"
+    grep -q "add_library($MODULE " "$ROOT/CMakeLists.txt" || die "target '$MODULE' not in CMakeLists.txt"
+else
+    grep -q "add_library($MODULE " "$ROOT/CMakeLists.txt" && die "target '$MODULE' already in CMakeLists.txt"
+    grep -q '# ── Testing Frameworks' "$ROOT/CMakeLists.txt" || die "insertion anchor '# ── Testing Frameworks' not found in CMakeLists.txt"
+fi
 
 MODULE_UPPER=$(echo "$MODULE" | tr '[:lower:]' '[:upper:]')
 FILE_UPPER=$(echo "$FILE" | tr '[:lower:]' '[:upper:]')
@@ -64,8 +74,22 @@ ErrorCode ${FILE}_greet(const char *name);
 #endif /* $GUARD */
 EOF
 
-# ── Source ──────────────────────────────────────────────────────────────────
 mkdir -p "$ROOT/src/$MODULE"
+if [ "$EXISTING" -eq 0 ]; then
+cat > "$ROOT/include/$MODULE/AGENTS.md" <<EOF
+# $MODULE public API
+
+Consumer contract for include/$MODULE. Replace this stub after implementing the module.
+EOF
+
+cat > "$ROOT/src/$MODULE/AGENTS.md" <<EOF
+# $MODULE implementation
+
+Invariants for src/$MODULE. Replace this stub after implementing the module.
+EOF
+fi
+
+# ── Source ──────────────────────────────────────────────────────────────────
 cat > "$ROOT/src/$MODULE/$FILE.c" <<EOF
 /**
  * @file $FILE.c
@@ -81,19 +105,37 @@ ErrorCode ${FILE}_greet(const char *name) {
 }
 EOF
 
+if [ "$EXISTING" -eq 1 ]; then
+awk -v module="$MODULE" -v file="$FILE" '
+    $0 ~ "^add_library\\(" module " STATIC" { adding = 1 }
+    adding && /^\)/ {
+        printf "    src/%s/%s.c\n", module, file
+        adding = 0
+    }
+    { print }
+' "$ROOT/CMakeLists.txt" > "$ROOT/CMakeLists.txt.tmp"
+mv "$ROOT/CMakeLists.txt.tmp" "$ROOT/CMakeLists.txt"
+echo "Added $FILE to existing module '$MODULE':"
+echo "  include/$MODULE/$FILE.h"
+echo "  src/$MODULE/$FILE.c"
+echo "  + src/$MODULE/$FILE.c registered in add_library($MODULE)"
+exit 0
+fi
+
 # ── Test ────────────────────────────────────────────────────────────────────
 cat > "$ROOT/tests/test_$MODULE.c" <<EOF
 /**
  * @file test_$MODULE.c
  * @brief Tests for the $MODULE module.
  */
+#include "check.h"
 #include "$MODULE/$FILE.h"
-#include <assert.h>
+
 #include <stdio.h>
 
 int main(void) {
-    assert(${FILE}_greet(NULL) == ERR_INVALID_ARG);
-    assert(${FILE}_greet("world") == ERR_OK);
+    CHECK(${FILE}_greet(NULL) == ERR_INVALID_ARG);
+    CHECK(${FILE}_greet("world") == ERR_OK);
     printf("All $MODULE tests passed.\n");
     return 0;
 }
@@ -124,7 +166,7 @@ awk -v module="$MODULE" -v file="$FILE" -v title="$TITLE" '
 /^# ── Testing Frameworks/ && !done {
     printf "# ── %s Library ──────────────────────────────────────────────────\n", title
     printf "add_library(%s STATIC\n    src/%s/%s.c\n)\n", module, module, file
-    printf "target_include_directories(%s PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)\n", module
+    printf "target_include_directories(%s PUBLIC\\n    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>\\n    $<INSTALL_INTERFACE:include>\\n)\\n", module
     printf "target_link_libraries(%s PRIVATE core)\n\n", module
     done = 1
 }
@@ -159,3 +201,4 @@ echo "  1. Implement the module (replace the ${FILE}_greet placeholder)"
 echo "  2. cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON && cmake --build build"
 echo "  3. ctest --test-dir build --output-on-failure"
 echo "  4. Update the tables in docs/ARCHITECTURE.md (deps graph, test/example targets)"
+echo "  5. Add the new library name to _install_targets in cmake/Install.cmake"

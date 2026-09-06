@@ -5,6 +5,7 @@
 #include "ml/dataset.h"
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,9 +52,24 @@ ErrorCode dataset_load_csv(const char *path, int has_header, MatX *out) {
             break;
         }
 
+        if (cols > SIZE_MAX - count) {
+            err = ERR_OVERFLOW;
+            break;
+        }
         if (count + cols > cap) {
-            size_t new_cap = cap == 0 ? 256 : cap * 2;
-            while (new_cap < count + cols) new_cap *= 2;
+            size_t new_cap = cap == 0 ? 256 : cap;
+            while (new_cap < count + cols) {
+                if (new_cap > SIZE_MAX / 2) {
+                    err = ERR_OVERFLOW;
+                    break;
+                }
+                new_cap *= 2;
+            }
+            if (err) break;
+            if (new_cap > SIZE_MAX / sizeof(float)) {
+                err = ERR_OVERFLOW;
+                break;
+            }
             float *tmp = realloc(vals, new_cap * sizeof(float));
             if (!tmp) {
                 err = ERR_NOMEM;
@@ -117,7 +133,7 @@ ErrorCode dataset_shuffle(MatX *x, MatX *y, Rng *rng) {
 
 ErrorCode dataset_batch(const MatX *src, size_t start, size_t count, MatX *dst) {
     if (!src || !src->data || !dst || !dst->data || count == 0) return ERR_INVALID_ARG;
-    if (start + count > src->rows) return ERR_INVALID_ARG;
+    if (count > src->rows || start > src->rows - count) return ERR_INVALID_ARG;
     if (dst->rows != count || dst->cols != src->cols) return ERR_INVALID_ARG;
 
     memcpy(dst->data, src->data + start * src->cols, count * src->cols * sizeof(float));

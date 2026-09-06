@@ -11,7 +11,8 @@ c_comprehensive_template/
 ├── .clang-tidy                 clang-tidy rules
 ├── .cppcheck-suppressions      cppcheck suppression list
 ├── .github/workflows/
-│   └── security.yml            CI security scanning workflow
+│   ├── ci.yml                  Format, build, test, coverage ≥80%, ASan/UBSan
+│   └── security.yml            clang-tidy, cppcheck, valgrind, flawfinder, Trivy
 ├── cmake/
 │   ├── Platform.cmake          OS & SIMD detection (Linux/macOS/Windows, SSE/AVX/NEON)
 │   ├── Security.cmake          Static analysis & security tool targets
@@ -35,7 +36,7 @@ c_comprehensive_template/
 ├── tests/                      Unit & performance tests
 ├── examples/                   Working demo programs
 ├── docs/                       Documentation & Doxygen build
-└── third_party/                Vendored headers (e.g. stb)
+└── third_party/                Optional vendored headers (stb if present)
 ```
 
 ## Module Dependency Graph
@@ -99,8 +100,8 @@ Key relationships:
 - `systems` depends on `core` (file I/O, process wrappers)
 - `hpc` depends on `core` + `Threads::Threads` (SIMD, thread pool, parallel_for, SPSC/MPMC queues)
 - `math` depends on `core` + `m` (owns the Vec3 type; fixed-size linalg + dynamic MatX)
-- `ml` depends on `core` + `math` + `m` (dense layers with manual backprop, dataset utils)
-- `simulation` depends on `core` + `math` + `m` (uses math's Vec3)
+- `ml` depends on `math` (PUBLIC, headers include `math/matx.h`) plus `core` + `m`
+- `simulation` depends on `math` (PUBLIC, because `physics.h` includes `math/vec.h`) plus `core` + `m`
 - `rendering_sw` depends on `core` (software renderer, always built)
 - `rendering` depends on `core` (optional GL/Vulkan, requires `ENABLE_RENDERING=ON`)
 - `networking` depends on `core` (TCP/UDP/Unix domain sockets + poll event loop, POSIX only)
@@ -130,6 +131,8 @@ The build uses CMake 3.20+ with C17. The root `CMakeLists.txt` orchestrates ever
 | `BUILD_DOCS`         | OFF     | Build Doxygen HTML docs                         |
 | `ENABLE_SANITIZERS`  | OFF     | Add `-fsanitize=address,undefined`              |
 | `ENABLE_RENDERING`   | OFF     | Build GL/Vulkan rendering module                |
+| `ENABLE_NETWORKING`  | ON*     | POSIX sockets module (`OFF` by default on Windows) |
+| `ENABLE_HPC`         | ON*     | pthreads HPC (`OFF` by default on Windows)         |
 | `ENABLE_CLANG_TIDY`  | OFF     | Run clang-tidy during compilation               |
 | `ENABLE_CPPCHECK`    | OFF     | Enable cppcheck target                          |
 | `USE_UNITY`          | ON      | Fetch Unity test framework                      |
@@ -172,6 +175,8 @@ Tests are organized by framework:
 | `test_str_path`       | minimal     | core, containers, systems | String views, path utils |
 | `test_queue`          | minimal     | core, hpc          | SPSC/MPMC queues, threads   |
 | `test_event_loop`     | minimal     | core, networking   | poll loop, loop-driven echo |
+| `test_file_io`        | minimal     | core, systems      | file read/write, empty, mmap |
+| `test_rendering`      | minimal     | core, rendering_sw | software framebuffer         |
 | `test_memory_unity`   | Unity       | core               | Memory (Unity framework)    |
 | `test_cli`            | Unity       | cli, core          | CLI argument parsing        |
 | `test_memory_cmocka`  | cmocka      | core               | Memory (cmocka framework)   |

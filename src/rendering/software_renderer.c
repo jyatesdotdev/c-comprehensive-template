@@ -3,15 +3,19 @@
  * @brief Software framebuffer renderer with basic 2D drawing primitives.
  */
 #include "rendering/software_renderer.h"
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /* ── Lifecycle ─────────────────────────────────────────────────────────── */
 
 ErrorCode fb_create(Framebuffer *fb, int width, int height) {
     if (!fb || width <= 0 || height <= 0) return ERR_INVALID_ARG;
-    fb->pixels = calloc((size_t)width * (size_t)height, sizeof(uint32_t));
+    size_t w = (size_t)width, h = (size_t)height;
+    if (h > SIZE_MAX / w) return ERR_OVERFLOW;
+    if (w * h > SIZE_MAX / sizeof(uint32_t)) return ERR_OVERFLOW;
+    fb->pixels = calloc(w * h, sizeof(uint32_t));
     if (!fb->pixels) return ERR_NOMEM;
     fb->width = width;
     fb->height = height;
@@ -36,7 +40,7 @@ void fb_clear(Framebuffer *fb, uint32_t color) {
 void fb_set_pixel(Framebuffer *fb, int x, int y, uint32_t color) {
     if (!fb || !fb->pixels) return;
     if (x < 0 || x >= fb->width || y < 0 || y >= fb->height) return;
-    fb->pixels[y * fb->width + x] = color;
+    fb->pixels[(size_t)y * (size_t)fb->width + (size_t)x] = color;
 }
 
 /* Bresenham's line algorithm */

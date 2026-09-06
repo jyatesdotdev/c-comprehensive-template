@@ -1,6 +1,9 @@
 # Tests CMakeLists.txt
 # Supports three test backends: minimal (built-in), Unity, cmocka.
 
+# tests/check.h lives next to the test sources.
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # ── Minimal tests (always built) ───────────────────────────────────────────
 add_executable(test_arena test_arena.c)
 target_link_libraries(test_arena PRIVATE core)
@@ -14,9 +17,11 @@ add_executable(test_leak_detect test_leak_detect.c)
 target_link_libraries(test_leak_detect PRIVATE core)
 add_test(NAME test_leak_detect COMMAND test_leak_detect)
 
-add_executable(test_hpc test_hpc.c)
-target_link_libraries(test_hpc PRIVATE core hpc m)
-add_test(NAME test_hpc COMMAND test_hpc)
+if(ENABLE_HPC)
+    add_executable(test_hpc test_hpc.c)
+    target_link_libraries(test_hpc PRIVATE core hpc m)
+    add_test(NAME test_hpc COMMAND test_hpc)
+endif()
 
 add_executable(test_simulation test_simulation.c)
 target_link_libraries(test_simulation PRIVATE core simulation m)
@@ -45,9 +50,11 @@ add_executable(test_perf_memory test_perf_memory.c)
 target_link_libraries(test_perf_memory PRIVATE core)
 add_test(NAME test_perf_memory COMMAND test_perf_memory)
 
-add_executable(test_networking test_networking.c)
-target_link_libraries(test_networking PRIVATE core networking)
-add_test(NAME test_networking COMMAND test_networking)
+if(ENABLE_NETWORKING)
+    add_executable(test_networking test_networking.c)
+    target_link_libraries(test_networking PRIVATE core networking)
+    add_test(NAME test_networking COMMAND test_networking)
+endif()
 
 add_executable(test_math test_math.c)
 target_link_libraries(test_math PRIVATE core math m)
@@ -65,10 +72,22 @@ add_executable(test_str_path test_str_path.c)
 target_link_libraries(test_str_path PRIVATE core containers systems)
 add_test(NAME test_str_path COMMAND test_str_path)
 
-add_executable(test_queue test_queue.c)
-target_link_libraries(test_queue PRIVATE core hpc)
-add_test(NAME test_queue COMMAND test_queue)
+if(ENABLE_HPC)
+    add_executable(test_queue test_queue.c)
+    target_link_libraries(test_queue PRIVATE core hpc)
+    add_test(NAME test_queue COMMAND test_queue)
+endif()
 
-add_executable(test_event_loop test_event_loop.c)
-target_link_libraries(test_event_loop PRIVATE core networking)
-add_test(NAME test_event_loop COMMAND test_event_loop)
+if(ENABLE_NETWORKING)
+    add_executable(test_event_loop test_event_loop.c)
+    target_link_libraries(test_event_loop PRIVATE core networking)
+    add_test(NAME test_event_loop COMMAND test_event_loop)
+endif()
+
+add_executable(test_file_io test_file_io.c)
+target_link_libraries(test_file_io PRIVATE core systems)
+add_test(NAME test_file_io COMMAND test_file_io)
+
+add_executable(test_rendering test_rendering.c)
+target_link_libraries(test_rendering PRIVATE core rendering_sw)
+add_test(NAME test_rendering COMMAND test_rendering)

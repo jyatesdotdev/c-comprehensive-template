@@ -15,7 +15,7 @@ jobs:
     name: clang-tidy static analysis
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake clang-tidy
       - name: Configure
@@ -38,7 +38,7 @@ jobs:
     name: cppcheck analysis
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake cppcheck
       - name: Configure
@@ -48,7 +48,7 @@ jobs:
       - name: Upload report
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cppcheck-report
           path: build/cppcheck-report.xml
@@ -57,7 +57,7 @@ jobs:
     name: Valgrind memcheck
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake valgrind
       - name: Configure & build
@@ -71,7 +71,7 @@ jobs:
     name: flawfinder audit
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y cmake
@@ -103,18 +103,20 @@ jobs:
     name: Trivy Vulnerability Scanner
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@64d10c13136e1c5bce3e5fbde8d4906eeaafc885 # v3.30.6
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'

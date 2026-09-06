@@ -11,8 +11,10 @@ This guide covers how to add new modules, examples, tests, and third-party depen
 Modules follow the convention: headers in `include/<module>/`, sources in `src/<module>/`.
 
 > **Shortcut:** `scripts/new_module.sh <module> [file]` scaffolds all four files below
-> *and* registers the CMake targets in one step. The manual walkthrough that follows
-> documents exactly what the script does.
+> *and* registers the CMake targets in one step. If `include/<module>/` already exists,
+> pass a new `<file>` to add only that header/source to the existing `add_library`
+> (tests/examples are not rewritten). The manual walkthrough that follows documents
+> exactly what a brand-new module scaffold does.
 
 ### 1. Create the header
 
@@ -62,7 +64,10 @@ Add a new section in the root `CMakeLists.txt`, following the existing pattern:
 add_library(networking STATIC
     src/networking/socket.c
 )
-target_include_directories(networking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(networking PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(networking PRIVATE core)
 ```
 

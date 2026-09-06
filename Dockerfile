@@ -27,7 +27,9 @@ LABEL maintainer="maintainer@example.com" \
       version="1.0.0" \
       description="C comprehensive template — example binaries"
 
-COPY --from=builder /build/out/examples/example_* /usr/local/bin/
+# Only ship the CLI demo — echo/event-loop servers bind sockets and should not
+# be the default image contents.
+COPY --from=builder /build/out/examples/example_cli /usr/local/bin/
 
 USER nonroot:nonroot
 

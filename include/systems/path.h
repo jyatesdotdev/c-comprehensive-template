@@ -29,6 +29,7 @@ ErrorCode path_join(const char *a, const char *b, char *out, size_t cap);
  *        resolve "name/.." pairs, drop trailing slashes (except root).
  *        Leading ".." components are preserved (nothing to pop).
  * @param path Path to rewrite (result is never longer than the input).
+ * @return ERR_OK, ERR_INVALID_ARG, or ERR_OVERFLOW if more than 64 components.
  */
 ErrorCode path_normalize(char *path);
 
@@ -58,7 +59,8 @@ bool path_is_dir(const char *path);
  *        Succeeds if the directory already exists.
  * @param path Directory path to create.
  * @param mode Permission bits for created directories (e.g. 0755).
- * @return ERR_OK, ERR_INVALID_ARG, or ERR_IO on failure.
+ * @return ERR_OK, ERR_INVALID_ARG, ERR_OVERFLOW if path exceeds 1023 bytes,
+ *         or ERR_IO on failure.
  */
 ErrorCode path_mkdirs(const char *path, unsigned int mode);
 

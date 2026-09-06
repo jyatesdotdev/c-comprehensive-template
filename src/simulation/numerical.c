@@ -16,10 +16,15 @@ double numerical_integrate_simpson(double (*f)(double), double a, double b, int 
 }
 
 double numerical_bisect(double (*f)(double), double a, double b, double tol, int *iters) {
-    int    count = 0;
-    double mid;
-    while ((b - a) > tol) {
-        mid = (a + b) / 2.0;
+    int count = 0;
+    if (!f || !(tol > 0.0)) {
+        if (iters) *iters = 0;
+        return a;
+    }
+    /* 80 iterations is enough to exhaust IEEE-754 double between any finite bounds. */
+    const int max_iter = 80;
+    while ((b - a) > tol && count < max_iter) {
+        double mid = (a + b) / 2.0;
         if (f(mid) * f(a) < 0.0) b = mid;
         else a = mid;
         count++;
@@ -30,6 +35,10 @@ double numerical_bisect(double (*f)(double), double a, double b, double tol, int
 
 double numerical_newton(double (*f)(double), double (*df)(double), double x0, double tol,
                         int max_iter, int *iters) {
+    if (!f || !df || !(tol > 0.0) || max_iter <= 0) {
+        if (iters) *iters = 0;
+        return x0;
+    }
     double x = x0;
     int    i;
     for (i = 0; i < max_iter; i++) {

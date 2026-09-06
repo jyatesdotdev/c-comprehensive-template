@@ -6,6 +6,7 @@
 #include "socket_internal.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
@@ -18,6 +19,17 @@
 #endif
 
 /* ── Shared helpers (used by TCP and Unix domain sockets) ───────────────── */
+
+int nw_socket(int domain, int type, int protocol) {
+#ifdef SOCK_CLOEXEC
+    int fd = socket(domain, type | SOCK_CLOEXEC, protocol);
+    if (fd >= 0) return fd;
+        /* Some kernels reject SOCK_CLOEXEC; fall through to fcntl. */
+#endif
+    int fd = socket(domain, type, protocol);
+    if (fd >= 0) (void)fcntl(fd, F_SETFD, FD_CLOEXEC);
+    return fd;
+}
 
 void nw_disable_sigpipe(int fd) {
 #ifdef SO_NOSIGPIPE
@@ -76,7 +88,7 @@ ErrorCode tcp_connect(TcpSocket *s, const char *host, uint16_t port) {
 
     ErrorCode err = ERR_IO;
     for (const struct addrinfo *ai = res; ai; ai = ai->ai_next) {
-        int fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+        int fd = nw_socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
         if (fd < 0) continue;
         if (connect(fd, ai->ai_addr, ai->ai_addrlen) == 0) {
             nw_disable_sigpipe(fd);
@@ -90,29 +102,44 @@ ErrorCode tcp_connect(TcpSocket *s, const char *host, uint16_t port) {
     return err;
 }
 
-ErrorCode tcp_listen(TcpSocket *s, uint16_t port, int backlog) {
-    if (!s || backlog <= 0) return ERR_INVALID_ARG;
+ErrorCode tcp_listen_host(TcpSocket *s, const char *host, uint16_t port, int backlog) {
+    if (!s || !host || !host[0] || backlog <= 0) return ERR_INVALID_ARG;
     s->fd = -1;
 
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0) return ERR_IO;
+    char portstr[6];
+    snprintf(portstr, sizeof(portstr), "%u", (unsigned)port);
 
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = (strchr(host, ':') != NULL) ? AF_INET6 : AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+
+    const char *node = (strcmp(host, "*") == 0 || strcmp(host, "0.0.0.0") == 0) ? NULL : host;
+    if (!node) hints.ai_family = AF_INET; /* "*" stays IPv4 so 127.0.0.1 tests keep working */
+    struct addrinfo *res = NULL;
+    if (getaddrinfo(node, portstr, &hints, &res) != 0 || !res) return ERR_NOT_FOUND;
+
+    int fd = nw_socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if (fd < 0) {
+        freeaddrinfo(res);
+        return ERR_IO;
+    }
     int one = 1;
     (void)setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
     nw_disable_sigpipe(fd);
-
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(port);
-
-    if (bind(fd, (const struct sockaddr *)&addr, sizeof(addr)) != 0 || listen(fd, backlog) != 0) {
+    if (bind(fd, res->ai_addr, res->ai_addrlen) != 0 || listen(fd, backlog) != 0) {
         close(fd);
+        freeaddrinfo(res);
         return ERR_IO;
     }
+    freeaddrinfo(res);
     s->fd = fd;
     return ERR_OK;
+}
+
+ErrorCode tcp_listen(TcpSocket *s, uint16_t port, int backlog) {
+    return tcp_listen_host(s, "*", port, backlog);
 }
 
 ErrorCode tcp_accept(const TcpSocket *listener, TcpSocket *out_client) {

@@ -61,9 +61,9 @@ int main(int argc, char **argv) {
     if (argc > 1) port = (uint16_t)strtoul(argv[1], NULL, 10);
 
     TcpSocket listener;
-    ErrorCode err = tcp_listen(&listener, port, 16);
+    ErrorCode err = tcp_listen_host(&listener, "127.0.0.1", port, 16);
     if (err) {
-        fprintf(stderr, "tcp_listen failed: %s\n", error_str(err));
+        fprintf(stderr, "tcp_listen_host failed: %s\n", error_str(err));
         return 1;
     }
     uint16_t bound = 0;
@@ -82,7 +82,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("Event-loop echo server on port %u (single thread). Ctrl-C to stop.\n", (unsigned)bound);
+    printf("Event-loop echo server on 127.0.0.1:%u (single thread). Ctrl-C to stop.\n",
+           (unsigned)bound);
     err = event_loop_run(loop);
 
     event_loop_destroy(loop);

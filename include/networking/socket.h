@@ -30,13 +30,27 @@ typedef struct TcpSocket {
 ErrorCode tcp_connect(TcpSocket *s, const char *host, uint16_t port);
 
 /**
- * @brief Open a listening TCP socket on all interfaces.
+ * @brief Open a listening TCP socket on all interfaces (IPv4 INADDR_ANY).
+ *
+ * Equivalent to tcp_listen_host(s, "*", port, backlog). Prefer
+ * tcp_listen_host(..., "127.0.0.1", ...) for demos and tests.
  * @param s       Socket to initialize as a listener.
  * @param port    Port to bind, or 0 for an ephemeral port (see tcp_local_port).
  * @param backlog Maximum pending-connection queue length (must be > 0).
  * @return ERR_OK on success, ERR_INVALID_ARG for bad inputs, ERR_IO otherwise.
  */
 ErrorCode tcp_listen(TcpSocket *s, uint16_t port, int backlog);
+
+/**
+ * @brief Open a listening TCP socket bound to host (IPv4).
+ * @param s       Socket to initialize as a listener.
+ * @param host    IPv4 address, hostname, "*" / "0.0.0.0" for all IPv4 interfaces,
+ *                or an IPv6 literal (contains ':') such as "::1".
+ * @param port    Port to bind, or 0 for an ephemeral port.
+ * @param backlog Maximum pending-connection queue length (must be > 0).
+ * @return ERR_OK, ERR_INVALID_ARG, ERR_NOT_FOUND if host does not resolve, or ERR_IO.
+ */
+ErrorCode tcp_listen_host(TcpSocket *s, const char *host, uint16_t port, int backlog);
 
 /**
  * @brief Accept one pending connection on a listening socket (blocking).

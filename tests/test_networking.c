@@ -8,6 +8,7 @@
  * which compiles assert() bodies away entirely — any test logic (or loop
  * progress) inside an assert would silently disappear.
  */
+#include "check.h"
 #include "networking/socket.h"
 #include "networking/udp.h"
 #include "networking/unix_socket.h"
@@ -16,14 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 #define UNIX_TEST_PATH "test_networking_unix.sock"
 
@@ -38,6 +31,14 @@ static void test_tcp_invalid_args(void) {
     CHECK(tcp_connect(&s, "127.0.0.1", 0) == ERR_INVALID_ARG);
     CHECK(tcp_listen(NULL, 0, 4) == ERR_INVALID_ARG);
     CHECK(tcp_listen(&s, 0, 0) == ERR_INVALID_ARG);
+    CHECK(tcp_listen_host(NULL, "127.0.0.1", 0, 4) == ERR_INVALID_ARG);
+    CHECK(tcp_listen_host(&s, NULL, 0, 4) == ERR_INVALID_ARG);
+    CHECK(tcp_listen_host(&s, "", 0, 4) == ERR_INVALID_ARG);
+    {
+        ErrorCode v6 = tcp_listen_host(&s, "::1", 0, 4);
+        CHECK(v6 == ERR_OK || v6 == ERR_NOT_FOUND || v6 == ERR_IO);
+        if (v6 == ERR_OK) tcp_close(&s);
+    }
     s.fd = -1;
     CHECK(tcp_accept(&s, &s) == ERR_INVALID_ARG);
     CHECK(tcp_local_port(&s, &port) == ERR_INVALID_ARG);
@@ -49,7 +50,7 @@ static void test_tcp_invalid_args(void) {
 
 static void test_tcp_loopback_roundtrip(void) {
     TcpSocket server, client, conn;
-    CHECK(tcp_listen(&server, 0, 4) == ERR_OK);
+    CHECK(tcp_listen_host(&server, "127.0.0.1", 0, 4) == ERR_OK);
 
     uint16_t port = 0;
     CHECK(tcp_local_port(&server, &port) == ERR_OK);
@@ -95,6 +96,8 @@ static void test_udp_invalid_args(void) {
     char      buf[8];
 
     CHECK(udp_open(NULL, 0) == ERR_INVALID_ARG);
+    CHECK(udp_open_host(NULL, "127.0.0.1", 0) == ERR_INVALID_ARG);
+    CHECK(udp_open_host(&s, NULL, 0) == ERR_INVALID_ARG);
     CHECK(udp_local_port(&s, &port) == ERR_INVALID_ARG);
     CHECK(udp_send_to(&s, "127.0.0.1", 80, buf, 4) == ERR_INVALID_ARG);
     CHECK(udp_recv_from(&s, buf, sizeof(buf), &n, NULL) == ERR_INVALID_ARG);
@@ -104,8 +107,8 @@ static void test_udp_invalid_args(void) {
 
 static void test_udp_loopback_roundtrip(void) {
     UdpSocket server, client;
-    CHECK(udp_open(&server, 0) == ERR_OK);
-    CHECK(udp_open(&client, 0) == ERR_OK);
+    CHECK(udp_open_host(&server, "127.0.0.1", 0) == ERR_OK);
+    CHECK(udp_open_host(&client, "127.0.0.1", 0) == ERR_OK);
 
     uint16_t server_port = 0;
     CHECK(udp_local_port(&server, &server_port) == ERR_OK);

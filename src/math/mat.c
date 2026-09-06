@@ -160,6 +160,8 @@ Mat4 mat4_rotate_axis(Vec3 axis, float angle) {
 }
 
 Mat4 mat4_perspective(float fovy_rad, float aspect, float near_z, float far_z) {
+    if (!(aspect > 0.0f) || !(near_z > 0.0f) || !(far_z > near_z) || !(fovy_rad > 0.0f))
+        return mat4_identity();
     float f = 1.0f / tanf(fovy_rad * 0.5f);
     Mat4  out = {{0}};
     M(out, 0, 0) = f / aspect;
@@ -171,6 +173,7 @@ Mat4 mat4_perspective(float fovy_rad, float aspect, float near_z, float far_z) {
 }
 
 Mat4 mat4_ortho(float left, float right, float bottom, float top, float near_z, float far_z) {
+    if (right == left || top == bottom || far_z == near_z) return mat4_identity();
     Mat4 out = mat4_identity();
     M(out, 0, 0) = 2.0f / (right - left);
     M(out, 1, 1) = 2.0f / (top - bottom);

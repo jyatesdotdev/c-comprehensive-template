@@ -16,7 +16,7 @@
 
 /** @brief Log severity, in increasing order. */
 typedef enum {
-    LOG_LEVEL_DEBUG = 0, /**< Verbose diagnostics, compiled out of hot paths. */
+    LOG_LEVEL_DEBUG = 0, /**< Verbose diagnostics; dropped at runtime below log_set_level. */
     LOG_LEVEL_INFO,      /**< Normal operational messages. */
     LOG_LEVEL_WARN,      /**< Something unexpected but recoverable. */
     LOG_LEVEL_ERROR,     /**< Operation failed. */

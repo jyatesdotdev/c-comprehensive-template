@@ -6,21 +6,18 @@ fails the gate.
 
 ## The CHECK convention (non-negotiable)
 
+Include `tests/check.h` (on the tests include path) instead of copying the
+macro:
+
 ```c
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
+#include "check.h"
 ```
 
 **Never use `assert()` in tests.** Release builds define `NDEBUG`, which
 deletes assert bodies entirely — a function call inside `assert` silently
 never runs, and a loop waiting on its side effect hangs forever (this
 actually hung CI once). CHECK always executes. Function calls inside
-`CHECK(...)` are therefore fine.
+`CHECK(...)` are therefore fine. `CHECK_NEAR(a, b, tol)` is for floats.
 
 ## What a good module test covers
 

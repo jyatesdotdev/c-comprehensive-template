@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 
@@ -28,15 +29,23 @@ ErrorCode unix_listen(UnixSocket *s, const char *path, int backlog) {
     ErrorCode          err = make_addr(&addr, path);
     if (err) return err;
 
-    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    int fd = nw_socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) return ERR_IO;
     nw_disable_sigpipe(fd);
 
-    (void)unlink(path); /* remove stale socket file from a previous run */
+    struct stat st;
+    if (lstat(path, &st) == 0) {
+        if (!S_ISSOCK(st.st_mode)) {
+            close(fd);
+            return ERR_IO; /* refuse to unlink a non-socket */
+        }
+        (void)unlink(path);
+    }
     if (bind(fd, (const struct sockaddr *)&addr, sizeof(addr)) != 0 || listen(fd, backlog) != 0) {
         close(fd);
         return ERR_IO;
     }
+    (void)chmod(path, 0600);
     s->fd = fd;
     return ERR_OK;
 }
@@ -49,7 +58,7 @@ ErrorCode unix_connect(UnixSocket *s, const char *path) {
     ErrorCode          err = make_addr(&addr, path);
     if (err) return err;
 
-    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    int fd = nw_socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) return ERR_IO;
     nw_disable_sigpipe(fd);
 

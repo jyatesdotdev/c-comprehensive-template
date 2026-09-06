@@ -18,7 +18,10 @@ typedef struct UnixSocket {
 } UnixSocket;
 
 /**
- * @brief Listen on a Unix domain socket path. Removes a stale socket file first.
+ * @brief Listen on a Unix domain socket path.
+ *
+ * Unlinks `path` only if it already names a socket (refuses to delete other
+ * file types). The socket file is chmod 0600 after bind.
  * @param s       Socket to initialize as a listener.
  * @param path    Filesystem path to bind (max ~100 chars, platform-dependent).
  * @param backlog Maximum pending-connection queue length (must be > 0).

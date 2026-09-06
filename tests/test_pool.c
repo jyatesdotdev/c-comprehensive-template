@@ -2,19 +2,12 @@
  * @file test_pool.c
  * @brief Tests for the fixed-size pool allocator.
  */
+#include "check.h"
 #include "memory/pool.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 int main(void) {
     Pool p;
@@ -38,7 +31,9 @@ int main(void) {
     CHECK(d != NULL && e != NULL);
     CHECK(pool_alloc(&p) == NULL);
 
-    pool_free(&p, NULL); /* safe no-op */
+    pool_free(&p, NULL);                 /* safe no-op */
+    pool_free(&p, (void *)(uintptr_t)1); /* not in this pool — ignored */
+    CHECK(pool_alloc(&p) == NULL);       /* still exhausted */
     pool_destroy(&p);
     pool_destroy(&p); /* double-destroy is safe */
     pool_destroy(NULL);

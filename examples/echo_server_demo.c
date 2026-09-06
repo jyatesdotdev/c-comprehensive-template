@@ -34,9 +34,9 @@ int main(int argc, char **argv) {
     if (argc > 1) port = (uint16_t)strtoul(argv[1], NULL, 10);
 
     TcpSocket listener;
-    ErrorCode err = tcp_listen(&listener, port, BACKLOG);
+    ErrorCode err = tcp_listen_host(&listener, "127.0.0.1", port, BACKLOG);
     if (err) {
-        fprintf(stderr, "tcp_listen failed: %s\n", error_str(err));
+        fprintf(stderr, "tcp_listen_host failed: %s\n", error_str(err));
         return 1;
     }
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("Echo server listening on port %u (%d workers). Ctrl-C to stop.\n", (unsigned)bound,
+    printf("Echo server listening on 127.0.0.1:%u (%d workers). Ctrl-C to stop.\n", (unsigned)bound,
            NUM_WORKERS);
     printf("Try: ./example_echo_client 127.0.0.1 %u \"hello\"\n", (unsigned)bound);
 

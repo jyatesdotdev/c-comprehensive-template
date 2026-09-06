@@ -28,12 +28,23 @@ typedef struct UdpEndpoint {
 } UdpEndpoint;
 
 /**
- * @brief Open a UDP socket bound to all interfaces.
+ * @brief Open a UDP socket bound to all interfaces (IPv4 INADDR_ANY).
+ *
+ * Equivalent to udp_open_host(s, "*", port).
  * @param s    Socket to initialize.
  * @param port Port to bind, or 0 for an ephemeral port (see udp_local_port).
  * @return ERR_OK on success, ERR_INVALID_ARG for bad inputs, ERR_IO otherwise.
  */
 ErrorCode udp_open(UdpSocket *s, uint16_t port);
+
+/**
+ * @brief Open a UDP socket bound to host (IPv4).
+ * @param s    Socket to initialize.
+ * @param host IPv4 address, hostname, or "*" / "0.0.0.0" for all interfaces.
+ * @param port Port to bind, or 0 for an ephemeral port.
+ * @return ERR_OK, ERR_INVALID_ARG, ERR_NOT_FOUND if host does not resolve, or ERR_IO.
+ */
+ErrorCode udp_open_host(UdpSocket *s, const char *host, uint16_t port);
 
 /**
  * @brief Get the locally bound port (useful after udp_open with port 0).

@@ -26,7 +26,7 @@ typedef struct {
  * @param fb     Framebuffer to initialize.
  * @param width  Width in pixels.
  * @param height Height in pixels.
- * @return ERR_OK on success, ERR_NOMEM on allocation failure.
+ * @return ERR_OK on success, ERR_INVALID_ARG, ERR_OVERFLOW, or ERR_NOMEM.
  */
 ErrorCode fb_create(Framebuffer *fb, int width, int height);
 

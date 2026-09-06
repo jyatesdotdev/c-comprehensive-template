@@ -3,6 +3,7 @@
  * @brief UDP datagram sockets (POSIX implementation, IPv4).
  */
 #include "networking/udp.h"
+#include "socket_internal.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -13,25 +14,41 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-ErrorCode udp_open(UdpSocket *s, uint16_t port) {
-    if (!s) return ERR_INVALID_ARG;
+ErrorCode udp_open_host(UdpSocket *s, const char *host, uint16_t port) {
+    if (!s || !host || !host[0]) return ERR_INVALID_ARG;
     s->fd = -1;
 
-    int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (fd < 0) return ERR_IO;
+    char portstr[6];
+    snprintf(portstr, sizeof(portstr), "%u", (unsigned)port);
 
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(port);
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = (strchr(host, ':') != NULL) ? AF_INET6 : AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_PASSIVE;
 
-    if (bind(fd, (const struct sockaddr *)&addr, sizeof(addr)) != 0) {
-        close(fd);
+    const char *node = (strcmp(host, "*") == 0 || strcmp(host, "0.0.0.0") == 0) ? NULL : host;
+    if (!node) hints.ai_family = AF_INET;
+    struct addrinfo *res = NULL;
+    if (getaddrinfo(node, portstr, &hints, &res) != 0 || !res) return ERR_NOT_FOUND;
+
+    int fd = nw_socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if (fd < 0) {
+        freeaddrinfo(res);
         return ERR_IO;
     }
+    if (bind(fd, res->ai_addr, res->ai_addrlen) != 0) {
+        close(fd);
+        freeaddrinfo(res);
+        return ERR_IO;
+    }
+    freeaddrinfo(res);
     s->fd = fd;
     return ERR_OK;
+}
+
+ErrorCode udp_open(UdpSocket *s, uint16_t port) {
+    return udp_open_host(s, "*", port);
 }
 
 ErrorCode udp_local_port(const UdpSocket *s, uint16_t *out_port) {

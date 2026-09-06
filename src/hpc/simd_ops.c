@@ -13,6 +13,7 @@
 /* ── Element-wise add ─────────────────────────────────────────────────── */
 
 void simd_add_f32(float *dst, const float *a, const float *b, size_t n) {
+    if (n == 0 || !dst || !a || !b) return;
     size_t i = 0;
 #if defined(HAS_NEON)
     for (; i + 4 <= n; i += 4) vst1q_f32(dst + i, vaddq_f32(vld1q_f32(a + i), vld1q_f32(b + i)));
@@ -26,6 +27,7 @@ void simd_add_f32(float *dst, const float *a, const float *b, size_t n) {
 /* ── Element-wise multiply ────────────────────────────────────────────── */
 
 void simd_mul_f32(float *dst, const float *a, const float *b, size_t n) {
+    if (n == 0 || !dst || !a || !b) return;
     size_t i = 0;
 #if defined(HAS_NEON)
     for (; i + 4 <= n; i += 4) vst1q_f32(dst + i, vmulq_f32(vld1q_f32(a + i), vld1q_f32(b + i)));
@@ -39,6 +41,7 @@ void simd_mul_f32(float *dst, const float *a, const float *b, size_t n) {
 /* ── Scale ────────────────────────────────────────────────────────────── */
 
 void simd_scale_f32(float *dst, const float *a, float scalar, size_t n) {
+    if (n == 0 || !dst || !a) return;
     size_t i = 0;
 #if defined(HAS_NEON)
     float32x4_t vs = vdupq_n_f32(scalar);
@@ -53,12 +56,20 @@ void simd_scale_f32(float *dst, const float *a, float scalar, size_t n) {
 /* ── Dot product ──────────────────────────────────────────────────────── */
 
 float simd_dot_f32(const float *a, const float *b, size_t n) {
+    if (n == 0 || !a || !b) return 0.0f;
     float  sum = 0.0f;
     size_t i = 0;
 #if defined(HAS_NEON)
     float32x4_t vsum = vdupq_n_f32(0.0f);
     for (; i + 4 <= n; i += 4) vsum = vmlaq_f32(vsum, vld1q_f32(a + i), vld1q_f32(b + i));
+#if defined(__aarch64__)
     sum = vaddvq_f32(vsum);
+#else
+    {
+        float32x2_t pair = vadd_f32(vget_low_f32(vsum), vget_high_f32(vsum));
+        sum = vget_lane_f32(vpadd_f32(pair, pair), 0);
+    }
+#endif
 #elif defined(HAS_SSE42)
     __m128 vsum = _mm_setzero_ps();
     for (; i + 4 <= n; i += 4)
@@ -74,12 +85,20 @@ float simd_dot_f32(const float *a, const float *b, size_t n) {
 /* ── Sum reduction ────────────────────────────────────────────────────── */
 
 float simd_sum_f32(const float *a, size_t n) {
+    if (n == 0 || !a) return 0.0f;
     float  sum = 0.0f;
     size_t i = 0;
 #if defined(HAS_NEON)
     float32x4_t vsum = vdupq_n_f32(0.0f);
     for (; i + 4 <= n; i += 4) vsum = vaddq_f32(vsum, vld1q_f32(a + i));
+#if defined(__aarch64__)
     sum = vaddvq_f32(vsum);
+#else
+    {
+        float32x2_t pair = vadd_f32(vget_low_f32(vsum), vget_high_f32(vsum));
+        sum = vget_lane_f32(vpadd_f32(pair, pair), 0);
+    }
+#endif
 #elif defined(HAS_SSE42)
     __m128 vsum = _mm_setzero_ps();
     for (; i + 4 <= n; i += 4) vsum = _mm_add_ps(vsum, _mm_loadu_ps(a + i));

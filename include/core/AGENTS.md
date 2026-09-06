@@ -18,5 +18,6 @@ implementation invariants: `src/core/AGENTS.md`.
   (monotonic; epoch is arbitrary, only differences are meaningful). Never
   measure elapsed time with wall-clock APIs.
 
-Nothing in core returns allocated memory to callers; there is no ownership
-to manage here.
+error/log/time do not return allocated memory to callers. Allocators live in
+`include/memory/` but compile into the **core** CMake target (there is no
+`libmemory`): `arena_*`, `pool_*`, and `leak_detect_*` do return/own buffers.

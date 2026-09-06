@@ -6,12 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   format-check:
     name: clang-format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       # Pinned so local and CI results are identical: `pip install clang-format==18.1.8`
       - name: Install clang-format
@@ -24,7 +27,7 @@ jobs:
     name: Build, test & coverage
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake lcov libopenblas-dev
@@ -62,3 +65,20 @@ jobs:
             echo "::error::Coverage ${COVERAGE}% is below 80% threshold"
             exit 1
           fi
+
+  sanitizers:
+    name: ASan/UBSan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake
+
+      - name: Build with sanitizers
+        run: |
+          cmake -B build-san -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
+          cmake --build build-san
+
+      - name: Test
+        run: ctest --test-dir build-san --output-on-failure --timeout 120

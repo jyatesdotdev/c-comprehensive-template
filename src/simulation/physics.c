@@ -61,32 +61,37 @@ void physics_collide_spheres(Particle *a, Particle *b, float radius) {
 
     float dist = sqrtf(dist2);
     Vec3  normal = vec3_scale(delta, 1.0f / dist);
+    float ma = a->mass > 0.0f ? a->mass : 1.0f;
+    float mb = b->mass > 0.0f ? b->mass : 1.0f;
+    float inv_mass = 1.0f / (ma + mb);
 
-    /* Push apart equally */
-    Vec3 half_push = vec3_scale(normal, (min_dist - dist) * 0.5f);
-    a->pos = vec3_sub(a->pos, half_push);
-    b->pos = vec3_add(b->pos, half_push);
+    /* Separate along the normal, weighted by inverse mass. */
+    Vec3 push = vec3_scale(normal, min_dist - dist);
+    a->pos = vec3_sub(a->pos, vec3_scale(push, mb * inv_mass));
+    b->pos = vec3_add(b->pos, vec3_scale(push, ma * inv_mass));
 
-    /* Elastic velocity exchange along the collision normal */
+    /* 1D elastic collision along the contact normal. */
     float va = vec3_dot(a->vel, normal);
     float vb = vec3_dot(b->vel, normal);
-    a->vel = vec3_add(a->vel, vec3_scale(normal, vb - va));
-    b->vel = vec3_add(b->vel, vec3_scale(normal, va - vb));
+    float va2 = (va * (ma - mb) + 2.0f * mb * vb) * inv_mass;
+    float vb2 = (vb * (mb - ma) + 2.0f * ma * va) * inv_mass;
+    a->vel = vec3_add(a->vel, vec3_scale(normal, va2 - va));
+    b->vel = vec3_add(b->vel, vec3_scale(normal, vb2 - vb));
 }
 
 void physics_confine_box(Particle *p, Vec3 bounds, float restitution) {
     if (!p) return;
+    float *pos[3] = {&p->pos.x, &p->pos.y, &p->pos.z};
+    float *vel[3] = {&p->vel.x, &p->vel.y, &p->vel.z};
+    float  limit[3] = {bounds.x, bounds.y, bounds.z};
     for (int axis = 0; axis < 3; axis++) {
-        float *pos = &p->pos.x + axis;
-        float *vel = &p->vel.x + axis;
-        float  limit = *(&bounds.x + axis);
-        if (*pos < 0.0f) {
-            *pos = 0.0f;
-            *vel = -*vel * restitution;
+        if (*pos[axis] < 0.0f) {
+            *pos[axis] = 0.0f;
+            *vel[axis] = -*vel[axis] * restitution;
         }
-        if (*pos > limit) {
-            *pos = limit;
-            *vel = -*vel * restitution;
+        if (*pos[axis] > limit[axis]) {
+            *pos[axis] = limit[axis];
+            *vel[axis] = -*vel[axis] * restitution;
         }
     }
 }

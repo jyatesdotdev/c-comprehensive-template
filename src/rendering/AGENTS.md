@@ -3,7 +3,7 @@
 Two targets with different guarantees:
 
 - **`rendering_sw`** (`software_renderer.c`) — always built, zero external
-  dependencies, fully covered by tests/CI. A CPU framebuffer with 2D
+  dependencies. Covered by `tests/test_rendering.c`. A CPU framebuffer with 2D
   primitives and PPM output.
 - **`rendering`** (`gl_pipeline.c`, `vk_pipeline.c`) — built only with
   `-DENABLE_RENDERING=ON`, requires OpenGL/Vulkan via Platform.cmake.

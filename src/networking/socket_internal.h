@@ -11,6 +11,9 @@
 #include "core/error.h"
 #include <stddef.h>
 
+/** socket(2) with FD_CLOEXEC (SOCK_CLOEXEC when available). */
+int nw_socket(int domain, int type, int protocol);
+
 /** Prevent SIGPIPE on writes to a closed peer (BSD/macOS; Linux uses MSG_NOSIGNAL). */
 void nw_disable_sigpipe(int fd);
 

@@ -1,6 +1,9 @@
 /**
  * @file simd_ops.h
- * @brief SIMD-accelerated operations (SSE/AVX/NEON when available).
+ * @brief SIMD-accelerated operations (SSE4.2 / NEON when available, else scalar).
+ *
+ * HAS_AVX2 only pulls in <immintrin.h>; the kernels themselves are 128-bit SSE
+ * or NEON plus a scalar tail. Pointers must be non-NULL when n > 0.
  */
 #ifndef HPC_SIMD_OPS_H
 #define HPC_SIMD_OPS_H

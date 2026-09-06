@@ -4,8 +4,9 @@
  */
 #include "hpc/thread_pool.h"
 #include <pthread.h>
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 /** @brief A single queued task node in the pool's linked list. */
 typedef struct Task {
@@ -46,6 +47,7 @@ static void *worker(void *arg) {
 
 ErrorCode thread_pool_create(ThreadPool **pool, size_t num_threads) {
     if (!pool || num_threads == 0) return ERR_INVALID_ARG;
+    if (num_threads > SIZE_MAX / sizeof(pthread_t)) return ERR_OVERFLOW;
     ThreadPool *p = calloc(1, sizeof(ThreadPool));
     if (!p) return ERR_NOMEM;
     p->threads = malloc(num_threads * sizeof(pthread_t));
@@ -83,6 +85,11 @@ ErrorCode thread_pool_submit(ThreadPool *pool, TaskFunc func, void *arg) {
     t->arg = arg;
     t->next = NULL;
     pthread_mutex_lock(&pool->mutex);
+    if (pool->shutdown) {
+        pthread_mutex_unlock(&pool->mutex);
+        free(t);
+        return ERR_UNSUPPORTED;
+    }
     if (pool->queue_tail) pool->queue_tail->next = t;
     else pool->queue_head = t;
     pool->queue_tail = t;

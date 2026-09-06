@@ -16,17 +16,30 @@ option(BUILD_EXAMPLES   "Build example programs"        ON)
 option(BUILD_DOCS       "Build Doxygen documentation"   OFF)
 option(ENABLE_SANITIZERS "Enable ASan/UBSan"            OFF)
 option(ENABLE_RENDERING "Build rendering modules (requires OpenGL/Vulkan)" OFF)
+if(WIN32)
+    option(ENABLE_NETWORKING "Build POSIX networking (TCP/UDP/Unix/event loop)" OFF)
+    option(ENABLE_HPC "Build pthreads HPC (thread pool, queues, SIMD)" OFF)
+else()
+    option(ENABLE_NETWORKING "Build POSIX networking (TCP/UDP/Unix/event loop)" ON)
+    option(ENABLE_HPC "Build pthreads HPC (thread pool, queues, SIMD)" ON)
+endif()
 
 # ── POSIX feature-test macro (needed for clock_gettime, strdup, usleep, etc.
 #    when compiling with -std=c17 instead of -std=gnu17) ─────────────────────
-add_compile_definitions(_DEFAULT_SOURCE)
+if(NOT MSVC)
+    add_compile_definitions(_DEFAULT_SOURCE)
+endif()
 
 # ── Compiler Warnings ──────────────────────────────────────────────────────
-add_compile_options(
-    -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wdouble-promotion
-    -Wformat=2 -Wno-unused-parameter -Wnull-dereference
-    -fstack-protector-strong
-)
+if(MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(
+        -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wdouble-promotion
+        -Wformat=2 -Wno-unused-parameter -Wnull-dereference
+        -fstack-protector-strong
+    )
+endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU")
     add_compile_options(-Wlogical-op -Wduplicated-cond)
@@ -43,6 +56,15 @@ endif()
 if(ENABLE_SANITIZERS)
     add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
     add_link_options(-fsanitize=address,undefined)
+endif()
+
+# ── Linux Release hardening (skip when sanitizers own the link flags) ───────
+if(NOT ENABLE_SANITIZERS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_compile_definitions($<$<CONFIG:Release>:_FORTIFY_SOURCE=2>)
+    add_compile_options($<$<CONFIG:Release>:-fPIE>)
+    add_link_options($<$<CONFIG:Release>:-pie>
+                     $<$<CONFIG:Release>:-Wl,-z,relro>
+                     $<$<CONFIG:Release>:-Wl,-z,now>)
 endif()
 
 # ── Coverage ────────────────────────────────────────────────────────────────
@@ -71,14 +93,20 @@ add_library(core STATIC
     src/memory/pool.c
     src/memory/leak_detect.c
 )
-target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(core PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 
 # ── CLI Library ──────────────────────────────────────────────────────────────
 add_library(cli STATIC
     src/cli/argparse.c
     src/cli/output.c
 )
-target_include_directories(cli PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(cli PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(cli PRIVATE core)
 
 # ── Systems Library ─────────────────────────────────────────────────────────
@@ -87,31 +115,45 @@ add_library(systems STATIC
     src/systems/process.c
     src/systems/path.c
 )
-target_include_directories(systems PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(systems PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(systems PRIVATE core)
 
-# ── HPC Library ─────────────────────────────────────────────────────────────
-find_package(Threads REQUIRED)
-add_library(hpc STATIC
-    src/hpc/simd_ops.c
-    src/hpc/thread_pool.c
-    src/hpc/parallel.c
-    src/hpc/queue.c
-)
-target_include_directories(hpc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(hpc PRIVATE core Threads::Threads)
+# ── HPC Library (pthreads; off by default on Windows) ───────────────────────
+if(ENABLE_HPC)
+    find_package(Threads REQUIRED)
+    add_library(hpc STATIC
+        src/hpc/simd_ops.c
+        src/hpc/thread_pool.c
+        src/hpc/parallel.c
+        src/hpc/queue.c
+    )
+    target_include_directories(hpc PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+    target_link_libraries(hpc PRIVATE core Threads::Threads)
+endif()
 
 # ── Simulation Library ──────────────────────────────────────────────────────
 add_library(simulation STATIC
     src/simulation/physics.c
     src/simulation/numerical.c
 )
-target_include_directories(simulation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(simulation PRIVATE core math m)
+target_include_directories(simulation PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(simulation PUBLIC math PRIVATE core m)
 
 # ── Software Renderer (always available, no external deps) ──────────────────
 add_library(rendering_sw STATIC src/rendering/software_renderer.c)
-target_include_directories(rendering_sw PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(rendering_sw PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(rendering_sw PRIVATE core)
 
 # ── GL/Vulkan Rendering (optional, requires graphics libraries) ─────────────
@@ -120,20 +162,36 @@ if(ENABLE_RENDERING)
         src/rendering/gl_pipeline.c
         src/rendering/vk_pipeline.c
     )
-    target_include_directories(rendering PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_include_directories(rendering PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
     target_link_libraries(rendering PRIVATE core)
-    # Platform-specific GL/Vulkan linkage handled in cmake/Platform.cmake
+    if(OpenGL_FOUND)
+        target_link_libraries(rendering PRIVATE OpenGL::GL)
+    endif()
+    if(Vulkan_FOUND)
+        target_link_libraries(rendering PRIVATE Vulkan::Vulkan)
+    endif()
+    if(NOT OpenGL_FOUND AND NOT Vulkan_FOUND)
+        message(WARNING "ENABLE_RENDERING=ON but neither OpenGL nor Vulkan was found")
+    endif()
 endif()
 
-# ── Networking Library ──────────────────────────────────────────────────
-add_library(networking STATIC
-    src/networking/socket.c
-    src/networking/udp.c
-    src/networking/unix_socket.c
-    src/networking/event_loop.c
+# ── Networking Library (POSIX sockets; off by default on Windows) ───────
+if(ENABLE_NETWORKING)
+    add_library(networking STATIC
+        src/networking/socket.c
+        src/networking/udp.c
+        src/networking/unix_socket.c
+        src/networking/event_loop.c
+    )
+    target_include_directories(networking PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
-target_include_directories(networking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(networking PRIVATE core)
+    target_link_libraries(networking PRIVATE core)
+endif()
 
 # ── Math Library ──────────────────────────────────────────────────
 add_library(math STATIC
@@ -144,7 +202,10 @@ add_library(math STATIC
     src/math/rng.c
     src/math/stats.c
 )
-target_include_directories(math PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(math PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(math PRIVATE core m)
 
 # ── ML Library ──────────────────────────────────────────────────
@@ -152,8 +213,11 @@ add_library(ml STATIC
     src/ml/nn.c
     src/ml/dataset.c
 )
-target_include_directories(ml PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(ml PRIVATE core math m)
+target_include_directories(ml PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(ml PUBLIC math PRIVATE core m)
 
 # ── Containers Library ──────────────────────────────────────────────────
 add_library(containers STATIC
@@ -164,7 +228,10 @@ add_library(containers STATIC
     src/containers/ringbuf.c
     src/containers/str.c
 )
-target_include_directories(containers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(containers PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(containers PRIVATE core)
 
 # ── Testing Frameworks ──────────────────────────────────────────────────────
@@ -184,3 +251,5 @@ if(BUILD_DOCS)
     find_package(Doxygen REQUIRED)
     add_subdirectory(docs)
 endif()
+
+include(cmake/Install.cmake)

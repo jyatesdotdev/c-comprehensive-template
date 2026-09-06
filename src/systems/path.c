@@ -57,7 +57,8 @@ ErrorCode path_normalize(char *path) {
             leading_dotdot++;       /* relative path keeps leading ".."s */
         }
 
-        if (ncomp < sizeof(comp_start) / sizeof(comp_start[0])) comp_start[ncomp++] = out;
+        if (ncomp >= sizeof(comp_start) / sizeof(comp_start[0])) return ERR_OVERFLOW;
+        comp_start[ncomp++] = out;
         if (out > 0 || absolute) path[out++] = '/';
         memmove(path + out, path + start, clen);
         out += clen;
@@ -113,7 +114,7 @@ ErrorCode path_mkdirs(const char *path, unsigned int mode) {
     if (!path || path[0] == '\0') return ERR_INVALID_ARG;
 
     char buf[1024];
-    if (strlen(path) + 1 > sizeof(buf)) return ERR_INVALID_ARG;
+    if (strlen(path) + 1 > sizeof(buf)) return ERR_OVERFLOW;
     memcpy(buf, path, strlen(path) + 1);
 
     /* Create each prefix in turn; EEXIST is fine at every step. */

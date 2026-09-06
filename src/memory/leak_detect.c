@@ -8,6 +8,7 @@
 #undef ENABLE_LEAK_DETECT
 #include "memory/leak_detect.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -78,15 +79,17 @@ void *leak_detect_malloc(size_t size, const char *file, int line) {
 }
 
 void *leak_detect_calloc(size_t count, size_t size, const char *file, int line) {
+    if (size != 0 && count > SIZE_MAX / size) return NULL;
     void *ptr = calloc(count, size);
     if (ptr) record_add(ptr, count * size, file, line);
     return ptr;
 }
 
 void *leak_detect_realloc(void *ptr, size_t size, const char *file, int line) {
-    if (ptr) record_remove(ptr);
     void *newptr = realloc(ptr, size);
-    if (newptr) record_add(newptr, size, file, line);
+    if (!newptr) return NULL; /* original pointer stays live and tracked */
+    if (ptr) record_remove(ptr);
+    record_add(newptr, size, file, line);
     return newptr;
 }
 

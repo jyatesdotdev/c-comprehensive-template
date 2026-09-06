@@ -9,7 +9,9 @@
  */
 #include "networking/event_loop.h"
 
+#include <errno.h>
 #include <poll.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct EventEntry {
@@ -70,7 +72,10 @@ ErrorCode event_loop_add(EventLoop *loop, int fd, unsigned int events, EventCall
     if (find_index(loop, fd) >= 0) return ERR_INVALID_ARG; /* already registered */
 
     if (loop->len == loop->cap) {
-        size_t      new_cap = loop->cap == 0 ? 8 : loop->cap * 2;
+        if (loop->cap > SIZE_MAX / 2) return ERR_OVERFLOW;
+        size_t new_cap = loop->cap == 0 ? 8 : loop->cap * 2;
+        if (new_cap > SIZE_MAX / sizeof(EventEntry) || new_cap > SIZE_MAX / sizeof(struct pollfd))
+            return ERR_OVERFLOW;
         EventEntry *e = realloc(loop->entries, new_cap * sizeof(EventEntry));
         if (!e) return ERR_NOMEM;
         loop->entries = e;
@@ -119,7 +124,13 @@ static void compact(EventLoop *loop) {
 
 ErrorCode event_loop_poll_once(EventLoop *loop, int timeout_ms) {
     if (!loop) return ERR_INVALID_ARG;
-    if (loop->len == 0) return ERR_OK;
+
+    int ready;
+    if (loop->len == 0) {
+        /* Honor timeout even with no fds — otherwise event_loop_run busy-spins. */
+        do { ready = poll(NULL, 0, timeout_ms); } while (ready < 0 && errno == EINTR);
+        return ready < 0 ? ERR_IO : ERR_OK;
+    }
 
     for (size_t i = 0; i < loop->len; i++) {
         loop->pollfds[i].fd = loop->entries[i].fd;
@@ -127,7 +138,9 @@ ErrorCode event_loop_poll_once(EventLoop *loop, int timeout_ms) {
         loop->pollfds[i].revents = 0;
     }
 
-    int ready = poll(loop->pollfds, (nfds_t)loop->len, timeout_ms);
+    do {
+        ready = poll(loop->pollfds, (nfds_t)loop->len, timeout_ms);
+    } while (ready < 0 && errno == EINTR);
     if (ready < 0) return ERR_IO;
     if (ready == 0) return ERR_OK; /* timeout */
 

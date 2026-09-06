@@ -4,6 +4,7 @@
  *
  * Uses CHECK instead of assert() so tests still run under NDEBUG (Release).
  */
+#include "check.h"
 #include "math/mat.h"
 #include "math/matx.h"
 #include "math/quat.h"
@@ -16,14 +17,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
+#include <string.h>
 
 #define EPS 1e-5f
 
@@ -125,6 +119,13 @@ static void test_mat4(void) {
     Mat4 ortho = mat4_ortho(-2.0f, 2.0f, -1.0f, 1.0f, 0.0f, 10.0f);
     Vec3 corner = mat4_mul_point(ortho, (Vec3){2.0f, 1.0f, -10.0f});
     CHECK(vec3_approx_eq(corner, (Vec3){1.0f, 1.0f, 1.0f}, EPS));
+
+    /* Degenerate frustum/box must not divide by zero — identity is returned. */
+    Mat4 bad_p = mat4_perspective(scalar_deg_to_rad(60.0f), 0.0f, 0.1f, 100.0f);
+    Mat4 ident = mat4_identity();
+    CHECK(memcmp(&bad_p, &ident, sizeof(Mat4)) == 0);
+    Mat4 bad_o = mat4_ortho(1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f);
+    CHECK(memcmp(&bad_o, &ident, sizeof(Mat4)) == 0);
 }
 
 static void test_quat(void) {

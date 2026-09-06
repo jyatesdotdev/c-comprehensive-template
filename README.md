@@ -20,6 +20,8 @@ ctest --output-on-failure
 | `BUILD_DOCS` | OFF | Build Doxygen documentation |
 | `ENABLE_SANITIZERS` | OFF | Enable AddressSanitizer + UBSan |
 | `ENABLE_RENDERING` | OFF | Build rendering modules (requires OpenGL) |
+| `ENABLE_NETWORKING` | ON (OFF on Windows) | POSIX TCP/UDP/Unix/event-loop module |
+| `ENABLE_HPC` | ON (OFF on Windows) | Thread pool, queues, SIMD |
 
 ## Project Structure
 
@@ -31,7 +33,7 @@ ctest --output-on-failure
 ├── include/                Public headers
 │   ├── core/               Error handling, logging, monotonic time
 │   ├── containers/         Vec, hash map, string builder, ring buffer
-│   ├── memory/             Arena & pool allocators
+│   ├── memory/             Arena & pool allocators (compiled into `core`)
 │   ├── systems/            File I/O, process control, paths
 │   ├── hpc/                SIMD, thread pool, parallel_for, queues
 │   ├── math/               Vectors, matrices, quaternions, RNG, stats
@@ -48,9 +50,9 @@ ctest --output-on-failure
 
 ## Modules
 
-- **core**: Unified error codes, leveled logging, monotonic time/stopwatch
+- **core**: Unified error codes, leveled logging, monotonic time/stopwatch, plus arena/pool/leak_detect (headers under `include/memory/`)
+- **cli**: getopt_long wrapper, config files, tables, progress bars
 - **containers**: Growable array, string-keyed hash map, string builder/views, ring buffer, FNV-1a/CRC-32
-- **memory**: Arena (bump) allocator and fixed-size pool allocator
 - **systems**: Safe file I/O wrappers, process control, path utilities
 - **hpc**: SSE/AVX SIMD operations, pthreads thread pool, parallel_for, SPSC/MPMC queues
 - **math**: Vec2/3/4, Mat4 transforms, quaternions, dynamic MatX matrices, PCG32 RNG, statistics

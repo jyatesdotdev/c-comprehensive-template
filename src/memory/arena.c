@@ -3,6 +3,7 @@
  * @brief Linear (bump) arena allocator implementation.
  */
 #include "memory/arena.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,8 +18,11 @@ ErrorCode arena_init(Arena *a, size_t capacity) {
 
 void *arena_alloc(Arena *a, size_t size, size_t align) {
     if (!a || !a->buf || size == 0) return NULL;
+    /* Alignment must be a non-zero power of two: (x & ~(align-1)) depends on it. */
+    if (align == 0 || (align & (align - 1)) != 0) return NULL;
+    if (a->pos > SIZE_MAX - (align - 1)) return NULL;
     size_t aligned = (a->pos + align - 1) & ~(align - 1);
-    if (aligned + size > a->cap) return NULL;
+    if (aligned > a->cap || size > a->cap - aligned) return NULL;
     void *ptr = a->buf + aligned;
     a->pos = aligned + size;
     return ptr;

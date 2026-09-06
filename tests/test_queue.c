@@ -2,19 +2,12 @@
  * @file test_queue.c
  * @brief Tests for hpc/queue.h: SPSC ring and blocking MPMC queue.
  */
+#include "check.h"
 #include "hpc/queue.h"
 
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 /* ── SPSC: single-threaded semantics ────────────────────────────────────── */
 

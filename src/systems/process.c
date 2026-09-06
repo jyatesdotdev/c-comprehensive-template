@@ -3,10 +3,11 @@
  * @brief Process execution, output capture, and signal handling.
  */
 #include "systems/process.h"
+#include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -40,6 +41,11 @@ ErrorCode process_capture(const char *cmd, char **out_buf, size_t *out_len) {
     while ((n = fread(buf + len, 1, cap - len - 1, fp)) > 0) {
         len += n;
         if (len + 1 >= cap) {
+            if (cap > SIZE_MAX / 2) {
+                free(buf);
+                pclose(fp);
+                return ERR_OVERFLOW;
+            }
             cap *= 2;
             char *tmp = realloc(buf, cap);
             if (!tmp) {
@@ -49,6 +55,11 @@ ErrorCode process_capture(const char *cmd, char **out_buf, size_t *out_len) {
             }
             buf = tmp;
         }
+    }
+    if (ferror(fp)) {
+        free(buf);
+        pclose(fp);
+        return ERR_IO;
     }
     buf[len] = '\0';
     pclose(fp);
@@ -87,6 +98,15 @@ ErrorCode process_exec(const char *prog, char *const argv[], int *exit_status) {
 #endif
 
 ErrorCode process_on_sigint(SignalHandler handler) {
+#ifndef _WIN32
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = handler ? handler : SIG_DFL;
+    sigemptyset(&sa.sa_mask);
+    if (sigaction(SIGINT, &sa, NULL) != 0) return ERR_IO;
+    return ERR_OK;
+#else
     if (signal(SIGINT, handler ? handler : SIG_DFL) == SIG_ERR) return ERR_IO;
     return ERR_OK;
+#endif
 }

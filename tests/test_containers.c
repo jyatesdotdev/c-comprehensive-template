@@ -2,6 +2,7 @@
  * @file test_containers.c
  * @brief Tests for the containers module and core log/time utilities.
  */
+#include "check.h"
 #include "containers/hash.h"
 #include "containers/hashmap.h"
 #include "containers/ringbuf.h"
@@ -13,14 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 static void test_hash(void) {
     /* Known FNV-1a vectors */

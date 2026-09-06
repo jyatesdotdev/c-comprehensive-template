@@ -63,7 +63,8 @@ static char *trim(char *s) {
 
 ErrorCode cli_parse(int argc, char **argv, const CliOption *options, int num_options,
                     CliContext *ctx) {
-    if (!argv || !options || !ctx) return ERR_INVALID_ARG;
+    if (!argv || !options || !ctx || num_options < 0 || num_options > CLI_MAX_OPTS)
+        return ERR_INVALID_ARG;
 
     memset(ctx, 0, sizeof(*ctx));
     ctx->options = options;

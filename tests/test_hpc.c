@@ -2,20 +2,13 @@
  * @file test_hpc.c
  * @brief Tests for SIMD ops, parallel_for, and parallel_reduce.
  */
+#include "check.h"
 #include "hpc/parallel.h"
 #include "hpc/simd_ops.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 #define N 1024
 
@@ -48,6 +41,10 @@ static void test_simd_ops(void) {
     /* Odd length exercises the scalar tail after the SIMD lanes */
     simd_add_f32(dst, a, b, N - 3);
     for (int i = 0; i < N - 3; i++) CHECK(fabsf(dst[i] - (float)N) < 1e-3f);
+
+    simd_add_f32(NULL, a, b, N); /* n>0 + NULL is a no-op, not UB */
+    CHECK(simd_dot_f32(NULL, b, N) == 0.0f);
+    CHECK(simd_sum_f32(a, 0) == 0.0f);
 }
 
 /* parallel_for: each thread writes its index range */

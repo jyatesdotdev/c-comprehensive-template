@@ -2,18 +2,11 @@
  * @file test_arena.c
  * @brief Tests for the arena (bump) allocator.
  */
+#include "check.h"
 #include "memory/arena.h"
 
+#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 int main(void) {
     CHECK(arena_init(NULL, 1024) == ERR_INVALID_ARG);
@@ -34,6 +27,9 @@ int main(void) {
 
     /* Oversized request fails cleanly */
     CHECK(arena_alloc(&a, 4096, 8) == NULL);
+    CHECK(arena_alloc(&a, 8, 0) == NULL);        /* align 0 is invalid */
+    CHECK(arena_alloc(&a, 8, 3) == NULL);        /* not a power of two */
+    CHECK(arena_alloc(&a, SIZE_MAX, 8) == NULL); /* size must not wrap the cap check */
 
     arena_destroy(&a);
     arena_destroy(&a); /* double-destroy is safe */

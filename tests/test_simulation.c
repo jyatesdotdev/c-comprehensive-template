@@ -2,22 +2,13 @@
  * @file test_simulation.c
  * @brief Tests for physics and numerical modules.
  */
+#include "check.h"
 #include "simulation/numerical.h"
 #include "simulation/physics.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
-
-#define CHECK_NEAR(a, b, tol) CHECK(fabs((double)(a) - (double)(b)) <= (tol))
 
 static double f_x2(double x) {
     return x * x;
@@ -51,6 +42,8 @@ int main(void) {
     root = numerical_newton(f_poly, df_poly, 1.5, 1e-12, 50, &iters);
     CHECK_NEAR(f_poly(root), 0.0, 1e-10);
     CHECK(iters < 15); /* Newton should converge fast */
+    CHECK(numerical_newton(NULL, df_poly, 1.5, 1e-12, 50, &iters) == 1.5);
+    CHECK(iters == 0);
 
     /* RK4: SHO with y(0)=1, y'(0)=0 => y(t)=cos(t). Check at t=2*pi. */
     double y[2] = {1.0, 0.0};

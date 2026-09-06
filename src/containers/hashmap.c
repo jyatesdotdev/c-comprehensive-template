@@ -5,6 +5,7 @@
 #include "containers/hashmap.h"
 #include "containers/hash.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -73,7 +74,9 @@ ErrorCode hashmap_put(HashMap *m, const char *key, void *value) {
     if (!m || !m->slots || !key) return ERR_INVALID_ARG;
 
     /* Keep load factor (including tombstones) at or below 3/4. */
+    if (m->used > SIZE_MAX / 4 - 1) return ERR_OVERFLOW;
     if ((m->used + 1) * 4 > m->cap * 3) {
+        if (m->cap > SIZE_MAX / 2) return ERR_OVERFLOW;
         ErrorCode err = rehash(m, m->cap * 2);
         if (err) return err;
     }

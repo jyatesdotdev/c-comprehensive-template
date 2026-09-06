@@ -3,9 +3,11 @@
  * @brief File I/O utilities: read/write, memory-mapped I/O, directory walking.
  */
 #include "systems/file_io.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <string.h>
 
 #ifdef _WIN32
 /* Minimal stubs — full Win32 impl left as exercise. */
@@ -54,13 +56,14 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
         return ERR_IO;
     }
 
-    *out_buf = malloc((size_t)len);
+    /* malloc(0) may return NULL; treat an empty file as a 1-byte dummy buffer. */
+    *out_buf = malloc(len == 0 ? 1 : (size_t)len);
     if (!*out_buf) {
         (void)fclose(f);
         return ERR_NOMEM;
     }
 
-    if (fread(*out_buf, 1, (size_t)len, f) != (size_t)len) {
+    if (len > 0 && fread(*out_buf, 1, (size_t)len, f) != (size_t)len) {
         free(*out_buf);
         *out_buf = NULL;
         (void)fclose(f);
@@ -77,14 +80,39 @@ ErrorCode file_read_all(const char *path, unsigned char **out_buf, size_t *out_s
 
 ErrorCode file_write_all(const char *path, const unsigned char *buf, size_t size) {
     if (!path || (!buf && size > 0)) return ERR_INVALID_ARG;
-    FILE *f = fopen(path, "wb");
-    if (!f) return ERR_IO;
-    if (size > 0 && fwrite(buf, 1, size, f) != size) {
-        (void)fclose(f); /* already returning an error */
+
+    size_t path_len = strlen(path);
+    if (path_len > SIZE_MAX - 5) return ERR_OVERFLOW;
+    char *tmp = malloc(path_len + 5); /* ".tmp" + NUL */
+    if (!tmp) return ERR_NOMEM;
+    memcpy(tmp, path, path_len);
+    memcpy(tmp + path_len, ".tmp", 5);
+
+    FILE *f = fopen(tmp, "wb");
+    if (!f) {
+        free(tmp);
         return ERR_IO;
     }
-    /* fclose flushes buffered data — a failure here means the write failed. */
-    if (fclose(f) != 0) return ERR_IO;
+    if (size > 0 && fwrite(buf, 1, size, f) != size) {
+        (void)fclose(f);
+        (void)remove(tmp);
+        free(tmp);
+        return ERR_IO;
+    }
+    if (fclose(f) != 0) {
+        (void)remove(tmp);
+        free(tmp);
+        return ERR_IO;
+    }
+#ifdef _WIN32
+    (void)remove(path); /* POSIX rename replaces; Windows rename does not. */
+#endif
+    if (rename(tmp, path) != 0) {
+        (void)remove(tmp);
+        free(tmp);
+        return ERR_IO;
+    }
+    free(tmp);
     return ERR_OK;
 }
 
@@ -110,6 +138,11 @@ static ErrorCode mmap_open(const char *path, int oflags, int prot, int mflags, M
     if (fstat(fd, &st) < 0) {
         close(fd);
         return ERR_IO;
+    }
+
+    if (st.st_size == 0) {
+        close(fd);
+        return ERR_UNSUPPORTED; /* mmap(size=0) is EINVAL on POSIX */
     }
 
     void *data = mmap(NULL, (size_t)st.st_size, prot, mflags, fd, 0);
@@ -154,6 +187,13 @@ ErrorCode dir_walk(const char *path, DirEntryCallback cb, void *user_data) {
             (ent->d_name[1] == '\0' || (ent->d_name[1] == '.' && ent->d_name[2] == '\0')))
             continue;
         bool is_dir = (ent->d_type == DT_DIR);
+        if (ent->d_type == DT_UNKNOWN) {
+            char full[1024];
+            if (snprintf(full, sizeof(full), "%s/%s", path, ent->d_name) < (int)sizeof(full)) {
+                struct stat st;
+                if (stat(full, &st) == 0) is_dir = S_ISDIR(st.st_mode);
+            }
+        }
         if (!cb(ent->d_name, is_dir, user_data)) break;
     }
     closedir(d);

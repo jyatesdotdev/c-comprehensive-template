@@ -4,6 +4,7 @@
  */
 #include "hpc/parallel.h"
 #include <pthread.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 /* ── parallel_for ─────────────────────────────────────────────────────── */
@@ -26,6 +27,10 @@ void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_
                   void *ctx) {
     if (n == 0 || num_threads == 0) return;
     if (num_threads > n) num_threads = n;
+    if (num_threads > SIZE_MAX / sizeof(pthread_t) || num_threads > SIZE_MAX / sizeof(ChunkArg)) {
+        body(0, n, ctx);
+        return;
+    }
 
     pthread_t *threads = malloc(num_threads * sizeof(pthread_t));
     ChunkArg  *args = malloc(num_threads * sizeof(ChunkArg));

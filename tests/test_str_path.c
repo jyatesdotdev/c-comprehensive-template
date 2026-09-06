@@ -2,6 +2,7 @@
  * @file test_str_path.c
  * @brief Tests for string views (containers/str.h) and paths (systems/path.h).
  */
+#include "check.h"
 #include "containers/str.h"
 #include "systems/path.h"
 
@@ -9,14 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 static void test_sv_basics(void) {
     StrView sv = sv_from("hello world");
@@ -99,6 +92,17 @@ static void test_path_lexical(void) {
     CHECK(path_normalize(p4) == ERR_OK && strcmp(p4, ".") == 0);
     char p5[] = "a/b/../..";
     CHECK(path_normalize(p5) == ERR_OK && strcmp(p5, ".") == 0);
+
+    {
+        char   deep[256];
+        size_t n = 0;
+        for (int i = 0; i < 65; i++) {
+            if (i) deep[n++] = '/';
+            deep[n++] = 'a';
+        }
+        deep[n] = '\0';
+        CHECK(path_normalize(deep) == ERR_OVERFLOW);
+    }
 
     CHECK(strcmp(path_basename("/a/b/file.txt"), "file.txt") == 0);
     CHECK(strcmp(path_basename("file.txt"), "file.txt") == 0);

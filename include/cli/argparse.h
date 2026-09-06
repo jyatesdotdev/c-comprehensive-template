@@ -75,9 +75,10 @@ typedef struct {
  * @param argc        Argument count.
  * @param argv        Argument vector.
  * @param options     Array of option definitions.
- * @param num_options Number of entries in options.
+ * @param num_options Number of entries in options (0..CLI_MAX_OPTS).
  * @param ctx         Parsing context to populate.
- * @return ERR_OK on success, or an error code.
+ * @return ERR_OK on success, ERR_INVALID_ARG if a pointer is NULL or
+ *         num_options is outside 0..CLI_MAX_OPTS.
  */
 ErrorCode cli_parse(int argc, char **argv, const CliOption *options, int num_options,
                     CliContext *ctx);
@@ -103,7 +104,9 @@ int cli_dispatch(int argc, char **argv, const CliSubcommand *cmds, int num_cmds,
  * Keys are matched against option long_name for resolution.
  * @param path Config file path.
  * @param ctx  Parsing context to populate.
- * @return ERR_OK on success, ERR_IO on file error.
+ * @return ERR_OK on success, ERR_NOT_FOUND if the file cannot be opened,
+ *         ERR_NOMEM, or ERR_IO on fclose failure. Call cli_free(ctx) if any
+ *         config entries were stored before an error return.
  */
 ErrorCode cli_load_config(const char *path, CliContext *ctx);
 

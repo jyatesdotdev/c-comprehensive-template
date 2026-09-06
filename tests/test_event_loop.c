@@ -2,6 +2,7 @@
  * @file test_event_loop.c
  * @brief Tests for the poll-based event loop (networking/event_loop.h).
  */
+#include "check.h"
 #include "networking/event_loop.h"
 #include "networking/socket.h"
 
@@ -9,14 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#define CHECK(cond)                                                                    \
-    do {                                                                               \
-        if (!(cond)) {                                                                 \
-            fprintf(stderr, "CHECK failed at %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            exit(1);                                                                   \
-        }                                                                              \
-    } while (0)
 
 /* ── Read readiness via a pipe ──────────────────────────────────────────── */
 
@@ -220,7 +213,8 @@ static void test_invalid_args(void) {
     CHECK(event_loop_add(loop, 0, 0, on_writable, NULL) == ERR_INVALID_ARG);
     CHECK(event_loop_add(loop, 0, EV_READ, NULL, NULL) == ERR_INVALID_ARG);
     CHECK(event_loop_poll_once(NULL, 0) == ERR_INVALID_ARG);
-    CHECK(event_loop_poll_once(loop, 0) == ERR_OK); /* empty loop is a no-op */
+    CHECK(event_loop_poll_once(loop, 0) == ERR_OK);  /* empty loop, no wait */
+    CHECK(event_loop_poll_once(loop, 20) == ERR_OK); /* empty loop honors timeout */
     CHECK(event_loop_run(NULL) == ERR_INVALID_ARG);
     event_loop_stop(NULL); /* safe */
     event_loop_destroy(loop);

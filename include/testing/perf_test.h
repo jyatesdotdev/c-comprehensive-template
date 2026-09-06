@@ -8,8 +8,8 @@
  *   PERF_END(label);           // prints elapsed time
  *   PERF_BENCH(label, iters, { code; });  // runs N iterations, prints stats
  */
-#ifndef PERF_TEST_H
-#define PERF_TEST_H
+#ifndef TESTING_PERF_TEST_H
+#define TESTING_PERF_TEST_H
 
 #include <stdio.h>
 #include <time.h>
@@ -81,4 +81,4 @@ static inline void perf_stop(const PerfTimer *t) {
                _sum / (iters), _max);                                                                   \
     } while (0)
 
-#endif /* PERF_TEST_H */
+#endif /* TESTING_PERF_TEST_H */

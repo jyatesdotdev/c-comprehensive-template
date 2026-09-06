@@ -10,8 +10,8 @@ if(USE_UNITY)
     FetchContent_Declare(
         unity
         GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-        GIT_TAG        v2.6.0
-        GIT_SHALLOW    TRUE
+        GIT_TAG        860062d51b2e8a75d150337b63ca2a472840d13c # v2.6.0
+        GIT_SHALLOW    FALSE
     )
     FetchContent_MakeAvailable(unity)
 

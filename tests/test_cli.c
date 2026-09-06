@@ -67,6 +67,13 @@ void test_parse_null_returns_error(void) {
     TEST_ASSERT_EQUAL(ERR_INVALID_ARG, cli_parse(0, NULL, test_opts, NUM_OPTS, NULL));
 }
 
+void test_parse_rejects_option_count_out_of_range(void) {
+    char      *argv[] = {"prog", NULL};
+    CliContext ctx;
+    TEST_ASSERT_EQUAL(ERR_INVALID_ARG, cli_parse(1, argv, test_opts, CLI_MAX_OPTS + 1, &ctx));
+    TEST_ASSERT_EQUAL(ERR_INVALID_ARG, cli_parse(1, argv, test_opts, -1, &ctx));
+}
+
 void test_parse_rest_args(void) {
     char      *argv[] = {"prog", "--verbose", "file1", "file2", NULL};
     CliContext ctx;
@@ -206,6 +213,7 @@ int main(void) {
     RUN_TEST(test_parse_short_option);
     RUN_TEST(test_parse_flag);
     RUN_TEST(test_parse_null_returns_error);
+    RUN_TEST(test_parse_rejects_option_count_out_of_range);
     RUN_TEST(test_parse_rest_args);
     /* resolve priority */
     RUN_TEST(test_resolve_default);
