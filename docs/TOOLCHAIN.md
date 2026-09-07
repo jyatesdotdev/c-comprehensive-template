@@ -92,7 +92,8 @@ The project sets these compiler flags in the root `CMakeLists.txt`:
 -fstack-protector-strong
 ```
 
-GCC additionally enables `-Wlogical-op -Wduplicated-cond`.
+GCC additionally enables `-Wlogical-op -Wduplicated-cond`. MSVC uses `/W4`.
+Linux Release (without sanitizers) also sets `_FORTIFY_SOURCE=2`, PIE, and RELRO.
 
 Sanitizers (ASan + UBSan) are available via `-DENABLE_SANITIZERS=ON` and add:
 

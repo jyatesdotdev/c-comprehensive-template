@@ -12,12 +12,13 @@ A hands-on walkthrough for new developers: clone, build, test, run examples, add
 git clone <repository-url>
 cd c_comprehensive_template
 
-# Configure and build (Debug mode for development)
-cmake -B build -DCMAKE_BUILD_TYPE=Debug
+# Configure and build (Debug + sanitizers — the local development loop)
+cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
 cmake --build build -j$(nproc)
 ```
 
-This builds all libraries (`core`, `cli`, `systems`, `hpc`, `simulation`, `rendering_sw`), tests, and examples by default.
+This builds `core`, `cli`, `systems`, `math`, `ml`, `containers`, `simulation`,
+`rendering_sw`, plus `hpc`/`networking` on POSIX, and the tests/examples.
 
 ### Common Build Variants
 
@@ -52,16 +53,8 @@ ctest --test-dir build -R test_arena --output-on-failure
 ctest --test-dir build -N
 ```
 
-Expected output:
-
-```
-test_arena: PASS
-test_pool: PASS
-test_leak_detect: PASS
-test_hpc: PASS
-test_simulation: PASS
-test_perf_memory: PASS
-```
+Expected: all registered tests pass (17 on a default POSIX sanitizer build,
+including `test_file_io`, `test_rendering`, `test_networking`, `test_event_loop`).
 
 ---
 
@@ -197,28 +190,25 @@ add_library(core STATIC
 Create `tests/test_stack.c`:
 
 ```c
-#include <stdio.h>
-#include <stdlib.h>
+#include "check.h"
 #include "core/stack.h"
 
-#define ASSERT(cond) do { \
-    if (!(cond)) { fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #cond); exit(1); } \
-} while(0)
+#include <stdio.h>
 
 int main(void) {
     Stack s;
-    ASSERT(stack_init(&s, 4) == ERR_OK);
-    ASSERT(stack_push(&s, 10) == ERR_OK);
-    ASSERT(stack_push(&s, 20) == ERR_OK);
+    CHECK(stack_init(&s, 4) == ERR_OK);
+    CHECK(stack_push(&s, 10) == ERR_OK);
+    CHECK(stack_push(&s, 20) == ERR_OK);
 
     int val;
-    ASSERT(stack_pop(&s, &val) == ERR_OK);
-    ASSERT(val == 20);
+    CHECK(stack_pop(&s, &val) == ERR_OK);
+    CHECK(val == 20);
 
     /* Fill to capacity */
-    ASSERT(stack_push(&s, 30) == ERR_OK);
-    ASSERT(stack_push(&s, 40) == ERR_OK);
-    ASSERT(stack_push(&s, 50) == ERR_OVERFLOW);
+    CHECK(stack_push(&s, 30) == ERR_OK);
+    CHECK(stack_push(&s, 40) == ERR_OK);
+    CHECK(stack_push(&s, 50) == ERR_OVERFLOW);
 
     stack_destroy(&s);
     printf("test_stack: PASS\n");

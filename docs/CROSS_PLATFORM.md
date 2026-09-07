@@ -36,13 +36,25 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU")
     add_compile_options(-Wlogical-op -Wduplicated-cond)
 endif()
 
-# MSVC requires different flags entirely
+# Matches root CMakeLists.txt: MSVC /W4; GCC/Clang get -Wall and friends.
 if(MSVC)
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(
+        -Wall -Wextra -Wpedantic -Wshadow -Wconversion
+        -fstack-protector-strong
+    )
 endif()
 ```
+
+POSIX-only libraries are CMake-gated rather than compiled as empty stubs:
+
+| Option | Default on Windows | Default on POSIX |
+|--------|--------------------|------------------|
+| `ENABLE_NETWORKING` | OFF | ON |
+| `ENABLE_HPC` | OFF | ON |
+
+MSVC configure uses `/W4` (not the GCC warning set). Full Winsock is not implemented.
 
 ### Cross-Compilation
 
@@ -390,7 +402,7 @@ strategy:
         cc: cl
 
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
   - name: Configure
     run: cmake -B build -DCMAKE_C_COMPILER=${{ matrix.cc }}
   - name: Build

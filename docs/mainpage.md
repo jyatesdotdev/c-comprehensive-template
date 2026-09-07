@@ -6,18 +6,21 @@ A production-ready C project template covering systems programming, high-perform
 
 | Module | Description |
 |--------|-------------|
-| @ref core/error.h "core" | Unified error codes and logging |
+| @ref core/error.h "core" | Errors, logging, time; allocators live under `memory/` but link as `core` |
 | @ref memory/arena.h "memory/arena" | Bump allocator for bulk-freed allocations |
 | @ref memory/pool.h "memory/pool" | Fixed-size block pool allocator |
-| @ref memory/leak_detect.h "memory/leak_detect" | Debug allocator with leak reporting |
-| @ref systems/file_io.h "systems/file_io" | File I/O, memory-mapped files, directory walking |
-| @ref systems/process.h "systems/process" | Process control, fork/exec, signal handling |
-| @ref hpc/simd_ops.h "hpc/simd" | SIMD operations (NEON/SSE with scalar fallback) |
+| @ref cli/argparse.h "cli" | getopt_long wrapper, config files, tables |
+| @ref containers/vec.h "containers" | Vec, hashmap, strbuf, ringbuf, string views |
+| @ref systems/file_io.h "systems/file_io" | File I/O (atomic write), mmap, directory walking |
+| @ref systems/process.h "systems/process" | Shell wrappers + `process_exec`; sanitization is caller-owned |
+| @ref hpc/simd_ops.h "hpc/simd" | SIMD operations (NEON/SSE with scalar fallback); `ENABLE_HPC` |
 | @ref hpc/thread_pool.h "hpc/thread_pool" | Pthreads-based thread pool |
-| @ref hpc/parallel.h "hpc/parallel" | Parallel for-each and map-reduce |
+| @ref math/vec.h "math" | Vec/mat/quat, MatX, RNG, stats |
+| @ref ml/nn.h "ml" | Dense layers, losses, SGD/Adam, datasets |
+| @ref networking/socket.h "networking" | TCP/UDP/Unix + poll loop (`ENABLE_NETWORKING`, POSIX) |
 | @ref rendering/software_renderer.h "rendering/sw" | Software rasterizer (lines, rects, circles, PPM) |
-| @ref rendering/gl_pipeline.h "rendering/gl" | OpenGL shader pipeline |
-| @ref rendering/vk_pipeline.h "rendering/vk" | Vulkan pipeline setup |
+| @ref rendering/gl_pipeline.h "rendering/gl" | OpenGL shader pipeline (optional) |
+| @ref rendering/vk_pipeline.h "rendering/vk" | Vulkan pipeline setup (optional) |
 | @ref simulation/physics.h "simulation/physics" | Verlet integration, collisions, springs |
 | @ref simulation/numerical.h "simulation/numerical" | Root finding, ODE solvers, quadrature |
 

@@ -357,7 +357,9 @@ define `ACCELERATE_NEW_LAPACK` before including `<Accelerate/Accelerate.h>`.
 
 ### stb Libraries (Single-Header)
 
-The stb libraries are single-file public domain libraries. Include the implementation in exactly one `.c` file.
+This template does **not** vendor stb. `cmake/ThirdParty.cmake` creates an
+INTERFACE target named `stb` only if `third_party/stb/` exists. Copy headers
+in yourself, then include the implementation in exactly one `.c` file.
 
 **Common stb libraries:**
 - `stb_image.h` — Image loading (PNG, JPG, BMP, TGA)
@@ -479,13 +481,9 @@ endif()
 
 ```
 third_party/
-  glad/              # Generated OpenGL loader
-    include/
-    src/
-  stb/               # Single-header libraries
+  AGENTS.md          # Vendoring policy (this is all that ships)
+  stb/               # Optional: drop headers here, then ThirdParty.cmake exposes them
     stb_image.h
-    stb_image_write.h
-  linmath.h          # Single-header math
 cmake/
   ThirdParty.cmake   # All FetchContent declarations
 ```

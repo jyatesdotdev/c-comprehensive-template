@@ -17,7 +17,8 @@ c_comprehensive_template/
 │   ├── Platform.cmake          OS & SIMD detection (Linux/macOS/Windows, SSE/AVX/NEON)
 │   ├── Security.cmake          Static analysis & security tool targets
 │   ├── Testing.cmake           Unity & cmocka test framework integration
-│   └── ThirdParty.cmake        Optional dependencies via FetchContent
+│   ├── ThirdParty.cmake        Optional FetchContent deps (not vendored stb)
+│   └── Install.cmake           install()/export() for find_package
 ├── include/                    Public headers (all modules)
 │   ├── core/{error,log,time}.h
 │   ├── containers/{hash,vec,hashmap,strbuf,ringbuf,str}.h
@@ -36,7 +37,7 @@ c_comprehensive_template/
 ├── tests/                      Unit & performance tests
 ├── examples/                   Working demo programs
 ├── docs/                       Documentation & Doxygen build
-└── third_party/                Optional vendored headers (stb if present)
+└── third_party/                Optional vendored headers (empty except AGENTS.md)
 ```
 
 ## Module Dependency Graph
@@ -98,13 +99,13 @@ Key relationships:
 - `systems` also provides lexical + filesystem path utilities (path.h)
 - `cli` depends on `core` (uses error handling)
 - `systems` depends on `core` (file I/O, process wrappers)
-- `hpc` depends on `core` + `Threads::Threads` (SIMD, thread pool, parallel_for, SPSC/MPMC queues)
+- `hpc` depends on `core` + `Threads::Threads` (SIMD, thread pool, parallel_for, SPSC/MPMC queues). Gated by `ENABLE_HPC` (default ON except Windows).
 - `math` depends on `core` + `m` (owns the Vec3 type; fixed-size linalg + dynamic MatX)
 - `ml` depends on `math` (PUBLIC, headers include `math/matx.h`) plus `core` + `m`
 - `simulation` depends on `math` (PUBLIC, because `physics.h` includes `math/vec.h`) plus `core` + `m`
 - `rendering_sw` depends on `core` (software renderer, always built)
 - `rendering` depends on `core` (optional GL/Vulkan, requires `ENABLE_RENDERING=ON`)
-- `networking` depends on `core` (TCP/UDP/Unix domain sockets + poll event loop, POSIX only)
+- `networking` depends on `core` (TCP/UDP/Unix domain sockets + poll event loop, POSIX). Gated by `ENABLE_NETWORKING` (default ON except Windows).
 
 ## Build System Overview
 
@@ -115,12 +116,13 @@ The build uses CMake 3.20+ with C17. The root `CMakeLists.txt` orchestrates ever
 1. **Compiler setup** — C17 standard, strict warnings (`-Wall -Wextra -Wpedantic -Wshadow` etc.), stack protector
 2. **cmake/Security.cmake** — Included early so `CMAKE_C_CLANG_TIDY` applies to all subsequent targets
 3. **cmake/Platform.cmake** — Detects OS (Linux/macOS/Windows) and architecture (x86 SSE/AVX, ARM NEON), sets compile definitions
-4. **cmake/ThirdParty.cmake** — Optional FetchContent dependencies (SDL2, GLFW, cglm, cJSON, argtable3), plus vendored stb headers
-5. **Library targets** — `core`, `cli`, `systems`, `hpc`, `simulation`, `rendering_sw`, and optionally `rendering`
-6. **cmake/Testing.cmake** — Fetches Unity test framework, optionally finds cmocka
+4. **cmake/ThirdParty.cmake** — Optional FetchContent dependencies (SDL2, GLFW, cglm, cJSON, argtable3). Vendored `stb` is only an INTERFACE target *if* `third_party/stb` exists (not shipped).
+5. **Library targets** — `core`, `cli`, `systems`, `simulation`, `rendering_sw`, `math`, `ml`, `containers`; `hpc`/`networking` unless gated off; optionally `rendering`
+6. **cmake/Testing.cmake** — Fetches Unity (pinned commit SHA), optionally finds cmocka
 7. **tests/** — Test executables linked against library targets + test frameworks
 8. **examples/** — Demo executables linked against library targets
-9. **docs/** — Doxygen documentation generation (when `BUILD_DOCS=ON`)
+9. **cmake/Install.cmake** — `install(TARGETS … EXPORT …)` + Config/Version files
+10. **docs/** — Doxygen documentation generation (when `BUILD_DOCS=ON`)
 
 ### CMake Options
 
@@ -197,14 +199,14 @@ Tests are organized by framework:
 | `example_cli`            | cli, core              | CLI argument parsing         |
 | `example_cli_argtable`   | argtable3              | argtable3 CLI (optional)     |
 | `example_networking`     | core, networking       | TCP/UDP/Unix loopback tour   |
-| `example_echo_server`    | core, networking, hpc  | Concurrent TCP echo server   |
+| `example_echo_server`    | core, networking, hpc  | Concurrent TCP echo (127.0.0.1) |
 | `example_echo_client`    | core, networking       | TCP echo client              |
 | `example_math`           | core, math, m          | Transforms, quat, MatX, RNG  |
 | `example_ml`             | core, ml, math, m      | MLP trained on spiral data   |
 | `example_matmul_bench`   | core, math, m (+BLAS)  | Our matmul vs optimized BLAS |
 | `example_containers`     | core, containers       | Vec/hashmap/strbuf + logging |
 | `example_pipeline`       | core, hpc              | Producer/consumer pipeline   |
-| `example_evloop_server`  | core, networking       | Single-thread event-loop echo|
+| `example_evloop_server`  | core, networking       | Event-loop echo (127.0.0.1)  |
 
 ## See Also
 

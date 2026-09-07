@@ -184,15 +184,20 @@ strcpy(dst, src);
 
 ## CI/CD Integration
 
-The project includes `.github/workflows/security.yml` with five parallel jobs:
+Two workflows run on every push/PR to `main`:
+
+**`.github/workflows/ci.yml`** — clang-format, Release build + CTest, lcov **≥ 80%** line coverage, Debug ASan/UBSan + CTest.
+
+**`.github/workflows/security.yml`** — parallel scanners plus an aggregate gate:
 
 | Job | Tool | Failure Condition |
 |-----|------|-------------------|
-| `clang-tidy` | clang-tidy | Any warning in build output |
+| `clang-tidy` | clang-tidy | Any warning/error in build output |
 | `cppcheck` | cppcheck (CI mode) | Any finding (exit code 1) |
 | `valgrind` | Valgrind memcheck | Any memory error (exit code 1) |
 | `flawfinder` | flawfinder | Level 4+ finding |
-| `security-gate` | — | Any upstream job failed |
+| `trivy` | Trivy fs scan | Action failure (SARIF uploaded when present) |
+| `security-gate` | — | Any of the jobs above failed |
 
 The `security-gate` job aggregates all results. Add it as a **required status check** in GitHub branch protection to gate merges on security scan results.
 

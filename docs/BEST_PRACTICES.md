@@ -24,7 +24,7 @@ This project targets **C17** (`-std=c17`) as the default, with awareness of C11 
 
 ### C11 Features Used
 - `_Alignof` / `alignof` — alignment queries for custom allocators
-- `<stdatomic.h>` — lock-free atomics for thread pool signaling
+- `<stdatomic.h>` — lock-free atomics for the SPSC queue (`hpc/queue.h`)
 - `<threads.h>` awareness (we use pthreads for broader platform support)
 - Anonymous structs/unions
 - `static_assert` — compile-time invariant checks

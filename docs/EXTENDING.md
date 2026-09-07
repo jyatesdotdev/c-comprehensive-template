@@ -125,22 +125,24 @@ Tests live in `tests/` and are registered in `tests/CMakeLists.txt`. The project
 
 | Backend | When available | Link target |
 |---------|---------------|-------------|
-| Minimal (built-in) | Always | — (just `assert.h`) |
+| Minimal (built-in) | Always | — (`tests/check.h`, never `assert`) |
 | Unity | `USE_UNITY=ON` (default) | `unity::framework` |
 | cmocka | `USE_CMOCKA=ON` + system install | `cmocka::cmocka` |
 
 ### Minimal test (no framework)
 
+Never use `assert()` — Release builds define `NDEBUG` and delete the call.
+Include `tests/check.h` (on the tests include path):
+
 ```c
 /* tests/test_networking.c */
+#include "check.h"
 #include "networking/socket.h"
-#include <assert.h>
+
 #include <stdio.h>
 
 int main(void) {
-    assert(socket_connect(NULL, 80) == ERR_INVALID_ARG);
-    assert(socket_connect("localhost", -1) == ERR_INVALID_ARG);
-    assert(socket_connect("localhost", 80) == ERR_OK);
+    CHECK(tcp_connect(NULL, "127.0.0.1", 80) == ERR_INVALID_ARG);
     printf("All networking tests passed.\n");
     return 0;
 }
@@ -228,7 +230,7 @@ endif()
 Key conventions:
 - Always gate behind an `option(USE_<NAME> ...)` so it's opt-in
 - Try `find_package()` first to use a system install if available
-- Use `GIT_SHALLOW TRUE` to speed up clones
+- Prefer a full commit SHA in `GIT_TAG` (Unity is pinned this way). `GIT_SHALLOW TRUE` is fine for floating tags on opt-in `USE_*` deps.
 - Disable the dependency's tests/examples/docs via cache variables
 
 Enable at configure time:
@@ -239,7 +241,8 @@ cmake -B build -DUSE_CURL=ON
 
 ### Strategy 2: Vendored headers (for header-only libraries)
 
-Drop headers into `third_party/<name>/` and they're automatically available if the `stb` pattern in `ThirdParty.cmake` is followed:
+This tree does **not** ship stb. Drop headers into `third_party/<name>/` *and*
+add an `if(EXISTS …)` INTERFACE target in `cmake/ThirdParty.cmake` (only `stb` is special-cased today):
 
 ```bash
 mkdir -p third_party/stb
@@ -284,8 +287,9 @@ When extending the project, make sure to:
 - [ ] Write `src/<module>/AGENTS.md` (invariants, domain practices) and
       `include/<module>/AGENTS.md` (the consumer contract) for a new module —
       see existing module guides for the shape
+- [ ] Add a new `add_library` name to `_install_targets` in `cmake/Install.cmake`
 - [ ] Run `clang-format -i` on new/changed files — CI rejects unformatted code
-- [ ] Run `ctest` and `clang-tidy` before committing
+- [ ] Run sanitizer `ctest` and `clang-tidy` before committing
 
 ---
 
