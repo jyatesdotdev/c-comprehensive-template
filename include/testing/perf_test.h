@@ -17,7 +17,7 @@
 
 /** @brief Timer state for performance measurement. */
 typedef struct {
-    const char     *label;
+    const char *label;
     struct timespec start;
 } PerfTimer;
 

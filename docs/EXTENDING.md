@@ -230,7 +230,7 @@ endif()
 Key conventions:
 - Always gate behind an `option(USE_<NAME> ...)` so it's opt-in
 - Try `find_package()` first to use a system install if available
-- Prefer a full commit SHA in `GIT_TAG` (Unity is pinned this way). `GIT_SHALLOW TRUE` is fine for floating tags on opt-in `USE_*` deps.
+- Prefer a full commit SHA in `GIT_TAG` (Unity and the `USE_*` deps are pinned this way) with `GIT_SHALLOW FALSE`.
 - Disable the dependency's tests/examples/docs via cache variables
 
 Enable at configure time:

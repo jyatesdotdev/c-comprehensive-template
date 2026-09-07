@@ -20,7 +20,7 @@ Status: `[ ]` open, `[x]` done, `[~]` deferred (design / out of this pass).
 - [x] **path_normalize 64-component cap** — `ERR_OVERFLOW`
 - [x] **process_capture** — overflow-check doubling; `ferror` → `ERR_IO`
 - [x] **dataset_batch / CSV growth wrap** — `src/ml/dataset.c`
-- [x] **fb_create size overflow + size_t indexing**
+- [x] **framebuffer_create size overflow + size_t indexing**
 - [x] **vk_pipeline ERR_UNKNOWN** → `ERR_IO`
 - [x] **HAS_NEON 32-bit ARM** — `vaddvq_f32` gated on `__aarch64__`
 - [x] **numerical_bisect** — NULL/`tol<=0` + iteration cap
@@ -50,7 +50,7 @@ Status: `[ ]` open, `[x]` done, `[~]` deferred (design / out of this pass).
 - [x] **new_module.sh** — `CHECK` not `assert()`; stub `AGENTS.md` files
 - [x] Tests for `file_io` and software renderer
 - [x] Tests for arena align rejection, cli_parse overflow, event_loop empty poll, path 65 components
-- [x] Header `@return` lists (`arena_init`, `pool_init`, `fb_create`, process, argparse)
+- [x] Header `@return` lists (`arena_init`, `pool_init`, `framebuffer_create`, process, argparse)
 - [x] `pool_init` documents silent `block_size` bump
 - [x] `log.h` — DEBUG is runtime-filtered
 - [x] `simd_ops.h` — SSE/NEON + scalar, not AVX kernels
@@ -87,15 +87,18 @@ Status: `[ ]` open, `[x]` done, `[~]` deferred (design / out of this pass).
 
 ## Closed / out of scope
 
-- Windows sockets, Windows CI, FILE_SET header isolation, `queue.h` split,
-  `fb_*` rename, mass `vec3_*` Doxygen, clang-format align churn, allocator vtable:
-  **not doing**. User does not support Windows; the rest are breaking or taste.
+- Windows sockets, Windows CI, FILE_SET header isolation: **not doing**.
+  FILE_SET would break `#include "module/foo.h"`.
 
-## Pins (Dependabot PRs #1 #2 #4 applied on main)
+## Backlog (this pass)
 
-- [x] Unity FetchContent SHA (v2.6.0)
-- [x] actions/checkout v7.0.1, upload-artifact v7.0.1, codeql upload-sarif v4.37.9
-- [~] Optional FetchContent (SDL/GLFW/…) and Docker digests — unused unless `USE_*=ON`
+- [x] Allocator vtable + `vec_init_a` (`memory/allocator.h`)
+- [x] Split `queue.h` into `spsc.h` + `blocking_queue.h` (umbrella kept)
+- [x] Rename `fb_*` → `framebuffer_*`
+- [x] Mass Doxygen `@param` on `vec2_*` / `vec3_*` / `vec4_*`
+- [x] `AlignConsecutiveDeclarations: None`
+- [x] Pin optional FetchContent SHAs (SDL/GLFW/cglm/cJSON/argtable3)
+- [x] Pin Docker `gcc:13` and distroless image digests
 
 ---
 

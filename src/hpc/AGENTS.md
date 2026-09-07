@@ -22,13 +22,13 @@ threaded tests under sanitizers after any edit.
 
 ## Per-file invariants
 
-- `queue.c` (SPSC) — the acquire/release pairs are load-bearing and each
+- `spsc.c` — the acquire/release pairs are load-bearing and each
   has a comment saying what it pairs with. One slot is deliberately wasted
   (`slots = capacity + 1`) so `head == tail` means empty without a shared
   length counter. `head`/`tail` sit on separate cache lines
   (`_Alignas(64)`) to prevent false sharing. Exactly one producer thread
   and one consumer thread — that contract is what makes lock-freedom sound.
-- `queue.c` (BlockingQueue) — `closed` semantics: push → ERR_UNSUPPORTED,
+- `blocking_queue.c` — `closed` semantics: push → ERR_UNSUPPORTED,
   pop drains then ERR_NOT_FOUND. This is the shutdown protocol demos and
   tests rely on.
 - `thread_pool.c` — workers exit only when `shutdown && queue empty`;

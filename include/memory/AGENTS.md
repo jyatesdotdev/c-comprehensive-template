@@ -6,6 +6,9 @@ Allocators compiled into the `core` target. General header rules:
 
 ## Consumer contract
 
+- `allocator.h` — pluggable heap vtable (`allocator_libc`, or swap jemalloc).
+  Pass to `vec_init_a`. NULL allocator means libc. All three callbacks must
+  be non-NULL on a custom vtable; `realloc(NULL, n)` allocates.
 - `arena.h` — bump allocator. `arena_alloc(a, size, align)` returns NULL
   when full (not an ErrorCode — allocation failure here is a normal
   outcome). `align` must be a power of two. Individual frees don't exist:

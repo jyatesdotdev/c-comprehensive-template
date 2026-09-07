@@ -36,7 +36,7 @@ static void demo_quaternions(void) {
     printf("Slerp of +X around Y axis:\n");
     for (int i = 0; i <= 4; i++) {
         float t = (float)i / 4.0f;
-        Vec3  v = quat_rotate_vec3(quat_slerp(start, end, t), (Vec3){1.0f, 0.0f, 0.0f});
+        Vec3 v = quat_rotate_vec3(quat_slerp(start, end, t), (Vec3){1.0f, 0.0f, 0.0f});
         printf("  t=%.2f -> (%.3f, %.3f, %.3f)\n", (double)t, (double)v.x, (double)v.y,
                (double)v.z);
     }
@@ -46,7 +46,7 @@ static void demo_quaternions(void) {
 static int demo_matx(void) {
     enum { N = 256 };
     MatX a, b, out;
-    Rng  rng;
+    Rng rng;
     rng_seed(&rng, 7, 1);
 
     if (matx_init(&a, N, N) || matx_init(&b, N, N) || matx_init(&out, N, N)) {

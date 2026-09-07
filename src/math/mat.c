@@ -37,7 +37,7 @@ Mat4 mat4_transpose(Mat4 a) {
 /* Cofactor-expansion inverse (the well-known gluInvertMatrix formulation). */
 bool mat4_inverse(Mat4 a, Mat4 *out_inv) {
     const float *m = a.m;
-    float        inv[16];
+    float inv[16];
 
     inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
              m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
@@ -113,7 +113,7 @@ Mat4 mat4_scale(Vec3 s) {
 }
 
 Mat4 mat4_rotate_x(float angle) {
-    Mat4  out = mat4_identity();
+    Mat4 out = mat4_identity();
     float c = cosf(angle), s = sinf(angle);
     M(out, 1, 1) = c;
     M(out, 1, 2) = -s;
@@ -123,7 +123,7 @@ Mat4 mat4_rotate_x(float angle) {
 }
 
 Mat4 mat4_rotate_y(float angle) {
-    Mat4  out = mat4_identity();
+    Mat4 out = mat4_identity();
     float c = cosf(angle), s = sinf(angle);
     M(out, 0, 0) = c;
     M(out, 0, 2) = s;
@@ -133,7 +133,7 @@ Mat4 mat4_rotate_y(float angle) {
 }
 
 Mat4 mat4_rotate_z(float angle) {
-    Mat4  out = mat4_identity();
+    Mat4 out = mat4_identity();
     float c = cosf(angle), s = sinf(angle);
     M(out, 0, 0) = c;
     M(out, 0, 1) = -s;
@@ -143,7 +143,7 @@ Mat4 mat4_rotate_z(float angle) {
 }
 
 Mat4 mat4_rotate_axis(Vec3 axis, float angle) {
-    Vec3  a = vec3_normalize(axis);
+    Vec3 a = vec3_normalize(axis);
     float c = cosf(angle), s = sinf(angle), t = 1.0f - c;
 
     Mat4 out = mat4_identity();
@@ -163,7 +163,7 @@ Mat4 mat4_perspective(float fovy_rad, float aspect, float near_z, float far_z) {
     if (!(aspect > 0.0f) || !(near_z > 0.0f) || !(far_z > near_z) || !(fovy_rad > 0.0f))
         return mat4_identity();
     float f = 1.0f / tanf(fovy_rad * 0.5f);
-    Mat4  out = {{0}};
+    Mat4 out = {{0}};
     M(out, 0, 0) = f / aspect;
     M(out, 1, 1) = f;
     M(out, 2, 2) = (far_z + near_z) / (near_z - far_z);

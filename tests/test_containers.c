@@ -10,6 +10,7 @@
 #include "containers/vec.h"
 #include "core/log.h"
 #include "core/time.h"
+#include "memory/allocator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +65,56 @@ static void test_vec(void) {
     vec_destroy(NULL);
 }
 
+static size_t g_reallocs;
+static size_t g_frees;
+
+static void *count_alloc(void *ctx, size_t size) {
+    (void)ctx;
+    return malloc(size);
+}
+
+static void *count_realloc(void *ctx, void *ptr, size_t size) {
+    (void)ctx;
+    g_reallocs++;
+    return realloc(ptr, size);
+}
+
+static void count_free(void *ctx, void *ptr) {
+    (void)ctx;
+    if (ptr) g_frees++;
+    free(ptr);
+}
+
+static void test_vec_allocator(void) {
+    Allocator counting = {
+        .alloc = count_alloc,
+        .realloc = count_realloc,
+        .free = count_free,
+        .ctx = NULL,
+    };
+    Allocator broken = allocator_libc;
+    broken.realloc = NULL;
+
+    Vec v;
+    CHECK(vec_init_a(NULL, sizeof(int), &counting) == ERR_INVALID_ARG);
+    CHECK(vec_init_a(&v, 0, &counting) == ERR_INVALID_ARG);
+    CHECK(vec_init_a(&v, sizeof(int), &broken) == ERR_INVALID_ARG);
+
+    g_reallocs = 0;
+    g_frees = 0;
+    CHECK(vec_init_a(&v, sizeof(int), &counting) == ERR_OK);
+    CHECK(v.alloc == &counting);
+    int x = 7;
+    CHECK(vec_push(&v, &x) == ERR_OK);
+    CHECK(g_reallocs >= 1);
+    vec_destroy(&v);
+    CHECK(g_frees == 1);
+
+    CHECK(vec_init_a(&v, sizeof(int), NULL) == ERR_OK);
+    CHECK(v.alloc == &allocator_libc);
+    vec_destroy(&v);
+}
+
 static void test_hashmap(void) {
     HashMap m;
     CHECK(hashmap_init(NULL) == ERR_INVALID_ARG);
@@ -75,7 +126,7 @@ static void test_hashmap(void) {
 
     /* Insert enough entries to force several rehashes */
     static int values[200];
-    char       key[32];
+    char key[32];
     for (int i = 0; i < 200; i++) {
         values[i] = i * 7;
         snprintf(key, sizeof(key), "key_%d", i);
@@ -112,8 +163,8 @@ static void test_hashmap(void) {
     /* Iterator visits every live entry exactly once */
     HashMapIter it = {0};
     const char *k = NULL;
-    void       *val = NULL;
-    size_t      seen = 0;
+    void *val = NULL;
+    size_t seen = 0;
     while (hashmap_next(&m, &it, &k, &val)) {
         CHECK(k && val);
         seen++;
@@ -229,7 +280,7 @@ static void test_log(void) {
 
     fflush(f);
     CHECK(fseek(f, 0, SEEK_SET) == 0);
-    char   buf[4096] = {0};
+    char buf[4096] = {0};
     size_t n = fread(buf, 1, sizeof(buf) - 1, f);
     CHECK(n > 0);
     CHECK(strstr(buf, "kept: warning") != NULL);
@@ -252,6 +303,7 @@ static void test_log(void) {
 int main(void) {
     test_hash();
     test_vec();
+    test_vec_allocator();
     test_hashmap();
     test_strbuf();
     test_ringbuf();

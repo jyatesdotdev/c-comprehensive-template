@@ -26,7 +26,7 @@ ErrorCode unix_listen(UnixSocket *s, const char *path, int backlog) {
     s->fd = -1;
 
     struct sockaddr_un addr;
-    ErrorCode          err = make_addr(&addr, path);
+    ErrorCode err = make_addr(&addr, path);
     if (err) return err;
 
     int fd = nw_socket(AF_UNIX, SOCK_STREAM, 0);
@@ -55,7 +55,7 @@ ErrorCode unix_connect(UnixSocket *s, const char *path) {
     s->fd = -1;
 
     struct sockaddr_un addr;
-    ErrorCode          err = make_addr(&addr, path);
+    ErrorCode err = make_addr(&addr, path);
     if (err) return err;
 
     int fd = nw_socket(AF_UNIX, SOCK_STREAM, 0);

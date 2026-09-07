@@ -31,7 +31,7 @@ ErrorCode process_capture(const char *cmd, char **out_buf, size_t *out_len) {
     if (!fp) return ERR_IO;
 
     size_t cap = 1024, len = 0;
-    char  *buf = malloc(cap);
+    char *buf = malloc(cap);
     if (!buf) {
         pclose(fp);
         return ERR_NOMEM;

@@ -36,8 +36,8 @@ static void bench_simd(void) {
     simd_add_f32(dst, a, b, N);
     simd_mul_f32(dst, a, b, N);
     simd_scale_f32(dst, a, 3.14f, N);
-    float  dot = simd_dot_f32(a, b, N);
-    float  sum = simd_sum_f32(a, N);
+    float dot = simd_dot_f32(a, b, N);
+    float sum = simd_sum_f32(a, N);
     double t1 = now_sec();
 
     printf("[SIMD] add+mul+scale+dot+sum on %d floats: %.3f ms  (dot=%.2f, sum=%.2f)\n", N,
@@ -61,7 +61,7 @@ static void compute_chunk(size_t start, size_t end, void *ctx) {
 
 static void bench_parallel_for(void) {
     double *data = malloc(N * sizeof(double));
-    ForCtx  ctx = {data};
+    ForCtx ctx = {data};
 
     double t0 = now_sec();
     compute_chunk(0, N, &ctx);

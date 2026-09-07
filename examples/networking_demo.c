@@ -22,7 +22,7 @@
 
 static int demo_tcp(void) {
     TcpSocket server, client, conn;
-    uint16_t  port = 0;
+    uint16_t port = 0;
 
     ErrorCode err = tcp_listen(&server, 0, 4);
     if (err) DIE(err, "tcp_listen");
@@ -34,8 +34,8 @@ static int demo_tcp(void) {
     if (err) DIE(err, "tcp_accept");
 
     const char msg[] = "hello over TCP";
-    char       buf[64];
-    size_t     got = 0;
+    char buf[64];
+    size_t got = 0;
     err = tcp_send_all(&client, msg, sizeof(msg));
     if (err) DIE(err, "tcp_send_all");
     err = tcp_recv(&conn, buf, sizeof(buf), &got);
@@ -50,7 +50,7 @@ static int demo_tcp(void) {
 
 static int demo_udp(void) {
     UdpSocket server, client;
-    uint16_t  port = 0;
+    uint16_t port = 0;
 
     ErrorCode err = udp_open(&server, 0);
     if (err) DIE(err, "udp_open(server)");
@@ -59,9 +59,9 @@ static int demo_udp(void) {
     err = udp_local_port(&server, &port);
     if (err) DIE(err, "udp_local_port");
 
-    const char  msg[] = "hello over UDP";
-    char        buf[64];
-    size_t      got = 0;
+    const char msg[] = "hello over UDP";
+    char buf[64];
+    size_t got = 0;
     UdpEndpoint from;
     err = udp_send_to(&client, "127.0.0.1", port, msg, sizeof(msg));
     if (err) DIE(err, "udp_send_to");
@@ -77,7 +77,7 @@ static int demo_udp(void) {
 
 static int demo_unix(void) {
     const char *path = "networking_demo.sock";
-    UnixSocket  server, client, conn;
+    UnixSocket server, client, conn;
 
     ErrorCode err = unix_listen(&server, path, 4);
     if (err) DIE(err, "unix_listen");
@@ -87,8 +87,8 @@ static int demo_unix(void) {
     if (err) DIE(err, "unix_accept");
 
     const char msg[] = "hello over Unix socket";
-    char       buf[64];
-    size_t     got = 0;
+    char buf[64];
+    size_t got = 0;
     err = unix_send_all(&client, msg, sizeof(msg));
     if (err) DIE(err, "unix_send_all");
     err = unix_recv(&conn, buf, sizeof(buf), &got);

@@ -19,8 +19,8 @@ enum { DEFAULT_PORT = 7777, NUM_WORKERS = 4, BACKLOG = 16 };
 /** Echo everything a client sends until it disconnects. Owns and frees `arg`. */
 static void handle_client(void *arg) {
     TcpSocket *client = arg;
-    char       buf[1024];
-    size_t     got = 0;
+    char buf[1024];
+    size_t got = 0;
 
     while (tcp_recv(client, buf, sizeof(buf), &got) == ERR_OK && got > 0) {
         if (tcp_send_all(client, buf, got) != ERR_OK) break;

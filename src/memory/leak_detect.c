@@ -14,16 +14,16 @@
 #include <string.h>
 
 typedef struct AllocRecord {
-    void               *ptr;
-    size_t              size;
-    const char         *file;
-    int                 line;
+    void *ptr;
+    size_t size;
+    const char *file;
+    int line;
     struct AllocRecord *next;
 } AllocRecord;
 
 static AllocRecord *g_head;
-static size_t       g_total_allocs;
-static size_t       g_total_frees;
+static size_t g_total_allocs;
+static size_t g_total_frees;
 
 void leak_detect_init(void) {
     g_head = NULL;

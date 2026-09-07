@@ -9,7 +9,8 @@ the genericity decision): `src/containers/AGENTS.md`.
 - **Element-size genericity**: `vec_init(&v, sizeof(T))`, then pass `&value`
   to push and cast `vec_at` results. For pointer payloads store the pointer
   itself (`vec_push(&v, &ptr)`). The container memcpys by value and never
-  owns what pointers point at.
+  owns what pointers point at. `vec_init_a` uses a custom `Allocator`
+  (`memory/allocator.h`); NULL means libc.
 - **Growth invalidates interior pointers**: any pointer from `vec_at` (or
   address of a hashmap value you stashed) dies on the next growing
   operation. Reserve capacity up front if you must hold addresses

@@ -33,15 +33,15 @@ typedef enum {
  * are sized on first forward and resized automatically if the batch changes.
  */
 typedef struct DenseLayer {
-    size_t     in_dim;  /**< Input feature count. */
-    size_t     out_dim; /**< Output feature count. */
-    Activation act;     /**< Activation function. */
-    MatX       w;       /**< Weights (in_dim x out_dim). */
-    MatX       b;       /**< Bias (1 x out_dim). */
-    MatX       dw;      /**< Weight gradient, filled by dense_backward. */
-    MatX       db;      /**< Bias gradient, filled by dense_backward. */
-    MatX       x_cache; /**< Last forward input (batch x in_dim). */
-    MatX       z_cache; /**< Last pre-activation (batch x out_dim). */
+    size_t in_dim;  /**< Input feature count. */
+    size_t out_dim; /**< Output feature count. */
+    Activation act; /**< Activation function. */
+    MatX w;         /**< Weights (in_dim x out_dim). */
+    MatX b;         /**< Bias (1 x out_dim). */
+    MatX dw;        /**< Weight gradient, filled by dense_backward. */
+    MatX db;        /**< Bias gradient, filled by dense_backward. */
+    MatX x_cache;   /**< Last forward input (batch x in_dim). */
+    MatX z_cache;   /**< Last pre-activation (batch x out_dim). */
 } DenseLayer;
 
 /**
@@ -91,7 +91,7 @@ ErrorCode dense_sgd_step(DenseLayer *l, float lr);
 typedef struct AdamState {
     MatX mw, vw; /**< Moments for weights. */
     MatX mb, vb; /**< Moments for bias. */
-    int  t;      /**< Step count (for bias correction). */
+    int t;       /**< Step count (for bias correction). */
 } AdamState;
 
 /** @brief Allocate zeroed Adam moments matching a layer's shapes. */

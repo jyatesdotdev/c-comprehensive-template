@@ -10,20 +10,20 @@
 
 /** @brief A single queued task node in the pool's linked list. */
 typedef struct Task {
-    TaskFunc     func;
-    void        *arg;
+    TaskFunc func;
+    void *arg;
     struct Task *next;
 } Task;
 
 /** @brief Internal thread pool state (opaque to callers). */
 struct ThreadPool {
-    pthread_t      *threads;
-    size_t          num_threads;
-    Task           *queue_head;
-    Task           *queue_tail;
+    pthread_t *threads;
+    size_t num_threads;
+    Task *queue_head;
+    Task *queue_tail;
     pthread_mutex_t mutex;
-    pthread_cond_t  cond;
-    bool            shutdown;
+    pthread_cond_t cond;
+    bool shutdown;
 };
 
 /** @brief Worker loop: dequeue and execute tasks until shutdown. */

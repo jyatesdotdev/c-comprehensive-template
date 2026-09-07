@@ -122,7 +122,7 @@ static void test_mat4(void) {
     /* Degenerate frustum/box must not divide by zero — identity is returned. */
     Mat4 bad_p = mat4_perspective(scalar_deg_to_rad(60.0f), 0.0f, 0.1f, 100.0f);
     Mat4 ident = mat4_identity();
-    int  same_p = 1, same_o = 1;
+    int same_p = 1, same_o = 1;
     for (int i = 0; i < 16; i++) {
         if (bad_p.m[i] != ident.m[i]) same_p = 0;
     }
@@ -161,7 +161,7 @@ static void test_quat(void) {
                          (Vec3){1.0f, 0.0f, 0.0f}, EPS));
     CHECK(vec3_approx_eq(quat_rotate_vec3(quat_slerp(a, qz, 1.0f), (Vec3){1.0f, 0.0f, 0.0f}),
                          (Vec3){0.0f, 1.0f, 0.0f}, EPS));
-    Vec3  mid = quat_rotate_vec3(quat_slerp(a, qz, 0.5f), (Vec3){1.0f, 0.0f, 0.0f});
+    Vec3 mid = quat_rotate_vec3(quat_slerp(a, qz, 0.5f), (Vec3){1.0f, 0.0f, 0.0f});
     float inv_sqrt2 = 1.0f / sqrtf(2.0f);
     CHECK(vec3_approx_eq(mid, (Vec3){inv_sqrt2, inv_sqrt2, 0.0f}, 1e-4f));
 

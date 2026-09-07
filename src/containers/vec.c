@@ -10,30 +10,47 @@
 
 #define VEC_INITIAL_CAP 8
 
-ErrorCode vec_init(Vec *v, size_t elem_size) {
+static const Allocator *vec_heap(const Allocator *alloc) {
+    if (!alloc) return &allocator_libc;
+    if (!alloc->realloc || !alloc->free) return NULL;
+    return alloc;
+}
+
+ErrorCode vec_init_a(Vec *v, size_t elem_size, const Allocator *alloc) {
     if (!v || elem_size == 0) return ERR_INVALID_ARG;
+    alloc = vec_heap(alloc);
+    if (!alloc) return ERR_INVALID_ARG;
     v->data = NULL;
     v->len = 0;
     v->cap = 0;
     v->elem_size = elem_size;
+    v->alloc = alloc;
     return ERR_OK;
 }
 
+ErrorCode vec_init(Vec *v, size_t elem_size) {
+    return vec_init_a(v, elem_size, &allocator_libc);
+}
+
 void vec_destroy(Vec *v) {
-    if (v) {
-        free(v->data);
-        v->data = NULL;
-        v->len = 0;
-        v->cap = 0;
+    if (!v) return;
+    if (v->data) {
+        if (v->alloc && v->alloc->free) v->alloc->free(v->alloc->ctx, v->data);
+        else free(v->data);
     }
+    v->data = NULL;
+    v->len = 0;
+    v->cap = 0;
+    v->elem_size = 0;
+    v->alloc = NULL;
 }
 
 ErrorCode vec_reserve(Vec *v, size_t cap) {
-    if (!v || v->elem_size == 0) return ERR_INVALID_ARG;
+    if (!v || v->elem_size == 0 || !v->alloc || !v->alloc->realloc) return ERR_INVALID_ARG;
     if (cap <= v->cap) return ERR_OK;
     if (cap > SIZE_MAX / v->elem_size) return ERR_OVERFLOW;
 
-    unsigned char *tmp = realloc(v->data, cap * v->elem_size);
+    unsigned char *tmp = v->alloc->realloc(v->alloc->ctx, v->data, cap * v->elem_size);
     if (!tmp) return ERR_NOMEM;
     v->data = tmp;
     v->cap = cap;

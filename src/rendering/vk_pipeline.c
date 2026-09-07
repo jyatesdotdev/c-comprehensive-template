@@ -50,7 +50,7 @@ ErrorCode vk_context_create(VkContext *ctx, const char *app_name) {
         return ERR_IO;
     }
 
-    float                   priority = 1.0f;
+    float priority = 1.0f;
     VkDeviceQueueCreateInfo qci = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
         .queueFamilyIndex = ctx->queue_family,

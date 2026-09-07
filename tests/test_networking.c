@@ -22,9 +22,9 @@
 
 static void test_tcp_invalid_args(void) {
     TcpSocket s = {.fd = -1};
-    uint16_t  port = 0;
-    size_t    n = 0;
-    char      buf[8];
+    uint16_t port = 0;
+    size_t n = 0;
+    char buf[8];
 
     CHECK(tcp_connect(NULL, "127.0.0.1", 80) == ERR_INVALID_ARG);
     CHECK(tcp_connect(&s, NULL, 80) == ERR_INVALID_ARG);
@@ -62,7 +62,7 @@ static void test_tcp_loopback_roundtrip(void) {
     const char msg[] = "ping";
     CHECK(tcp_send_all(&client, msg, sizeof(msg)) == ERR_OK);
 
-    char   buf[16];
+    char buf[16];
     size_t total = 0;
     while (total < sizeof(msg)) {
         size_t got = 0;
@@ -91,9 +91,9 @@ static void test_tcp_loopback_roundtrip(void) {
 
 static void test_udp_invalid_args(void) {
     UdpSocket s = {.fd = -1};
-    uint16_t  port = 0;
-    size_t    n = 0;
-    char      buf[8];
+    uint16_t port = 0;
+    size_t n = 0;
+    char buf[8];
 
     CHECK(udp_open(NULL, 0) == ERR_INVALID_ARG);
     CHECK(udp_open_host(NULL, "127.0.0.1", 0) == ERR_INVALID_ARG);
@@ -117,8 +117,8 @@ static void test_udp_loopback_roundtrip(void) {
     const char msg[] = "datagram";
     CHECK(udp_send_to(&client, "127.0.0.1", server_port, msg, sizeof(msg)) == ERR_OK);
 
-    char        buf[32];
-    size_t      got = 0;
+    char buf[32];
+    size_t got = 0;
     UdpEndpoint from;
     CHECK(udp_recv_from(&server, buf, sizeof(buf), &got, &from) == ERR_OK);
     CHECK(got == sizeof(msg));
@@ -138,9 +138,9 @@ static void test_udp_loopback_roundtrip(void) {
 
 static void test_unix_invalid_args(void) {
     UnixSocket s = {.fd = -1};
-    size_t     n = 0;
-    char       buf[8];
-    char       long_path[256];
+    size_t n = 0;
+    char buf[8];
+    char long_path[256];
 
     CHECK(unix_listen(NULL, UNIX_TEST_PATH, 4) == ERR_INVALID_ARG);
     CHECK(unix_listen(&s, "", 4) == ERR_INVALID_ARG);
@@ -167,7 +167,7 @@ static void test_unix_roundtrip(void) {
     const char msg[] = "local ipc";
     CHECK(unix_send_all(&client, msg, sizeof(msg)) == ERR_OK);
 
-    char   buf[32];
+    char buf[32];
     size_t total = 0;
     while (total < sizeof(msg)) {
         size_t got = 0;

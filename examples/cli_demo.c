@@ -77,7 +77,7 @@ static int cmd_run(int argc, char **argv) {
     }
 
     const char *jobs_str = cli_resolve(&ctx, "jobs");
-    int         jobs = jobs_str ? (int)strtol(jobs_str, NULL, 10) : 1;
+    int jobs = jobs_str ? (int)strtol(jobs_str, NULL, 10) : 1;
     if (cli_flag(&ctx, "verbose")) printf("Running with %d job(s)\n", jobs);
 
     /* Demo progress bar. */
@@ -101,9 +101,9 @@ static int cmd_status(int argc, char **argv) {
 
     cli_color_fprintf(stdout, CLR_BOLD, "Project Status\n\n");
 
-    const int   widths[] = {20, 12, 30};
+    const int widths[] = {20, 12, 30};
     const char *headers[] = {"Component", "Status", "Details"};
-    CliTable    tbl;
+    CliTable tbl;
     cli_table_init(&tbl, stdout, 3, widths, headers);
     cli_table_header(&tbl);
 

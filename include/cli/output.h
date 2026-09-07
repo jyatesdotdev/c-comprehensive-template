@@ -50,9 +50,9 @@ void cli_color_fprintf(FILE *stream, const char *color, const char *fmt, ...)
 
 /** @brief Table state for formatted column output. */
 typedef struct {
-    int   num_cols;
-    int   widths[CLI_TABLE_MAX_COLS];      /**< Column widths. */
-    char  headers[CLI_TABLE_MAX_COLS][64]; /**< Column header labels. */
+    int num_cols;
+    int widths[CLI_TABLE_MAX_COLS];       /**< Column widths. */
+    char headers[CLI_TABLE_MAX_COLS][64]; /**< Column header labels. */
     FILE *out;
 } CliTable;
 

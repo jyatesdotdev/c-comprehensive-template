@@ -15,8 +15,8 @@
 /** @brief RGBA framebuffer (pixels stored as 0xAARRGGBB). */
 typedef struct {
     uint32_t *pixels;
-    int       width;
-    int       height;
+    int width;
+    int height;
 } Framebuffer;
 
 /* ── Lifecycle ─────────────────────────────────────────────────────────── */
@@ -28,13 +28,13 @@ typedef struct {
  * @param height Height in pixels.
  * @return ERR_OK on success, ERR_INVALID_ARG, ERR_OVERFLOW, or ERR_NOMEM.
  */
-ErrorCode fb_create(Framebuffer *fb, int width, int height);
+ErrorCode framebuffer_create(Framebuffer *fb, int width, int height);
 
 /**
  * @brief Destroy a framebuffer and free its pixel buffer.
  * @param fb Framebuffer to destroy.
  */
-void fb_destroy(Framebuffer *fb);
+void framebuffer_destroy(Framebuffer *fb);
 
 /* ── Drawing ───────────────────────────────────────────────────────────── */
 
@@ -43,7 +43,7 @@ void fb_destroy(Framebuffer *fb);
  * @param fb    Framebuffer to clear.
  * @param color Fill color (0xAARRGGBB).
  */
-void fb_clear(Framebuffer *fb, uint32_t color);
+void framebuffer_clear(Framebuffer *fb, uint32_t color);
 
 /**
  * @brief Set a single pixel. Out-of-bounds coordinates are ignored.
@@ -52,7 +52,7 @@ void fb_clear(Framebuffer *fb, uint32_t color);
  * @param y     Y coordinate.
  * @param color Pixel color (0xAARRGGBB).
  */
-void fb_set_pixel(Framebuffer *fb, int x, int y, uint32_t color);
+void framebuffer_set_pixel(Framebuffer *fb, int x, int y, uint32_t color);
 
 /**
  * @brief Draw a line using Bresenham's algorithm.
@@ -63,7 +63,7 @@ void fb_set_pixel(Framebuffer *fb, int x, int y, uint32_t color);
  * @param y1    End Y.
  * @param color Line color (0xAARRGGBB).
  */
-void fb_line(Framebuffer *fb, int x0, int y0, int x1, int y1, uint32_t color);
+void framebuffer_line(Framebuffer *fb, int x0, int y0, int x1, int y1, uint32_t color);
 
 /**
  * @brief Draw a filled rectangle.
@@ -74,7 +74,7 @@ void fb_line(Framebuffer *fb, int x0, int y0, int x1, int y1, uint32_t color);
  * @param h     Height in pixels.
  * @param color Fill color (0xAARRGGBB).
  */
-void fb_fill_rect(Framebuffer *fb, int x, int y, int w, int h, uint32_t color);
+void framebuffer_fill_rect(Framebuffer *fb, int x, int y, int w, int h, uint32_t color);
 
 /**
  * @brief Draw a circle outline using the midpoint algorithm.
@@ -84,7 +84,7 @@ void fb_fill_rect(Framebuffer *fb, int x, int y, int w, int h, uint32_t color);
  * @param r     Radius in pixels.
  * @param color Circle color (0xAARRGGBB).
  */
-void fb_circle(Framebuffer *fb, int cx, int cy, int r, uint32_t color);
+void framebuffer_circle(Framebuffer *fb, int cx, int cy, int r, uint32_t color);
 
 /* ── Output ────────────────────────────────────────────────────────────── */
 
@@ -94,7 +94,7 @@ void fb_circle(Framebuffer *fb, int cx, int cy, int r, uint32_t color);
  * @param path Output file path.
  * @return ERR_OK on success, ERR_IO on file error.
  */
-ErrorCode fb_write_ppm(const Framebuffer *fb, const char *path);
+ErrorCode framebuffer_write_ppm(const Framebuffer *fb, const char *path);
 
 /* ── Color helpers ─────────────────────────────────────────────────────── */
 
@@ -105,7 +105,7 @@ ErrorCode fb_write_ppm(const Framebuffer *fb, const char *path);
  * @param b Blue component (0–255).
  * @return Color value as 0xFFRRGGBB.
  */
-static inline uint32_t fb_rgb(uint8_t r, uint8_t g, uint8_t b) {
+static inline uint32_t framebuffer_rgb(uint8_t r, uint8_t g, uint8_t b) {
     return 0xFF000000u | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
 }
 

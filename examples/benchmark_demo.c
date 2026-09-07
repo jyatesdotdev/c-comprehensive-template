@@ -19,7 +19,7 @@
 
 /* Prevent compiler from optimizing away results. */
 static volatile float sink_f;
-static volatile int   sink_i;
+static volatile int sink_i;
 
 #define N     (1 << 20) /* ~1M elements */
 #define ITERS 100

@@ -14,9 +14,9 @@
 /* ── Read readiness via a pipe ──────────────────────────────────────────── */
 
 typedef struct ReadCtx {
-    int          fired;
+    int fired;
     unsigned int events;
-    char         byte;
+    char byte;
 } ReadCtx;
 
 static void on_readable(int fd, unsigned int events, void *ud) {
@@ -101,7 +101,7 @@ static void test_write_event_and_mod(void) {
 typedef struct ServerCtx {
     EventLoop *loop;
     TcpSocket *listener;
-    int        clients_served;
+    int clients_served;
 } ServerCtx;
 
 static void on_client_data(int fd, unsigned int events, void *ud) {
@@ -109,8 +109,8 @@ static void on_client_data(int fd, unsigned int events, void *ud) {
     (void)events;
 
     TcpSocket client = {.fd = fd};
-    char      buf[256];
-    size_t    got = 0;
+    char buf[256];
+    size_t got = 0;
     if (tcp_recv(&client, buf, sizeof(buf), &got) != ERR_OK || got == 0) {
         CHECK(event_loop_remove(srv->loop, fd) == ERR_OK); /* EOF: remove from inside cb */
         tcp_close(&client);
@@ -152,7 +152,7 @@ static void test_echo_server_loop(void) {
     CHECK(tcp_send_all(&c2, "two", 3) == ERR_OK);
     for (int i = 0; i < 4; i++) CHECK(event_loop_poll_once(loop, 1000) == ERR_OK);
 
-    char   buf[16];
+    char buf[16];
     size_t got = 0;
     CHECK(tcp_recv(&c1, buf, sizeof(buf), &got) == ERR_OK && got == 3);
     CHECK(memcmp(buf, "one", 3) == 0);
@@ -175,13 +175,13 @@ static void test_echo_server_loop(void) {
 
 typedef struct StopCtx {
     EventLoop *loop;
-    int        drained;
+    int drained;
 } StopCtx;
 
 static void on_stop_byte(int fd, unsigned int events, void *ud) {
     (void)events;
     StopCtx *ctx = ud;
-    char     c;
+    char c;
     CHECK(read(fd, &c, 1) == 1);
     ctx->drained++;
     event_loop_stop(ctx->loop);

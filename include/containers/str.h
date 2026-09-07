@@ -16,7 +16,7 @@
 /** @brief Non-owning view of len bytes at data (not NUL-terminated). */
 typedef struct StrView {
     const char *data; /**< First byte, or NULL for the empty/invalid view. */
-    size_t      len;  /**< Byte count. */
+    size_t len;       /**< Byte count. */
 } StrView;
 
 /** @brief View over a NUL-terminated string (NULL yields the empty view). */

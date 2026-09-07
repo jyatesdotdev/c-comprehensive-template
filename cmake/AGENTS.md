@@ -31,9 +31,9 @@ recreating it.
 
 **Optional dependency block** (`ThirdParty.cmake`):
 - Always gate behind `option(USE_<NAME> ... OFF)` — opt-in, never default-on.
-- Try `find_package()` first; fall back to FetchContent with a pinned
-  `GIT_TAG` and `GIT_SHALLOW TRUE`. Heavy libraries (OpenBLAS) are
-  find-only — don't build the world from source.
+- Try `find_package()` first; fall back to FetchContent with a **full commit SHA**
+  in `GIT_TAG` and `GIT_SHALLOW FALSE` (CMake cannot shallow-clone an arbitrary SHA).
+  Heavy libraries (OpenBLAS) are find-only — don't build the world from source.
 - Disable the dependency's own tests/examples via cache variables.
 
 **Third-party code is exempt from our lint rules.** Anything fetched into

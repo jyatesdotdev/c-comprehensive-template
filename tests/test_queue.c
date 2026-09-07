@@ -62,7 +62,7 @@ static void test_spsc_threads(void) {
 
     /* Consumer: every value arrives exactly once, in order. */
     long long sum = 0;
-    int       expect = 1, v = 0;
+    int expect = 1, v = 0;
     while (expect <= SPSC_ITEMS) {
         if (spsc_pop(&q, &v)) {
             CHECK(v == expect);
@@ -101,7 +101,7 @@ static void test_bq_threads(void) {
     long long expect_sum =
         (long long)BQ_PRODUCERS * ((long long)BQ_PER_PRODUCER * (BQ_PER_PRODUCER + 1) / 2);
     long long sum = 0;
-    int       v = 0;
+    int v = 0;
     for (int n = 0; n < BQ_PRODUCERS * BQ_PER_PRODUCER; n++) {
         CHECK(bq_pop(&q, &v) == ERR_OK);
         sum += v;

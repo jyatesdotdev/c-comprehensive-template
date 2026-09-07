@@ -38,7 +38,7 @@ int main(void) {
     printf("  integral(sin, 0, pi) = %.10f  (exact: 2.0)\n\n", result);
 
     /* 2. Root finding: x^3 - x - 2 = 0 */
-    int    iters;
+    int iters;
     double root_b = numerical_bisect(f_poly, 1.0, 2.0, 1e-10, &iters);
     printf("=== Root Finding ===\n");
     printf("  Bisection:       x = %.10f  (%d iters)\n", root_b, iters);
@@ -64,8 +64,8 @@ int main(void) {
         {.pos = {1, 5, 0}, .vel = {2, 0, 0}, .prev_pos = {1, 5, 0}, .mass = 1.0f},
         {.pos = {4, 5, 0}, .vel = {-1, 0, 0}, .prev_pos = {4, 5, 0}, .mass = 1.0f},
     };
-    Vec3  gravity = {0, -9.81f, 0};
-    Vec3  bounds = {10, 10, 10};
+    Vec3 gravity = {0, -9.81f, 0};
+    Vec3 bounds = {10, 10, 10};
     float pdt = 0.016f;
 
     for (int i = 0; i <= 60; i++) {

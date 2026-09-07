@@ -22,7 +22,7 @@ typedef struct WorkItem {
 
 typedef struct ProducerArgs {
     BlockingQueue *queue;
-    int            id;
+    int id;
 } ProducerArgs;
 
 static void *producer_main(void *arg) {
@@ -46,7 +46,7 @@ int main(void) {
         return 1;
     }
 
-    pthread_t    threads[PRODUCERS];
+    pthread_t threads[PRODUCERS];
     ProducerArgs args[PRODUCERS];
     for (int p = 0; p < PRODUCERS; p++) {
         args[p] = (ProducerArgs){.queue = &queue, .id = p};
@@ -60,7 +60,7 @@ int main(void) {
        many; open-ended pipelines would close the queue from a coordinator. */
     long long total = 0;
     long long per_producer[PRODUCERS] = {0};
-    WorkItem  item;
+    WorkItem item;
     for (int n = 0; n < PRODUCERS * ITEMS_PER_PRODUCER; n++) {
         if (bq_pop(&queue, &item) != ERR_OK) break;
         total += item.value;

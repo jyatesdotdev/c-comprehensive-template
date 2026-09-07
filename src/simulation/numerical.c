@@ -40,7 +40,7 @@ double numerical_newton(double (*f)(double), double (*df)(double), double x0, do
         return x0;
     }
     double x = x0;
-    int    i;
+    int i;
     for (i = 0; i < max_iter; i++) {
         double fx = f(x);
         double dfx = df(x);
@@ -90,7 +90,7 @@ ErrorCode numerical_rk4_integrate(OdeFunc f, double t0, double t1, double *y, in
 
     double t = t0;
     while (t < t1 - dt * 0.5) {
-        double    step = (t + dt > t1) ? t1 - t : dt;
+        double step = (t + dt > t1) ? t1 - t : dt;
         ErrorCode err = numerical_rk4_step(f, t, y, n, step, ctx);
         if (err) return err; /* stop at the failing step; y holds the last good state */
         t += step;

@@ -19,7 +19,7 @@ int main(void) {
     CHECK(file_write_all(path, payload, sizeof(payload) - 1) == ERR_OK);
 
     unsigned char *buf = NULL;
-    size_t         size = 0;
+    size_t size = 0;
     CHECK(file_read_all(path, &buf, &size) == ERR_OK);
     CHECK(size == sizeof(payload) - 1);
     CHECK(memcmp(buf, payload, size) == 0);

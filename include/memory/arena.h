@@ -10,8 +10,8 @@
 
 typedef struct Arena {
     unsigned char *buf;
-    size_t         cap;
-    size_t         pos;
+    size_t cap;
+    size_t pos;
 } Arena;
 
 /**

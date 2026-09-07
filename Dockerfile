@@ -1,5 +1,6 @@
 # ── Stage 1: Build ──────────────────────────────────────────────────────────
-FROM gcc:13 AS builder
+# gcc 13.4.0 — multi-arch index digest (linux/amd64 + linux/arm64).
+FROM gcc:13@sha256:3617a214e52a25bde5375dc9503b5e67f01b6c7322a30137e2790aa8e6db5d1f AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends cmake && \
     rm -rf /var/lib/apt/lists/*
@@ -21,7 +22,8 @@ RUN cmake -B out -DCMAKE_BUILD_TYPE=Release \
     cmake --build out --parallel "$(nproc)"
 
 # ── Stage 2: Runtime ───────────────────────────────────────────────────────
-FROM gcr.io/distroless/cc-debian12
+# distroless cc-debian12 — multi-arch index digest.
+FROM gcr.io/distroless/cc-debian12@sha256:e5d81ddde149641e2a9ba55be4545bc125c67de07508b03ba4c22e6eb0ded5aa
 
 LABEL maintainer="maintainer@example.com" \
       version="1.0.0" \

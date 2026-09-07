@@ -33,7 +33,7 @@ void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_
     }
 
     pthread_t *threads = malloc(num_threads * sizeof(pthread_t));
-    ChunkArg  *args = malloc(num_threads * sizeof(ChunkArg));
+    ChunkArg *args = malloc(num_threads * sizeof(ChunkArg));
     if (!threads || !args) {
         free(threads);
         free(args);
@@ -63,7 +63,7 @@ void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_
 typedef struct {
     size_t start, end;
     double (*map)(size_t, size_t, void *);
-    void  *ctx;
+    void *ctx;
     double result;
 } ReduceArg;
 
@@ -74,7 +74,7 @@ static void *reduce_worker(void *arg) {
     return NULL;
 }
 
-double parallel_reduce(size_t n, size_t                                          num_threads,
+double parallel_reduce(size_t n, size_t num_threads,
                        double (*map)(size_t start, size_t end, void *ctx), void *ctx,
                        double (*reduce)(double a, double b)) {
     if (n == 0) return 0.0;

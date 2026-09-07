@@ -37,7 +37,7 @@ void *pool_alloc(Pool *p) {
 void pool_free(Pool *p, void *ptr) {
     if (!p || !ptr || !p->buf) return;
     unsigned char *b = ptr;
-    size_t         span = p->block_size * p->block_count;
+    size_t span = p->block_size * p->block_count;
     if (b < p->buf || b >= p->buf + span) return;
     if ((size_t)(b - p->buf) % p->block_size != 0) return;
     *(void **)ptr = p->free_list;

@@ -16,11 +16,11 @@
 
 /** @brief Vulkan context holding instance, device, and queue handles. */
 typedef struct {
-    VkInstance       instance;
+    VkInstance instance;
     VkPhysicalDevice physical_device;
-    VkDevice         device;
-    VkQueue          graphics_queue;
-    uint32_t         queue_family;
+    VkDevice device;
+    VkQueue graphics_queue;
+    uint32_t queue_family;
 } VkContext;
 
 /**

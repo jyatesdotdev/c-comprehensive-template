@@ -50,7 +50,7 @@ int nw_accept_intr(int listen_fd) {
 
 ErrorCode nw_send_all(int fd, const void *buf, size_t len) {
     const unsigned char *p = buf;
-    size_t               sent = 0;
+    size_t sent = 0;
     while (sent < len) {
         ssize_t n = send(fd, p + sent, len - sent, MSG_NOSIGNAL);
         if (n <= 0) {
@@ -153,7 +153,7 @@ ErrorCode tcp_local_port(const TcpSocket *s, uint16_t *out_port) {
     if (!s || s->fd < 0 || !out_port) return ERR_INVALID_ARG;
 
     struct sockaddr_storage ss;
-    socklen_t               len = sizeof(ss);
+    socklen_t len = sizeof(ss);
     if (getsockname(s->fd, (struct sockaddr *)&ss, &len) != 0) return ERR_IO;
 
     if (ss.ss_family == AF_INET) {

@@ -29,7 +29,7 @@ void parallel_for(size_t n, size_t num_threads, void (*body)(size_t start, size_
  * @param reduce      Reduction function combining two partial results.
  * @return Final reduced value.
  */
-double parallel_reduce(size_t n, size_t                                          num_threads,
+double parallel_reduce(size_t n, size_t num_threads,
                        double (*map)(size_t start, size_t end, void *ctx), void *ctx,
                        double (*reduce)(double a, double b));
 

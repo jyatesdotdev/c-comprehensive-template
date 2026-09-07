@@ -10,9 +10,9 @@
 
 /** @brief Particle with position, velocity, and mass. */
 typedef struct {
-    Vec3  pos;
-    Vec3  vel;
-    Vec3  prev_pos; /**< For Verlet integration. */
+    Vec3 pos;
+    Vec3 vel;
+    Vec3 prev_pos; /**< For Verlet integration. */
     float mass;
 } Particle;
 

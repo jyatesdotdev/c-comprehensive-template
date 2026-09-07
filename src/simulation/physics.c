@@ -37,7 +37,7 @@ void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, flo
                           float dt) {
     if (!a || !b || a->mass <= 0.0f || b->mass <= 0.0f) return;
 
-    Vec3  delta = vec3_sub(b->pos, a->pos);
+    Vec3 delta = vec3_sub(b->pos, a->pos);
     float dist = vec3_length(delta);
     if (dist < 1e-8f) return;
 
@@ -54,13 +54,13 @@ void physics_apply_spring(Particle *a, Particle *b, float rest_len, float k, flo
 void physics_collide_spheres(Particle *a, Particle *b, float radius) {
     if (!a || !b) return;
 
-    Vec3  delta = vec3_sub(b->pos, a->pos);
+    Vec3 delta = vec3_sub(b->pos, a->pos);
     float dist2 = vec3_dot(delta, delta);
     float min_dist = 2.0f * radius;
     if (dist2 >= min_dist * min_dist || dist2 < 1e-12f) return;
 
     float dist = sqrtf(dist2);
-    Vec3  normal = vec3_scale(delta, 1.0f / dist);
+    Vec3 normal = vec3_scale(delta, 1.0f / dist);
     float ma = a->mass > 0.0f ? a->mass : 1.0f;
     float mb = b->mass > 0.0f ? b->mass : 1.0f;
     float inv_mass = 1.0f / (ma + mb);
@@ -83,7 +83,7 @@ void physics_confine_box(Particle *p, Vec3 bounds, float restitution) {
     if (!p) return;
     float *pos[3] = {&p->pos.x, &p->pos.y, &p->pos.z};
     float *vel[3] = {&p->vel.x, &p->vel.y, &p->vel.z};
-    float  limit[3] = {bounds.x, bounds.y, bounds.z};
+    float limit[3] = {bounds.x, bounds.y, bounds.z};
     for (int axis = 0; axis < 3; axis++) {
         if (*pos[axis] < 0.0f) {
             *pos[axis] = 0.0f;

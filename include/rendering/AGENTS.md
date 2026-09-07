@@ -9,7 +9,7 @@ General header rules: `include/AGENTS.md`; target split and invariants:
 - `software_renderer.h` — link `rendering_sw` (always built). Pixels are
   `uint32_t` 0xAARRGGBB; coordinates are ints with (0,0) top-left. All
   drawing clips to the framebuffer — out-of-bounds draws are safe no-ops,
-  not errors. `fb_create`/`fb_destroy` pair; `fb_write_ppm` writes a
+  not errors. `framebuffer_create`/`framebuffer_destroy` pair; `framebuffer_write_ppm` writes a
   binary P6 file (viewable almost anywhere) and reports write failures.
 - `gl_pipeline.h` / `vk_pipeline.h` — only meaningful with
   `-DENABLE_RENDERING=ON` (links the `rendering` target); **CI never

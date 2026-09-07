@@ -28,9 +28,9 @@ static void make_spiral(MatX *x, MatX *labels, Rng *rng) {
     for (int c = 0; c < CLASSES; c++) {
         for (int i = 0; i < PER_CLASS; i++) {
             size_t row = (size_t)c * PER_CLASS + (size_t)i;
-            float  t = (float)i / (float)PER_CLASS;
-            float  radius = t;
-            float  angle = (float)c * 4.0f + t * 4.0f + rng_normal(rng) * 0.2f;
+            float t = (float)i / (float)PER_CLASS;
+            float radius = t;
+            float angle = (float)c * 4.0f + t * 4.0f + rng_normal(rng) * 0.2f;
             matx_set(x, row, 0, radius * sinf(angle));
             matx_set(x, row, 1, radius * cosf(angle));
             matx_set(labels, row, 0, (float)c);
@@ -55,7 +55,7 @@ int main(void) {
 
     /* ── Model: 2 → HIDDEN (tanh) → CLASSES (linear + softmax-xent) ────── */
     DenseLayer l1, l2;
-    AdamState  a1, a2;
+    AdamState a1, a2;
     if (dense_init(&l1, 2, HIDDEN, ACT_TANH, &rng) ||
         dense_init(&l2, HIDDEN, CLASSES, ACT_LINEAR, &rng) || adam_init(&a1, &l1) ||
         adam_init(&a2, &l2)) {
@@ -76,7 +76,7 @@ int main(void) {
            BATCH);
     for (int epoch = 1; epoch <= EPOCHS; epoch++) {
         float epoch_loss = 0.0f;
-        int   batches = 0;
+        int batches = 0;
 
         for (size_t start = 0; start + BATCH <= SAMPLES; start += BATCH) {
             dataset_batch(&x, start, BATCH, &bx);

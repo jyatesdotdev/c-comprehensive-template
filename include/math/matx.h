@@ -16,10 +16,10 @@
 
 /** @brief Dynamically sized row-major float matrix. */
 typedef struct MatX {
-    float *data;      /**< rows * cols floats, row-major. */
-    size_t rows;      /**< Number of rows. */
-    size_t cols;      /**< Number of columns. */
-    int    owns_data; /**< Nonzero if data is heap-owned (freed by matx_destroy). */
+    float *data;   /**< rows * cols floats, row-major. */
+    size_t rows;   /**< Number of rows. */
+    size_t cols;   /**< Number of columns. */
+    int owns_data; /**< Nonzero if data is heap-owned (freed by matx_destroy). */
 } MatX;
 
 /**

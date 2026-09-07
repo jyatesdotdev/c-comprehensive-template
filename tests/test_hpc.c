@@ -59,7 +59,7 @@ static void fill_chunk(size_t start, size_t end, void *ctx) {
 
 static void test_parallel_for(void) {
     static int buf[N];
-    PForCtx    ctx = {buf};
+    PForCtx ctx = {buf};
     parallel_for(N, 4, fill_chunk, &ctx);
     for (int i = 0; i < N; i++) CHECK(buf[i] == i);
 

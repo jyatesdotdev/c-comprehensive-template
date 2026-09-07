@@ -15,19 +15,19 @@
 #include <stdlib.h>
 
 typedef struct EventEntry {
-    int           fd;
-    unsigned int  events;
+    int fd;
+    unsigned int events;
     EventCallback cb;
-    void         *user_data;
+    void *user_data;
 } EventEntry;
 
 struct EventLoop {
-    EventEntry    *entries;
+    EventEntry *entries;
     struct pollfd *pollfds;
-    size_t         len;
-    size_t         cap;
-    int            running;
-    int            dispatching; /* nonzero while callbacks run (defers compaction) */
+    size_t len;
+    size_t cap;
+    int running;
+    int dispatching; /* nonzero while callbacks run (defers compaction) */
 };
 
 static short interest_to_poll(unsigned int events) {

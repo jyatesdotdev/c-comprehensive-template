@@ -15,17 +15,17 @@
 
 /** @brief One slot: key NULL = empty; key set + dead = tombstone. */
 typedef struct HashMapSlot {
-    char    *key;   /**< Owned copy of the key, or NULL if never used. */
-    void    *value; /**< Caller-owned value pointer. */
-    unsigned dead;  /**< Nonzero marks a deleted (tombstone) slot. */
+    char *key;     /**< Owned copy of the key, or NULL if never used. */
+    void *value;   /**< Caller-owned value pointer. */
+    unsigned dead; /**< Nonzero marks a deleted (tombstone) slot. */
 } HashMapSlot;
 
 /** @brief Hash map. Initialize with hashmap_init, free with hashmap_destroy. */
 typedef struct HashMap {
     HashMapSlot *slots; /**< Slot array (cap entries). */
-    size_t       cap;   /**< Slot count (power of two). */
-    size_t       len;   /**< Live entry count. */
-    size_t       used;  /**< Live entries + tombstones (drives rehashing). */
+    size_t cap;         /**< Slot count (power of two). */
+    size_t len;         /**< Live entry count. */
+    size_t used;        /**< Live entries + tombstones (drives rehashing). */
 } HashMap;
 
 /** @brief Initialize an empty map. */

@@ -57,7 +57,7 @@ void simd_scale_f32(float *dst, const float *a, float scalar, size_t n) {
 
 float simd_dot_f32(const float *a, const float *b, size_t n) {
     if (n == 0 || !a || !b) return 0.0f;
-    float  sum = 0.0f;
+    float sum = 0.0f;
     size_t i = 0;
 #if defined(HAS_NEON)
     float32x4_t vsum = vdupq_n_f32(0.0f);
@@ -86,7 +86,7 @@ float simd_dot_f32(const float *a, const float *b, size_t n) {
 
 float simd_sum_f32(const float *a, size_t n) {
     if (n == 0 || !a) return 0.0f;
-    float  sum = 0.0f;
+    float sum = 0.0f;
     size_t i = 0;
 #if defined(HAS_NEON)
     float32x4_t vsum = vdupq_n_f32(0.0f);

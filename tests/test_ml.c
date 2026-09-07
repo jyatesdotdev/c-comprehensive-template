@@ -215,7 +215,7 @@ static void test_xor_convergence(void) {
 
 static void test_dataset_csv(void) {
     const char *path = "test_ml_data.csv";
-    FILE       *f = fopen(path, "w");
+    FILE *f = fopen(path, "w");
     CHECK(f != NULL);
     fprintf(f, "a,b,label\n1.0,2.0,0\n3.0,4.0,1\n5.5,-1.5,2\n");
     CHECK(fclose(f) == 0);

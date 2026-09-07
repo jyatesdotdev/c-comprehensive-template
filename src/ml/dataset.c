@@ -26,11 +26,11 @@ ErrorCode dataset_load_csv(const char *path, int has_header, MatX *out) {
     FILE *f = fopen(path, "r");
     if (!f) return ERR_NOT_FOUND;
 
-    char      line[CSV_LINE_MAX];
-    float    *vals = NULL;
-    size_t    count = 0, cap = 0, cols = 0, rows = 0;
+    char line[CSV_LINE_MAX];
+    float *vals = NULL;
+    size_t count = 0, cap = 0, cols = 0, rows = 0;
     ErrorCode err = ERR_OK;
-    int       skipped_header = !has_header;
+    int skipped_header = !has_header;
 
     while (fgets(line, sizeof(line), f)) {
         size_t len = strlen(line);
@@ -153,8 +153,8 @@ ErrorCode dataset_normalize_zscore(MatX *x) {
             m2 += delta * (v - mean);
         }
         double var = m2 / (double)(x->rows - 1);
-        float  std = (float)sqrt(var);
-        float  fmean = (float)mean;
+        float std = (float)sqrt(var);
+        float fmean = (float)mean;
 
         for (size_t r = 0; r < x->rows; r++) {
             float centered = matx_get(x, r, c) - fmean;
@@ -185,7 +185,7 @@ ErrorCode dataset_accuracy(const MatX *pred, const MatX *target, float *out_acc)
 
     size_t correct = 0;
     for (size_t r = 0; r < pred->rows; r++) {
-        size_t    p = 0, t = 0;
+        size_t p = 0, t = 0;
         ErrorCode err = matx_row_argmax(pred, r, &p);
         if (!err) err = matx_row_argmax(target, r, &t);
         if (err) return err;

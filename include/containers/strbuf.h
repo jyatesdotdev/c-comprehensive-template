@@ -17,9 +17,9 @@
 
 /** @brief String builder. Initialize with strbuf_init, free with strbuf_destroy. */
 typedef struct StrBuf {
-    char  *data; /**< NUL-terminated contents (never NULL after init). */
-    size_t len;  /**< Length excluding the NUL. */
-    size_t cap;  /**< Allocated bytes including NUL space. */
+    char *data; /**< NUL-terminated contents (never NULL after init). */
+    size_t len; /**< Length excluding the NUL. */
+    size_t cap; /**< Allocated bytes including NUL space. */
 } StrBuf;
 
 /** @brief Initialize as the empty string. */

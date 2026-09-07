@@ -55,7 +55,7 @@ ErrorCode udp_local_port(const UdpSocket *s, uint16_t *out_port) {
     if (!s || s->fd < 0 || !out_port) return ERR_INVALID_ARG;
 
     struct sockaddr_in addr;
-    socklen_t          len = sizeof(addr);
+    socklen_t len = sizeof(addr);
     if (getsockname(s->fd, (struct sockaddr *)&addr, &len) != 0) return ERR_IO;
     *out_port = ntohs(addr.sin_port);
     return ERR_OK;
@@ -91,8 +91,8 @@ ErrorCode udp_recv_from(const UdpSocket *s, void *buf, size_t cap, size_t *out_l
     *out_len = 0;
 
     struct sockaddr_in from;
-    socklen_t          from_len = sizeof(from);
-    ssize_t            n;
+    socklen_t from_len = sizeof(from);
+    ssize_t n;
     do {
         n = recvfrom(s->fd, buf, cap, 0, (struct sockaddr *)&from, &from_len);
     } while (n < 0 && errno == EINTR);

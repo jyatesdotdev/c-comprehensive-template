@@ -26,8 +26,8 @@ enum CliArgReq {
 /** @brief Defines a single CLI option with layered resolution. */
 typedef struct {
     const char *long_name;   /**< Long flag name (e.g. "verbose"). */
-    char        short_name;  /**< Single-char alias, or '\0'. */
-    int         arg_req;     /**< CLI_NO_ARG, CLI_REQUIRED_ARG, CLI_OPTIONAL_ARG. */
+    char short_name;         /**< Single-char alias, or '\0'. */
+    int arg_req;             /**< CLI_NO_ARG, CLI_REQUIRED_ARG, CLI_OPTIONAL_ARG. */
     const char *description; /**< Help text for this option. */
     const char *env_var;     /**< Env var fallback name, or NULL. */
     const char *default_val; /**< Default value, or NULL. */
@@ -40,8 +40,8 @@ typedef int (*CliSubcommandFn)(int argc, char **argv);
 
 /** @brief Defines a subcommand with name, description, and handler. */
 typedef struct {
-    const char     *name;
-    const char     *description;
+    const char *name;
+    const char *description;
     CliSubcommandFn handler;
 } CliSubcommand;
 
@@ -55,15 +55,15 @@ typedef struct {
 
 /** @brief Parsing context holding results from all resolution layers. */
 typedef struct {
-    CliEntry         cli_args[CLI_MAX_OPTS]; /**< Values from command line. */
-    int              cli_count;
-    CliEntry         config_vals[CLI_MAX_CONFIG]; /**< Values from config file. */
-    int              config_count;
+    CliEntry cli_args[CLI_MAX_OPTS]; /**< Values from command line. */
+    int cli_count;
+    CliEntry config_vals[CLI_MAX_CONFIG]; /**< Values from config file. */
+    int config_count;
     const CliOption *options; /**< Option definitions (borrowed). */
-    int              option_count;
-    const char      *subcommand; /**< Matched subcommand, or NULL. */
-    int              rest_argc;  /**< argc after subcommand/options. */
-    char           **rest_argv;  /**< argv after subcommand/options. */
+    int option_count;
+    const char *subcommand; /**< Matched subcommand, or NULL. */
+    int rest_argc;          /**< argc after subcommand/options. */
+    char **rest_argv;       /**< argv after subcommand/options. */
 } CliContext;
 
 /* ── Core API ───────────────────────────────────────────────────────────── */

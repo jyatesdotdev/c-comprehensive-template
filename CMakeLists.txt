@@ -92,6 +92,7 @@ add_library(core STATIC
     src/memory/arena.c
     src/memory/pool.c
     src/memory/leak_detect.c
+    src/memory/allocator.c
 )
 target_include_directories(core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -128,7 +129,8 @@ if(ENABLE_HPC)
         src/hpc/simd_ops.c
         src/hpc/thread_pool.c
         src/hpc/parallel.c
-        src/hpc/queue.c
+        src/hpc/spsc.c
+        src/hpc/blocking_queue.c
     )
     target_include_directories(hpc PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

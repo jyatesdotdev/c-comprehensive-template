@@ -20,7 +20,7 @@ ErrorCode path_join(const char *a, const char *b, char *out, size_t cap) {
     }
 
     size_t alen = strlen(a);
-    int    need_sep = a[alen - 1] != '/';
+    int need_sep = a[alen - 1] != '/';
     size_t total = alen + (size_t)need_sep + strlen(b) + 1;
     if (total > cap) return ERR_OVERFLOW;
 
@@ -31,7 +31,7 @@ ErrorCode path_join(const char *a, const char *b, char *out, size_t cap) {
 ErrorCode path_normalize(char *path) {
     if (!path) return ERR_INVALID_ARG;
 
-    int    absolute = path[0] == '/';
+    int absolute = path[0] == '/';
     size_t len = strlen(path);
 
     /* Component stack: starts[i] = offset of component i in the output. */

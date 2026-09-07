@@ -33,7 +33,7 @@ int main(void) {
     CHECK_NEAR(numerical_integrate_simpson(f_x2, 0.0, 1.0, 100), 1.0 / 3.0, 1e-10);
 
     /* Bisection */
-    int    iters = 0;
+    int iters = 0;
     double root = numerical_bisect(f_poly, 1.0, 2.0, 1e-12, &iters);
     CHECK_NEAR(f_poly(root), 0.0, 1e-6);
     CHECK(iters > 0);
@@ -59,7 +59,7 @@ int main(void) {
 
     /* Euler physics step */
     Particle p = {.pos = {0, 0, 0}, .vel = {1, 0, 0}, .mass = 1.0f};
-    Vec3     g = {0, -10, 0};
+    Vec3 g = {0, -10, 0};
     physics_step_euler(&p, 1, 1.0f, g);
     CHECK_NEAR(p.pos.x, 1.0f, 1e-5);
     CHECK_NEAR(p.vel.y, -10.0f, 1e-5);
@@ -67,7 +67,7 @@ int main(void) {
 
     /* Verlet physics step */
     Particle v = {.pos = {0, 0, 0}, .vel = {0, 0, 0}, .prev_pos = {0, 0, 0}, .mass = 1.0f};
-    Vec3     g2 = {0, -10, 0};
+    Vec3 g2 = {0, -10, 0};
     physics_step_verlet(&v, 1, 1.0f, g2);
     CHECK_NEAR(v.pos.y, -10.0f, 1e-3);
 
@@ -80,7 +80,7 @@ int main(void) {
 
     /* Box confinement */
     Particle bp = {.pos = {-1, 5, 0}, .vel = {-5, 0, 0}, .mass = 1.0f};
-    Vec3     bounds = {10, 10, 10};
+    Vec3 bounds = {10, 10, 10};
     physics_confine_box(&bp, bounds, 0.5f);
     CHECK(bp.pos.x >= 0.0f);
     CHECK(bp.vel.x > 0.0f); /* reflected */

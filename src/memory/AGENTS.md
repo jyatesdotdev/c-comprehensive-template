@@ -7,6 +7,7 @@ compile into the `core` library target, so like core they depend on nothing.
 
 | Allocator | Lifetime shape | Free cost | Use for |
 |-----------|----------------|-----------|---------|
+| `allocator.h` | process heap via a vtable | same as the backend | swapping jemalloc/mimalloc; `vec_init_a` |
 | `arena`   | many allocs, one release point | O(1) reset for everything | per-frame / per-request scratch |
 | `pool`    | fixed-size objects, individual free | O(1) push to free list | nodes, particles, connections |
 | `malloc`  | unpredictable sizes and lifetimes | varies | everything else |

@@ -15,10 +15,10 @@ Two targets with different guarantees:
 - Pixels are `uint32_t` 0xAARRGGBB; the buffer is `width * height`
   computed in `size_t` (both dimensions widened *before* multiplying —
   int overflow at 46341x46341 is real).
-- Every drawing function clips: `fb_set_pixel` bounds-checks and is the
+- Every drawing function clips: `framebuffer_set_pixel` bounds-checks and is the
   single write path — primitives (lines, circles) go through it rather
   than poking the buffer, so clipping stays centralized.
-- `fb_write_ppm` checks `fwrite` and the final `fclose` (a failed close
+- `framebuffer_write_ppm` checks `fwrite` and the final `fclose` (a failed close
   loses buffered pixels — ERR_IO, not shrug).
 
 ## Integration guidance

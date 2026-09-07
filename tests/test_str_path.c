@@ -94,7 +94,7 @@ static void test_path_lexical(void) {
     CHECK(path_normalize(p5) == ERR_OK && strcmp(p5, ".") == 0);
 
     {
-        char   deep[256];
+        char deep[256];
         size_t n = 0;
         for (int i = 0; i < 65; i++) {
             if (i) deep[n++] = '/';
@@ -122,7 +122,7 @@ static void test_path_lexical(void) {
 
 static void test_path_fs(void) {
     const char *root = "test_path_tmp";
-    char        nested[256];
+    char nested[256];
     CHECK(path_join(root, "deep/er/est", nested, sizeof(nested)) == ERR_OK);
 
     CHECK(!path_exists(nested));

@@ -13,7 +13,7 @@
 #define LOG_LINE_MAX 1024
 
 static LogLevel g_min_level = LOG_LEVEL_INFO;
-static FILE    *g_stream = NULL; /* NULL means stderr (can't init statically, ISO C) */
+static FILE *g_stream = NULL; /* NULL means stderr (can't init statically, ISO C) */
 
 static const char *level_name(LogLevel l) {
     switch (l) {
@@ -57,7 +57,7 @@ void log_msg(LogLevel level, const char *fmt, ...) {
     struct tm tm_buf;
     localtime_r(&ts.tv_sec, &tm_buf);
 
-    char    msg[LOG_LINE_MAX];
+    char msg[LOG_LINE_MAX];
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(msg, sizeof(msg), fmt, ap); /* Flawfinder: ignore — format from trusted caller */

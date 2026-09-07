@@ -92,7 +92,7 @@ ErrorCode sv_parse_long(StrView sv, long *out) {
 
     errno = 0;
     char *end = NULL;
-    long  v = strtol(buf, &end, 10);
+    long v = strtol(buf, &end, 10);
     if (errno == ERANGE) return ERR_OVERFLOW;
     if (end == buf || *end != '\0') return ERR_INVALID_ARG; /* junk or partial */
     *out = v;

@@ -13,11 +13,11 @@
 
 /** @brief Circular FIFO. Initialize with ringbuf_init, free with ringbuf_destroy. */
 typedef struct RingBuf {
-    unsigned char *data;      /**< Element storage (cap * elem_size bytes). */
-    size_t         elem_size; /**< Size of one element. */
-    size_t         cap;       /**< Maximum element count. */
-    size_t         head;      /**< Index of the oldest element. */
-    size_t         len;       /**< Current element count. */
+    unsigned char *data; /**< Element storage (cap * elem_size bytes). */
+    size_t elem_size;    /**< Size of one element. */
+    size_t cap;          /**< Maximum element count. */
+    size_t head;         /**< Index of the oldest element. */
+    size_t len;          /**< Current element count. */
 } RingBuf;
 
 /**

@@ -55,7 +55,7 @@ static int bench_size(size_t n, Rng *rng) {
     t0 = time_now_ms();
     matx_mul_blocked(&a, &b, &out, 64);
     double t_blocked = time_now_ms() - t0;
-    float  blocked_err = max_abs_diff(&ref, &out);
+    float blocked_err = max_abs_diff(&ref, &out);
 
     printf("%4zu | naive %8.1f ms (%5.2f GFLOP/s) | blocked %8.1f ms (%5.2f GFLOP/s)", n, t_naive,
            gflop / (t_naive / 1000.0), t_blocked, gflop / (t_blocked / 1000.0));
@@ -65,7 +65,7 @@ static int bench_size(size_t n, Rng *rng) {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n, (int)n, (int)n, 1.0f, a.data,
                 (int)n, b.data, (int)n, 0.0f, out.data, (int)n);
     double t_blas = time_now_ms() - t0;
-    float  blas_err = max_abs_diff(&ref, &out);
+    float blas_err = max_abs_diff(&ref, &out);
     printf(" | BLAS %7.1f ms (%6.2f GFLOP/s)", t_blas, gflop / (t_blas / 1000.0));
     if (blas_err > 1e-2f) printf("  [MISMATCH %g]", (double)blas_err);
 #endif

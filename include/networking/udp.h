@@ -23,8 +23,8 @@ typedef struct UdpSocket {
 
 /** @brief Sender identity reported by udp_recv_from; pass back to udp_send_to to reply. */
 typedef struct UdpEndpoint {
-    char     host[UDP_HOST_MAX]; /**< Numeric IP address string. */
-    uint16_t port;               /**< Port in host byte order. */
+    char host[UDP_HOST_MAX]; /**< Numeric IP address string. */
+    uint16_t port;           /**< Port in host byte order. */
 } UdpEndpoint;
 
 /**

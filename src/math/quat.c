@@ -11,7 +11,7 @@ Quat quat_identity(void) {
 }
 
 Quat quat_from_axis_angle(Vec3 axis, float angle_rad) {
-    Vec3  a = vec3_normalize(axis);
+    Vec3 a = vec3_normalize(axis);
     float half = angle_rad * 0.5f;
     float s = sinf(half);
     return (Quat){a.x * s, a.y * s, a.z * s, cosf(half)};

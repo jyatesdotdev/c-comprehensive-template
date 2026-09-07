@@ -33,7 +33,7 @@ void hashmap_destroy(HashMap *m) {
 
 /** Find the slot for key: the live match if present, else the first free slot. */
 static HashMapSlot *probe(HashMapSlot *slots, size_t cap, const char *key) {
-    size_t       i = (size_t)(hash_fnv1a_str(key) & (cap - 1));
+    size_t i = (size_t)(hash_fnv1a_str(key) & (cap - 1));
     HashMapSlot *first_tombstone = NULL;
 
     for (size_t step = 0; step < cap; step++, i = (i + 1) & (cap - 1)) {

@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv) {
     const char *host = argc > 1 ? argv[1] : "127.0.0.1";
-    uint16_t    port = argc > 2 ? (uint16_t)strtoul(argv[2], NULL, 10) : 7777;
+    uint16_t port = argc > 2 ? (uint16_t)strtoul(argv[2], NULL, 10) : 7777;
     const char *msg = argc > 3 ? argv[3] : "hello from echo client";
 
     TcpSocket s;
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    char   buf[1024];
+    char buf[1024];
     size_t total = 0;
     while (total < len) {
         size_t got = 0;

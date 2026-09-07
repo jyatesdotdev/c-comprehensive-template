@@ -24,8 +24,8 @@ AllowShortCaseLabelsOnASingleLine: true
 # Pointers bind to the name: `char *buf`, not `char* buf`
 PointerAlignment: Right
 
-# Preserve deliberate column alignment in struct definitions and headers
-AlignConsecutiveDeclarations: Consecutive
+# Do not column-align declarations (avoids noisy diffs when one field changes).
+AlignConsecutiveDeclarations: None
 AlignConsecutiveMacros: Consecutive
 AlignTrailingComments: true
 AlignEscapedNewlines: Left

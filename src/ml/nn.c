@@ -115,7 +115,7 @@ ErrorCode dense_forward(DenseLayer *l, const MatX *x, MatX *out) {
     if (x->cols != l->in_dim) return ERR_INVALID_ARG;
     if (out->rows != x->rows || out->cols != l->out_dim) return ERR_INVALID_ARG;
 
-    size_t    batch = x->rows;
+    size_t batch = x->rows;
     ErrorCode err = ensure_shape(&l->x_cache, batch, l->in_dim);
     if (!err) err = ensure_shape(&l->z_cache, batch, l->out_dim);
     if (err) return err;
@@ -135,7 +135,7 @@ ErrorCode dense_backward(DenseLayer *l, const MatX *dout, MatX *dx) {
     if (dout->rows != batch || dout->cols != l->out_dim) return ERR_INVALID_ARG;
     if (dx && (dx->rows != batch || dx->cols != l->in_dim)) return ERR_INVALID_ARG;
 
-    MatX      dz = {0}, xt = {0}, wt = {0};
+    MatX dz = {0}, xt = {0}, wt = {0};
     ErrorCode err = matx_init(&dz, batch, l->out_dim);
 
     /* dz = dout ⊙ act'(z) */

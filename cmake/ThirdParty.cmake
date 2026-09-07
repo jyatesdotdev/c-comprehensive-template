@@ -3,6 +3,9 @@
 #
 # Usage:
 #   cmake -DUSE_SDL2=ON -DUSE_GLFW=ON -DUSE_CGLM=ON ..
+#
+# GIT_TAG is a full commit SHA (peeled annotated tags). GIT_SHALLOW FALSE
+# because CMake cannot shallow-clone an arbitrary SHA.
 
 include(FetchContent)
 
@@ -13,8 +16,8 @@ if(USE_SDL2)
     if(NOT SDL2_FOUND)
         FetchContent_Declare(SDL2
             GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG        release-2.30.0
-            GIT_SHALLOW    TRUE
+            GIT_TAG        859844eae358447be8d66e6da59b6fb3df0ed778 # release-2.30.0
+            GIT_SHALLOW    FALSE
         )
         set(SDL_SHARED OFF CACHE BOOL "" FORCE)
         set(SDL_STATIC ON  CACHE BOOL "" FORCE)
@@ -30,8 +33,8 @@ if(USE_GLFW)
     if(NOT glfw3_FOUND)
         FetchContent_Declare(glfw
             GIT_REPOSITORY https://github.com/glfw/glfw.git
-            GIT_TAG        3.4
-            GIT_SHALLOW    TRUE
+            GIT_TAG        7b6aead9fb88b3623e3b3725ebb42670cbe4c579 # 3.4
+            GIT_SHALLOW    FALSE
         )
         set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
         set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
@@ -46,8 +49,8 @@ option(USE_CGLM "Use cglm math library" OFF)
 if(USE_CGLM)
     FetchContent_Declare(cglm
         GIT_REPOSITORY https://github.com/recp/cglm.git
-        GIT_TAG        v0.9.4
-        GIT_SHALLOW    TRUE
+        GIT_TAG        1796cc5ce298235b615dc7a4750b8c3ba56a05dd # v0.9.4
+        GIT_SHALLOW    FALSE
     )
     FetchContent_MakeAvailable(cglm)
     message(STATUS "cglm enabled")
@@ -58,8 +61,8 @@ option(USE_CJSON "Use cJSON library" OFF)
 if(USE_CJSON)
     FetchContent_Declare(cjson
         GIT_REPOSITORY https://github.com/DaveGamble/cJSON.git
-        GIT_TAG        v1.7.18
-        GIT_SHALLOW    TRUE
+        GIT_TAG        acc76239bee01d8e9c858ae2cab296704e52d916 # v1.7.18
+        GIT_SHALLOW    FALSE
     )
     set(ENABLE_CJSON_TEST OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(cjson)
@@ -71,8 +74,8 @@ option(USE_ARGTABLE3 "Use argtable3 for structured CLI parsing" OFF)
 if(USE_ARGTABLE3)
     FetchContent_Declare(argtable3
         GIT_REPOSITORY https://github.com/argtable/argtable3.git
-        GIT_TAG        v3.3.1
-        GIT_SHALLOW    TRUE
+        GIT_TAG        b50c6c81f25eef8af51141678b333c55b661414d # v3.3.1
+        GIT_SHALLOW    FALSE
     )
     set(ARGTABLE3_ENABLE_TESTS    OFF CACHE BOOL "" FORCE)
     set(ARGTABLE3_ENABLE_EXAMPLES OFF CACHE BOOL "" FORCE)

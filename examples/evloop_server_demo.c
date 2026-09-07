@@ -27,8 +27,8 @@ static void on_client(int fd, unsigned int events, void *ud) {
     (void)events;
 
     TcpSocket client = {.fd = fd};
-    char      buf[1024];
-    size_t    got = 0;
+    char buf[1024];
+    size_t got = 0;
     if (tcp_recv(&client, buf, sizeof(buf), &got) != ERR_OK || got == 0) {
         /* Removal is deferred during dispatch, so don't report counts here. */
         (void)event_loop_remove(srv->loop, fd);

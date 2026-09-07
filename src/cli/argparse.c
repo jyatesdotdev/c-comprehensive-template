@@ -72,8 +72,8 @@ ErrorCode cli_parse(int argc, char **argv, const CliOption *options, int num_opt
 
     /* Build getopt_long structures. */
     struct option long_opts[CLI_MAX_OPTS + 1];
-    char          short_str[CLI_MAX_OPTS * 3 + 1];
-    int           si = 0;
+    char short_str[CLI_MAX_OPTS * 3 + 1];
+    int si = 0;
 
     for (int i = 0; i < num_options && i < CLI_MAX_OPTS; i++) {
         long_opts[i] = (struct option){

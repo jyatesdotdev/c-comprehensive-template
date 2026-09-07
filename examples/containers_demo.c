@@ -20,8 +20,8 @@ int main(void) {
     stopwatch_start(&sw);
 
     /* ── Count word frequencies with a HashMap ─────────────────────────── */
-    const char  *words[] = {"the", "quick", "brown", "fox", "jumps", "over",
-                            "the", "lazy",  "dog",   "the", "fox"};
+    const char *words[] = {"the", "quick", "brown", "fox", "jumps", "over",
+                           "the", "lazy",  "dog",   "the", "fox"};
     const size_t num_words = sizeof(words) / sizeof(words[0]);
 
     HashMap counts;
@@ -51,7 +51,7 @@ int main(void) {
 
     HashMapIter it = {0};
     const char *key = NULL;
-    void       *val = NULL;
+    void *val = NULL;
     while (hashmap_next(&counts, &it, &key, &val)) {
         if (strbuf_appendf(&report, "%s=%d ", key, *(int *)val) != ERR_OK) return 1;
     }

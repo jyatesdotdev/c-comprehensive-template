@@ -10,9 +10,9 @@
 
 typedef struct Pool {
     unsigned char *buf;
-    size_t         block_size;
-    size_t         block_count;
-    void          *free_list;
+    size_t block_size;
+    size_t block_count;
+    void *free_list;
 } Pool;
 
 /**

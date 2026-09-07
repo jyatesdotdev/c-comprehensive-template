@@ -22,7 +22,7 @@ static ErrorCode checked_count(size_t rows, size_t cols, size_t *out_count) {
 ErrorCode matx_init(MatX *m, size_t rows, size_t cols) {
     if (!m) return ERR_INVALID_ARG;
 
-    size_t    count = 0;
+    size_t count = 0;
     ErrorCode err = checked_count(rows, cols, &count);
     if (err) return err;
 
@@ -37,7 +37,7 @@ ErrorCode matx_init(MatX *m, size_t rows, size_t cols) {
 ErrorCode matx_init_arena(MatX *m, Arena *arena, size_t rows, size_t cols) {
     if (!m || !arena) return ERR_INVALID_ARG;
 
-    size_t    count = 0;
+    size_t count = 0;
     ErrorCode err = checked_count(rows, cols, &count);
     if (err) return err;
 
