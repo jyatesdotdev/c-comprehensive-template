@@ -1,6 +1,9 @@
 # Cross-Platform Compatibility Guide
 
-This guide covers patterns and practices for writing portable C code across Linux, macOS, and Windows using this template.
+This guide covers portable C for **Linux and macOS** (the supported platforms).
+Windows is **out of scope**: no Winsock, no Windows CI. `ENABLE_NETWORKING` and
+`ENABLE_HPC` default OFF on `WIN32` so a Windows configure does not try to build
+POSIX-only libraries.
 
 ---
 
@@ -384,9 +387,10 @@ The template targets C17 (`CMAKE_C_STANDARD 17`). For C23 features, use feature-
 
 ---
 
-## 10. CI/CD Matrix
+## 10. CI/CD
 
-Test across platforms in CI. Example GitHub Actions matrix:
+Supported CI is **ubuntu-24.04 only** (see `.github/workflows/ci.yml`).
+A multi-OS matrix is *not* used. If you fork and add macOS runners, a sketch:
 
 ```yaml
 strategy:
@@ -402,7 +406,7 @@ strategy:
         cc: cl
 
 steps:
-  - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
   - name: Configure
     run: cmake -B build -DCMAKE_C_COMPILER=${{ matrix.cc }}
   - name: Build

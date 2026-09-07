@@ -85,17 +85,17 @@ Status: `[ ]` open, `[x]` done, `[~]` deferred (design / out of this pass).
 - [x] MSVC `/W4` vs GCC/Clang warning set (so Windows configure is not killed by `-Wall`)
 - [x] Docs/scaffolder mention BUILD/INSTALL include genex + Install.cmake targets
 
-## Still deferred
+## Closed / out of scope
 
-- [~] Allocator vtable / `vec_init_a` for swapping jemalloc/mimalloc
-- [~] Per-module `FILE_SET HEADERS` so linking `cli` does not expose `ml/` (reviewers: skip — would break `#include "module/foo.h"`)
-- [~] Split `queue.h` (reviewers: skip — Windows still needs pthreads for the rest of HPC)
-- [~] Full Windows sockets / Winsock
-- [x] Pin Unity FetchContent to v2.6.0 commit SHA; pin checkout@v5.0.0, upload-artifact@v4, codeql upload-sarif@v3.30.6
-- [~] Pin remaining FetchContent (SDL/GLFW/…) and Docker image digests
-- [~] Mass Doxygen `@param` on infallible `vec3_*` helpers
-- [~] Rename `fb_*` → `framebuffer_*` (breaking)
-- [~] `AlignConsecutiveDeclarations: None` (format churn)
+- Windows sockets, Windows CI, FILE_SET header isolation, `queue.h` split,
+  `fb_*` rename, mass `vec3_*` Doxygen, clang-format align churn, allocator vtable:
+  **not doing**. User does not support Windows; the rest are breaking or taste.
+
+## Pins (Dependabot PRs #1 #2 #4 applied on main)
+
+- [x] Unity FetchContent SHA (v2.6.0)
+- [x] actions/checkout v7.0.1, upload-artifact v7.0.1, codeql upload-sarif v4.37.9
+- [~] Optional FetchContent (SDL/GLFW/…) and Docker digests — unused unless `USE_*=ON`
 
 ---
 
